@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Painel · Bizuxo </title>
+<title>Painel · Bizuxo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
@@ -11,7 +11,7 @@
 
 <style>
   /* ============================================================
-     Complementos visuais para o Dashboard (Mover para style.css)
+     Complementos visuais para o Dashboard
      ============================================================ */
   
   /* Grid de Estatísticas */
@@ -36,9 +36,7 @@
     box-shadow: 0 8px 24px rgba(16, 17, 19, 0.06);
     border-color: var(--ink-faint);
   }
-  .stat-card.accent {
-    border-top: 3px solid var(--accent);
-  }
+  .stat-card.accent { border-top: 3px solid var(--accent); }
   .stat-value {
     font-family: var(--font-display);
     font-size: 1.85rem;
@@ -52,6 +50,49 @@
     color: var(--ink-soft);
     text-transform: uppercase;
     letter-spacing: 0.06em;
+  }
+
+  /* ============================================================
+     NOVA SEÇÃO: Solicitação Rápida (Ícones)
+     ============================================================ */
+  .quick-services-section { margin-bottom: 32px; }
+  .section-subtitle {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0 0 16px 0;
+  }
+  .quick-services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 16px;
+  }
+  .quick-service-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+  .quick-service-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(5, 193, 103, 0.1);
+  }
+  .quick-service-card:active { transform: scale(0.96); }
+  .quick-service-card .icon { font-size: 2rem; }
+  .quick-service-card .label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.2;
   }
 
   /* Cabeçalho de Seção */
@@ -97,18 +138,51 @@
   .cta-banner p { font-size: 0.88rem; color: #B6B8BE; margin: 0; max-width: 40ch; line-height: 1.5; }
   .cta-banner .btn { width: auto; padding: 12px 24px; flex-shrink: 0; }
 
-  /* Ajuste para Mobile no Dashboard */
+  /* ============================================================
+     Toast Notifications (Alertas Elegantes)
+     ============================================================ */
+  .toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .toast {
+    background: var(--bg-app);
+    color: #fff;
+    padding: 14px 20px;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    min-width: 280px;
+    border-left: 4px solid var(--accent);
+  }
+  .toast.error { border-left-color: var(--alert); }
+  @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(120%); opacity: 0; } }
+
+  /* Ajuste para Mobile */
   @media (max-width: 768px) {
     .stat-grid { grid-template-columns: 1fr 1fr; }
+    .quick-services-grid { grid-template-columns: repeat(2, 1fr); }
     .cta-banner { flex-direction: column; text-align: center; padding: 24px 20px; }
     .cta-banner p { max-width: 100%; }
     .cta-banner .btn { width: 100%; }
+    .toast-container { bottom: 16px; right: 16px; left: 16px; }
+    .toast { min-width: auto; width: 100%; }
   }
   @media (max-width: 480px) {
     .stat-grid { grid-template-columns: 1fr; }
   }
 
-  /* Badges de status adicionais para o dashboard */
   .status-recebendo { background: var(--amber-soft); color: var(--amber); }
   .status-selecionado { background: var(--accent-soft); color: var(--accent-ink); }
 </style>
@@ -132,7 +206,7 @@
       <a class="nav-item" href="meu-perfil-cliente.html">
         <span class="nav-icon">⚙️</span> Meus Dados
       </a>
-      <div style="flex:1"></div> <!-- Empurra o botão de sair para baixo -->
+      <div style="flex:1"></div>
       <a class="nav-item" href="../index.html" style="color: var(--alert); margin-top: auto;">
         <span class="nav-icon">🚪</span> Sair
       </a>
@@ -172,11 +246,44 @@
       </div>
     </div>
 
+    <!-- ============================================================
+         NOVA SEÇÃO: Solicitação Rápida por Categoria
+         ============================================================ -->
+    <div class="quick-services-section">
+      <h3 class="section-subtitle">⚡ Solicitar serviço rápido</h3>
+      <div class="quick-services-grid">
+        <div class="quick-service-card" onclick="solicitarServicoRapido('Eletricista', '⚡')">
+          <span class="icon">⚡</span>
+          <span class="label">Eletricista</span>
+        </div>
+        <div class="quick-service-card" onclick="solicitarServicoRapido('Diarista', '🧹')">
+          <span class="icon">🧹</span>
+          <span class="label">Diarista</span>
+        </div>
+        <div class="quick-service-card" onclick="solicitarServicoRapido('Manicure', '💅')">
+          <span class="icon">💅</span>
+          <span class="label">Manicure</span>
+        </div>
+        <div class="quick-service-card" onclick="solicitarServicoRapido('Chaveiro', '🔑')">
+          <span class="icon">🔑</span>
+          <span class="label">Chaveiro</span>
+        </div>
+        <div class="quick-service-card" onclick="solicitarServicoRapido('Marido de Aluguel', '🛠️')">
+          <span class="icon">🛠️</span>
+          <span class="label">Marido de Aluguel</span>
+        </div>
+        <div class="quick-service-card" onclick="solicitarServicoRapido('Encanador', '🚿')">
+          <span class="icon">🚿</span>
+          <span class="label">Encanador</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Banner CTA -->
     <div class="cta-banner">
       <div>
-        <h3>Precisa de um serviço agora?</h3>
-        <p>Publique uma demanda e receba propostas de prestadores verificados da sua região em minutos.</p>
+        <h3>Precisa de algo mais específico?</h3>
+        <p>Publique uma demanda detalhada e receba propostas personalizadas de prestadores verificados.</p>
       </div>
       <a class="btn btn-accent" href="nova-demanda.html">Publicar demanda</a>
     </div>
@@ -203,7 +310,51 @@
 </div>
 
 <script>
-  // ---- Dados simulados (substituir por fetch ao Supabase depois) ----
+  // ============================================================
+  // LÓGICA DE SOLICITAÇÃO RÁPIDA (ALERTA A PRESTADORES)
+  // ============================================================
+  function solicitarServicoRapido(categoria, icone) {
+    // 1. Feedback imediato de que o sistema está trabalhando
+    showToast(`${icone} Buscando ${categoria}s na sua região (Águas Claras, DF)...`, 'info');
+
+    // 2. Simula o tempo de processamento e envio de push notification para os prestadores
+    setTimeout(() => {
+      const qtdPrestadores = Math.floor(Math.random() * 4) + 2; // Simula entre 2 e 5 prestadores
+      showToast(`✅ Sucesso! O alerta foi enviado para ${qtdPrestadores} ${categoria}s próximos. Eles entrarão em contato em breve.`, 'success');
+      
+      // Opcional: Atualizar estatística visualmente
+      const statAtivas = document.getElementById('statAtivas');
+      statAtivas.textContent = parseInt(statAtivas.textContent) + 1;
+    }, 1500);
+  }
+
+  // Sistema de Notificações Toast (Substituto elegante do alert())
+  function showToast(message, type = 'info') {
+    let container = document.getElementById('toastContainer');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'toastContainer';
+      container.className = 'toast-container';
+      document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `<span>${message}</span>`;
+    container.appendChild(toast);
+
+    // Remove o toast após 4 segundos com animação de saída
+    setTimeout(() => {
+      toast.style.animation = 'slideOut 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+      setTimeout(() => {
+        if (toast.parentNode) toast.parentNode.removeChild(toast);
+      }, 400);
+    }, 4000);
+  }
+
+  // ============================================================
+  // DADOS SIMULADOS E RENDERIZAÇÃO (Mantidos do seu código)
+  // ============================================================
   const DEMANDS = [
     { id: 823, title: "Instalação de chuveiro elétrico", loc: "Águas Claras", date: "27/08", status: "recebendo", statusLabel: "Recebendo propostas", proposals: 3 },
     { id: 819, title: "Revisão de disjuntor", loc: "Águas Claras", date: "25/08", status: "selecionado", statusLabel: "Prestador selecionado", proposals: 2 },
@@ -213,16 +364,14 @@
     { id: 1088, title: "Instalação elétrica — cômodo extra", provider: "Carlos Silva", avatar: "👨‍🔧", loc: "Águas Claras", date: "28/08", value: "R$ 250,00", status: "andamento", statusLabel: "Em andamento" },
   ];
 
-  // ---- Lógica de Estatísticas ----
   const activeDemands = DEMANDS.filter(d => d.status !== 'concluido' && d.status !== 'cancelado').length;
   const totalProposals = DEMANDS.reduce((sum, d) => sum + (d.proposals || 0), 0);
-  const completedServices = 4; // Mock
+  const completedServices = 4;
 
   document.getElementById('statAtivas').textContent = activeDemands;
   document.getElementById('statPropostas').textContent = totalProposals;
   document.getElementById('statConcluidos').textContent = completedServices;
 
-  // ---- Renderização: Demandas Recentes ----
   const demandasEl = document.getElementById('demandasRecentes');
   if (DEMANDS.length === 0) {
     demandasEl.innerHTML = `<div class="empty-state"><h3>Nenhuma demanda recente</h3><p>Publique sua primeira demanda para começar.</p></div>`;
@@ -236,11 +385,7 @@
         <div class="list-row-main">
           <div class="list-row-title">${d.title}</div>
           <div class="list-row-sub">
-            <span>📍 ${d.loc}</span>
-            <span class="sep">·</span>
-            <span>DEM #${d.id}</span>
-            <span class="sep">·</span>
-            <span>${d.proposals} proposta${d.proposals !== 1 ? 's' : ''}</span>
+            <span>📍 ${d.loc}</span><span class="sep">·</span><span>DEM #${d.id}</span><span class="sep">·</span><span>${d.proposals} proposta${d.proposals !== 1 ? 's' : ''}</span>
           </div>
         </div>
         <div class="list-row-side">
@@ -251,23 +396,20 @@
     });
   }
 
-  // ---- Renderização: Serviços em Andamento ----
   const servicosEl = document.getElementById('servicosAndamento');
   if (SERVICES.length === 0) {
     servicosEl.innerHTML = `<div class="empty-state"><h3>Nenhum serviço em andamento</h3><p>Seus serviços contratados aparecerão aqui.</p></div>`;
   } else {
     SERVICES.forEach(s => {
       const el = document.createElement('a');
-      el.href = `acompanhar-servico.html?id=${s.id}`; // Link ajustado para a tela que melhoramos antes
+      el.href = `acompanhar-servico.html?id=${s.id}`;
       el.className = 'list-row';
       el.innerHTML = `
         <div class="avatar avatar-md" style="background: var(--accent-soft); color: var(--accent-ink); font-size: 1.2rem;">${s.avatar}</div>
         <div class="list-row-main">
           <div class="list-row-title">${s.title}</div>
           <div class="list-row-sub">
-            <span>${s.provider}</span>
-            <span class="sep">·</span>
-            <span>📍 ${s.loc}</span>
+            <span>${s.provider}</span><span class="sep">·</span><span>📍 ${s.loc}</span>
           </div>
         </div>
         <div class="list-row-side">
