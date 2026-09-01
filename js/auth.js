@@ -45,11 +45,10 @@ const Auth = {
         return { success: false, error: 'Sua conta está bloqueada. Entre em contato com o suporte.' };
       }
 
-      window.location.href = perfil.tipo === 'prestador'
-        ? '../prestador/dashboard-prestador.html' // Ajuste o caminho conforme sua estrutura de pastas
-        : perfil.tipo === 'admin'
-          ? '../admin/dashboard.html'
-          : '../cliente/dashboard-cliente.html';
+     window.location.href = perfil.tipo === 'prestador'
+  ? 'prestador/dashboard-prestador.html'
+  : 'cliente/dashboard-cliente.html';
+    
 
       return { success: true };
     } catch (err) {
@@ -127,7 +126,7 @@ const Auth = {
     }
     
     const inSubfolder = /\/(cliente|prestador|admin|publico)\//.test(window.location.pathname);
-    window.location.href = inSubfolder ? '../index.html' : 'index.html';
+    window.location.href = inSubfolder ? 'index.html' : 'index.html';
   },
 
   async recuperarSenha(email) {
@@ -138,7 +137,7 @@ const Auth = {
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + '/index.html'
+        redirectTo: window.location.origin + 'index.html'
       });
       
       if (error) return { success: false, error: this.traduzErro(error.message) };
