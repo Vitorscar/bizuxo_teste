@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sobre Nós · Bizuxo</title>
+<meta name="description" content="Conheça a história, missão e o time por trás do Bizuxo, o ponto de encontro entre quem precisa e quem resolve.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  /* ============================================================
+     VARIÁVEIS E BASE (Herdadas do style.css)
+     ============================================================ */
+  body { background: var(--surface-soft); }
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  .text-accent { color: var(--accent); }
+  .text-alert { color: var(--alert); }
+  .text-gradient-x { 
+    background: linear-gradient(90deg, var(--accent) 0%, #FF8A00 50%, var(--alert) 100%); 
+    -webkit-background-clip: text; 
+    -webkit-text-fill-color: transparent; 
+    background-clip: text; 
+  }
+
+  /* ============================================================
+     ANIMAÇÕES (Scroll Reveal & Hover)
+     ============================================================ */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse-green {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(5, 193, 103, 0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(5, 193, 103, 0); }
+  }
+  @keyframes pulse-red {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(255, 59, 48, 0); }
+  }
+
+  .reveal { opacity: 0; transform: translateY(24px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+  .reveal.active { opacity: 1; transform: translateY(0); }
+
+  /* ============================================================
+     COMPONENTES DA PÁGINA
+     ============================================================ */
+  .navbar { 
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100; 
+    background: rgba(11,11,13,0.92); backdrop-filter: blur(12px); 
+    border-bottom: 1px solid rgba(255,255,255,0.08); padding: 16px 0; 
+  }
+  .nav-inner { display: flex; justify-content: space-between; align-items: center; }
+  .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; color: #fff; text-decoration: none; }
+  .nav-logo span { color: var(--accent); }
+  .nav-cta { 
+    background: var(--surface); color: var(--ink); padding: 10px 20px; 
+    border-radius: 100px; font-weight: 700; font-size: 0.85rem; text-decoration: none;
+    transition: transform 0.2s, background 0.2s;
+  }
+  .nav-cta:hover { transform: translateY(-2px); background: var(--accent); color: #fff; }
+
+  .page-hero { 
+    background: var(--bg-app); color: #fff; padding: 160px 0 100px; text-align: center; 
+    position: relative; overflow: hidden;
+  }
+  .page-hero::before {
+    content: ''; position: absolute; top: -20%; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(5,193,103,0.1) 0%, rgba(255,59,48,0.05) 50%, transparent 70%);
+    pointer-events: none;
+  }
+  .page-hero h1 { font-size: clamp(2.2rem, 5vw, 3.2rem); max-width: 18ch; margin: 0 auto 16px; position: relative; animation: fadeInUp 0.8s ease-out; }
+  .page-hero p { color: #B6B8BE; font-size: 1.1rem; max-width: 55ch; margin: 0 auto; position: relative; animation: fadeInUp 0.8s ease-out 0.1s backwards; }
+  .breadcrumb { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; font-size: 0.85rem; color: #8B8E96; position: relative; animation: fadeInUp 0.8s ease-out 0.2s backwards; }
+  .breadcrumb a { color: #8B8E96; text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: var(--accent); }
+
+  section { padding: 100px 0; }
+  .section-title { font-size: 2.2rem; text-align: center; margin-bottom: 12px; }
+  .section-sub { text-align: center; color: var(--ink-soft); margin-bottom: 56px; max-width: 60ch; margin-left: auto; margin-right: auto; font-size: 1.05rem; }
+
+  /* ESSÊNCIA */
+  .essence-section { background: var(--surface); }
+  .essence-content { max-width: 780px; margin: 0 auto; font-size: 1.1rem; line-height: 1.8; color: var(--ink); }
+  .essence-content p { margin-bottom: 24px; }
+  
+  .essence-x-symbol {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    font-family: var(--font-display); font-weight: 800; font-size: 1.5rem;
+    color: var(--ink); margin: 40px 0; letter-spacing: 1px;
+  }
+  .essence-x-symbol .dot-green { 
+    width: 16px; height: 16px; border-radius: 50%; background: var(--accent); 
+    animation: pulse-green 2s infinite;
+  }
+  .essence-x-symbol .dot-red { 
+    width: 16px; height: 16px; border-radius: 50%; background: var(--alert); 
+    animation: pulse-red 2s infinite;
+  }
+  .essence-x-symbol .x-letter { 
+    background: linear-gradient(90deg, var(--accent) 0%, #FF8A00 50%, var(--alert) 100%); 
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; 
+    font-size: 3.5rem; margin: 0 4px; line-height: 1;
+  }
+
+  /* MISSÃO, VISÃO, PROPÓSITO */
+  .mvv-section { background: var(--surface-soft); }
+  .mvv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+  .mvv-card { 
+    background: var(--surface); padding: 36px 28px; border-radius: var(--radius-lg); 
+    text-align: center; transition: transform 0.3s, box-shadow 0.3s; border: 1px solid transparent;
+  }
+  .mvv-card:hover { transform: translateY(-6px); box-shadow: 0 12px 32px rgba(16,17,19,0.08); border-color: var(--border); }
+  .mvv-icon { font-size: 2.5rem; margin-bottom: 16px; }
+  .mvv-card h3 { font-size: 1.25rem; margin-bottom: 12px; }
+  .mvv-card p { color: var(--ink-soft); font-size: 0.95rem; line-height: 1.6; }
+
+  /* VALORES */
+  .values-section { background: var(--bg-app); color: #fff; }
+  .values-section h2 { color: #fff; }
+  .values-section .section-sub { color: #B6B8BE; }
+  .values-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+  .value-card {
+    background: var(--bg-elevated); border: 1px solid rgba(255,255,255,0.08);
+    padding: 28px; border-radius: var(--radius-md); transition: border-color 0.3s, transform 0.3s;
+  }
+  .value-card:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-4px); }
+  .value-emoji { font-size: 1.8rem; margin-bottom: 12px; display: block; }
+  .value-card h4 { font-size: 1.1rem; color: #fff; margin-bottom: 8px; }
+  .value-card p { font-size: 0.9rem; color: #B6B8BE; line-height: 1.55; }
+
+  /* TIME */
+  .team-section { background: var(--surface); }
+  .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 32px; }
+  .team-card { text-align: center; transition: transform 0.3s; }
+  .team-card:hover { transform: translateY(-6px); }
+  .team-avatar {
+    width: 110px; height: 110px; border-radius: 50%; margin: 0 auto 20px;
+    background: linear-gradient(135deg, var(--accent-soft) 0%, var(--alert-soft) 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 2rem; font-weight: 800; color: var(--ink);
+    border: 3px solid var(--surface); box-shadow: 0 4px 12px rgba(16,17,19,0.1);
+  }
+  .team-card h4 { font-size: 1.1rem; margin-bottom: 4px; }
+  .team-role { font-size: 0.85rem; color: var(--accent); font-weight: 600; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .team-bio { font-size: 0.88rem; color: var(--ink-soft); line-height: 1.5; margin-bottom: 16px; }
+  .team-social { display: flex; justify-content: center; gap: 12px; }
+  .team-social a { 
+    color: var(--ink-faint); font-size: 0.85rem; text-decoration: none; font-weight: 600;
+    transition: color 0.2s;
+  }
+  .team-social a:hover { color: var(--accent); }
+
+  /* MANIFESTO */
+  .manifesto-section { background: var(--surface-soft); text-align: center; }
+  .manifesto-box {
+    max-width: 760px; margin: 0 auto; background: var(--surface); padding: 56px 48px;
+    border-radius: var(--radius-lg); border: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  /* Padrão sutil de fundo (malha de pontos) */
+  .manifesto-box::before {
+    content: ''; position: absolute; inset: 0; opacity: 0.4;
+    background-image: radial-gradient(var(--border) 1px, transparent 1px);
+    background-size: 20px 20px; pointer-events: none;
+  }
+  .manifesto-box > * { position: relative; z-index: 1; }
+  .manifesto-box h3 { font-size: 1.8rem; margin-bottom: 32px; }
+  .manifesto-box blockquote {
+    font-size: 1.15rem; line-height: 1.8; color: var(--ink); margin-bottom: 20px; font-style: italic;
+  }
+  .manifesto-box blockquote strong { font-style: normal; color: var(--ink); }
+  .manifesto-box .signature {
+    margin-top: 32px; font-family: var(--font-display); font-weight: 700; font-size: 1.2rem;
+  }
+
+  /* FOOTER */
+  footer { background: var(--bg-app); color: #8B8E96; padding: 60px 0 30px; font-size: 0.85rem; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+  .footer-brand { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; color: #fff; margin-bottom: 12px; }
+  .footer-brand span { color: var(--accent); }
+  .footer-col h4 { color: #fff; font-size: 0.9rem; margin-bottom: 16px; }
+  .footer-col ul { list-style: none; padding: 0; }
+  .footer-col li { margin-bottom: 10px; }
+  .footer-col a { color: #8B8E96; text-decoration: none; transition: color 0.2s; }
+  .footer-col a:hover { color: var(--accent); }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px; text-align: center; }
+
+  @media (max-width: 768px) {
+    .page-hero { padding: 130px 0 70px; }
+    .footer-grid { grid-template-columns: 1fr; gap: 32px; text-align: center; }
+    .manifesto-box { padding: 36px 24px; }
+    .essence-x-symbol { font-size: 1.2rem; gap: 8px; flex-wrap: wrap; }
+    .essence-x-symbol .x-letter { font-size: 2.5rem; }
+    section { padding: 70px 0; }
+  }
+</style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="landing.html" class="nav-logo" aria-label="Bizuxo - Página Inicial">Bizu<span>xo</span></a>
+      <a href="index.html" class="nav-cta">Entrar no App</a>
+    </div>
+  </nav>
+
+  <header class="page-hero">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="landing.html">Início</a> <span aria-hidden="true">/</span> <span aria-current="page">Sobre Nós</span>
+      </nav>
+      <h1>O ponto de encontro entre <span class="text-gradient-x">problema e solução</span>.</h1>
+      <p>Somos a plataforma que transforma o "preciso resolver isso" em "já resolvi", com confiança e agilidade.</p>
+    </div>
+  </header>
+
+  <!-- ESSÊNCIA -->
+  <section class="essence-section">
+    <div class="container reveal">
+      <h2 class="section-title">O que significa Bizuxo?</h2>
+      <div class="essence-content">
+        <p><strong>"Bizu"</strong> é aquela dica preciosa que te salva no momento certo. <strong>"Xo"</strong> vem do cruzamento, do encontro exato entre quem tem um problema e quem sabe resolvê-lo.</p>
+        <p>No centro está o <strong>X</strong> — não apenas uma letra, mas o símbolo vivo da nossa missão: unir <span class="text-accent">quem precisa</span> com <span class="text-alert">quem resolve</span>.</p>
+        
+        <div class="essence-x-symbol" aria-hidden="true">
+          <span class="dot-green"></span>
+          <span>precisa</span>
+          <span class="x-letter">X</span>
+          <span>resolve</span>
+          <span class="dot-red"></span>
+        </div>
+        
+        <p>Nosso propósito é simples: <strong>encurtar a distância entre o problema e a solução.</strong> Não somos apenas um aplicativo de serviços — somos o lugar onde o "e agora?" encontra o "deixa comigo".</p>
+        <p>Porque todo problema tem alguém que sabe resolver. E esse alguém pode estar a um clique de você.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MISSÃO, VISÃO, PROPÓSITO -->
+  <section class="mvv-section">
+    <div class="container reveal">
+      <h2 class="section-title">Missão, Visão e Propósito</h2>
+      <p class="section-sub">O que nos move todos os dias.</p>
+      <div class="mvv-grid">
+        <div class="mvv-card">
+          <div class="mvv-icon" aria-hidden="true">🎯</div>
+          <h3>Missão</h3>
+          <p>Transformar o "preciso resolver isso" em "já resolvi", conectando quem tem um problema a quem sabe resolvê-lo com transparência e confiança.</p>
+        </div>
+        <div class="mvv-card">
+          <div class="mvv-icon" aria-hidden="true">🔭</div>
+          <h3>Visão</h3>
+          <p>Ser a plataforma de serviços mais confiável do Brasil até 2030, presente em todas as capitais.</p>
+        </div>
+        <div class="mvv-card">
+          <div class="mvv-icon" aria-hidden="true">💎</div>
+          <h3>Propósito</h3>
+          <p>Valorizar quem trabalha com as mãos e tranquilizar quem precisa, encurtando o caminho entre o problema e a solução.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VALORES -->
+  <section class="values-section">
+    <div class="container reveal">
+      <h2 class="section-title">Nossos valores</h2>
+      <p class="section-sub">Os princípios que guiam cada decisão, produto e conversa.</p>
+      <div class="values-grid">
+        <div class="value-card">
+          <span class="value-emoji" aria-hidden="true">🤝</span>
+          <h4>Confiança acima de tudo</h4>
+          <p>Sem confiança não há encontro. Por isso verificamos, avaliamos e protegemos.</p>
+        </div>
+        <div class="value-card">
+          <span class="value-emoji" aria-hidden="true">⚡</span>
+          <h4>Velocidade com qualidade</h4>
+          <p>Resposta rápida não pode significar resposta ruim. Equilibramos os dois.</p>
+        </div>
+        <div class="value-card">
+          <span class="value-emoji" aria-hidden="true">🇧🇷</span>
+          <h4>Brasilidade real</h4>
+          <p>Somos brasileiros, falamos como brasileiros, entendemos o jeitinho daqui.</p>
+        </div>
+        <div class="value-card">
+          <span class="value-emoji" aria-hidden="true">🎯</span>
+          <h4>Direto ao ponto</h4>
+          <p>Sem enrolação, sem jargão, sem burocracia. Problema tem solução, fim.</p>
+        </div>
+        <div class="value-card">
+          <span class="value-emoji" aria-hidden="true">🌱</span>
+          <h4>Crescimento mútuo</h4>
+          <p>Cliente satisfeito, prestador lucrando, plataforma crescendo. Todos ganham.</p>
+        </div>
+        <div class="value-card">
+          <span class="value-emoji" aria-hidden="true">❤️</span>
+          <h4>Humanos antes de usuários</h4>
+          <p>Por trás de cada perfil tem uma história, uma família, um sonho.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIME -->
+  <section class="team-section">
+    <div class="container reveal">
+      <h2 class="section-title">Quem faz o Bizuxo</h2>
+      <p class="section-sub">Liderança apaixonada por resolver problemas reais.</p>
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-avatar">LS</div>
+          <h4>Lucas Souza</h4>
+          <div class="team-role">CEO & Co-fundador</div>
+          <div class="team-bio">Ex-product manager em fintech. Fã de marcenaria nas horas vagas.</div>
+          <div class="team-social">
+            <a href="#" aria-label="LinkedIn de Lucas">in</a>
+            <a href="#" aria-label="Twitter de Lucas">𝕏</a>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">MC</div>
+          <h4>Marina Costa</h4>
+          <div class="team-role">CTO & Co-fundadora</div>
+          <div class="team-bio">10 anos em engenharia. Já liderou times em 3 unicórnios brasileiros.</div>
+          <div class="team-social">
+            <a href="#" aria-label="LinkedIn de Marina">in</a>
+            <a href="#" aria-label="Twitter de Marina">𝕏</a>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">PR</div>
+          <h4>Pedro Rocha</h4>
+          <div class="team-role">COO</div>
+          <div class="team-bio">Especialista em marketplaces. Adora um bom churrasco e uma planilha.</div>
+          <div class="team-social">
+            <a href="#" aria-label="LinkedIn de Pedro">in</a>
+            <a href="#" aria-label="Twitter de Pedro">𝕏</a>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">BF</div>
+          <h4>Beatriz Ferreira</h4>
+          <div class="team-role">Head de Produto</div>
+          <div class="team-bio">Designer que virou PM. Obcecada por UX e por café forte.</div>
+          <div class="team-social">
+            <a href="#" aria-label="LinkedIn de Beatriz">in</a>
+            <a href="#" aria-label="Twitter de Beatriz">𝕏</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MANIFESTO -->
+  <section class="manifesto-section">
+    <div class="container reveal">
+      <div class="manifesto-box">
+        <h3>Nosso manifesto</h3>
+        <blockquote>
+          <p>Todo problema tem alguém que sabe resolver.</p>
+          <p>Uma torneira vazando, um fio desencapado, uma parede descascando, um cabelo sem corte. <strong>Alguém, em algum lugar, sabe exatamente o que fazer.</strong></p>
+          <p>O Bizuxo nasceu para encurtar a distância entre o problema e a solução.</p>
+          <p>Não somos apenas um aplicativo de serviços. <strong>Somos o ponto de encontro.</strong></p>
+          <p>🟢 Quem precisa. 🔴 Quem resolve.</p>
+          <p>E no meio, o X que conecta tudo.</p>
+        </blockquote>
+        <div class="signature">Time Bizuxo</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">Bizu<span>xo</span></div>
+          <p style="max-width: 280px; line-height: 1.6;">O ponto de encontro entre quem precisa e quem resolve. Feito com 💚 e ❤️ no Brasil.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Plataforma</h4>
+          <ul>
+            <li><a href="como-funciona.html">Como funciona</a></li>
+            <li><a href="condominios.html">Para condomínios</a></li>
+            <li><a href="seguranca.html">Segurança</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Empresa</h4>
+          <ul>
+            <li><a href="sobre-nos.html">Sobre nós</a></li>
+            <li><a href="blog.html">Blog</a></li>
+            <li><a href="carreiras.html">Carreiras</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Suporte</h4>
+          <ul>
+            <li><a href="central-ajuda.html">Central de Ajuda</a></li>
+            <li><a href="#">Termos de Uso</a></li>
+            <li><a href="privacidade.html">Privacidade</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom"><p>&copy; 2026 Bizuxo Tecnologia Ltda. Todos os direitos reservados.</p></div>
+    </div>
+  </footer>
+
+  <!-- Script leve para animação de scroll (Intersection Observer) -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+      };
+
+      const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+            observer.unobserve(entry.target); // Anima apenas uma vez
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll('.reveal').forEach(el => {
+        observer.observe(el);
+      });
+    });
+  </script>
+</body>
+</html>

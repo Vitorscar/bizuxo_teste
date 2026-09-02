@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enviar proposta · Bizuxoitle>
+<title>Enviar proposta · Bizuxo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
@@ -11,10 +11,7 @@
   .wrap{ padding:24px 22px 60px; }
   .success-state{ text-align:center; padding:20px 4px 4px; display:none; }
   .success-state.show{ display:block; }
-  .check-circle{
-    width:56px; height:56px; border-radius:50%; background:var(--accent-soft); margin:0 auto 16px;
-    display:flex; align-items:center; justify-content:center;
-  }
+  .check-circle{ width:56px; height:56px; border-radius:50%; background:var(--accent-soft); margin:0 auto 16px; display:flex; align-items:center; justify-content:center; }
   .check-circle svg{ width:26px; height:26px; }
   .check-circle path{ stroke:var(--accent-ink); stroke-width:3; fill:none; stroke-linecap:round; stroke-linejoin:round; }
   .success-state h3{ font-size:1.1rem; margin:0 0 6px; }
@@ -29,21 +26,16 @@
       <div class="brand alert">Bizu<span>xo</span></div>
       <a class="pill-link" href="demandas-disponiveis.html">← Voltar</a>
     </div>
-    <h2 style="font-size:1.1rem; margin:0;">Instalação de chuveiro elétrico</h2>
+    <h2 id="demandTitle" style="font-size:1.1rem; margin:0;">Carregando demanda...</h2>
   </header>
 
   <div class="wrap">
     <div class="card" id="detailCard">
       <div class="card-label alert"><span class="dot"></span>Detalhes da demanda</div>
-      <div class="detail-lines">
-        <div class="detail-line"><span>Categoria</span><span>Elétrica</span></div>
-        <div class="detail-line"><span>Local</span><span>Águas Claras</span></div>
-        <div class="detail-line"><span>Publicada</span><span>27/08 · há 2 dias</span></div>
-        <div class="detail-line"><span>Propostas até agora</span><span>3</span></div>
+      <div class="detail-lines" id="detailLines">
+        <!-- Preenchido via JS -->
       </div>
-      <p style="font-size:0.85rem; color:var(--ink-soft); line-height:1.5; margin:16px 0 0;">
-        "Chuveiro elétrico novo, só falta instalar. Tenho o material, preciso de alguém disponível essa semana."
-      </p>
+      <p id="demandDesc" style="font-size:0.85rem; color:var(--ink-soft); line-height:1.5; margin:16px 0 0;"></p>
     </div>
 
     <form id="propostaForm">
@@ -52,7 +44,7 @@
         <div class="field-row">
           <div class="field">
             <label for="valor">Valor (R$)</label>
-            <input type="number" id="valor" placeholder="120" min="1" required>
+            <input type="number" id="valor" placeholder="120" min="1" step="0.01" required>
           </div>
           <div class="field">
             <label for="prazo">Prazo</label>
@@ -71,7 +63,6 @@
           <textarea id="mensagem" placeholder="Ex: Consigo ir aí amanhã às 14h, já levo o material necessário..." required></textarea>
         </div>
       </div>
-
       <button type="submit" class="btn btn-alert" id="sendBtn">Enviar proposta</button>
     </form>
 
@@ -84,21 +75,78 @@
   </div>
 </div>
 
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-cliente.js"></script>
+<script src="../js/auth.js"></script>
+
 <script>
-  document.getElementById('propostaForm').addEventListener('submit', (e) => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const demandId = urlParams.get('id');
+
+  async function init() {
+    if (!demandId) { window.location.href = 'demandas-disponiveis.html'; return; }
+
+    const { data, error } = await supabase
+      .from('demands')
+      .select(`*, service_types(nome), proposals(count)`)
+      .eq('id', demandId)
+      .single();
+
+    if (error || !data) {
+      alert('Demanda não encontrada');
+      window.location.href = 'demandas-disponiveis.html';
+      return;
+    }
+
+    document.getElementById('demandTitle').textContent = data.titulo;
+    document.getElementById('demandDesc').textContent = `"${data.descricao}"`;
+    
+    const propostas = data.proposals[0]?.count || 0;
+    const dataPub = new Date(data.created_at).toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
+    
+    document.getElementById('detailLines').innerHTML = `
+      <div class="detail-line"><span>Categoria</span><span>${data.service_types?.nome || 'N/A'}</span></div>
+      <div class="detail-line"><span>Local</span><span>${data.bairro}, ${data.cidade}</span></div>
+      <div class="detail-line"><span>Publicada</span><span>${dataPub}</span></div>
+      <div class="detail-line"><span>Propostas até agora</span><span>${propostas}</span></div>
+    `;
+  }
+
+  document.getElementById('propostaForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const session = await supabase.auth.getSession();
+    if (!session.data.session) { alert('Faça login primeiro'); return; }
 
     const btn = document.getElementById('sendBtn');
     btn.textContent = 'Enviando...';
     btn.disabled = true;
 
-    // Lógica Supabase: insert em 'proposals' vinculado a essa demand e ao prestador logado
-    setTimeout(() => {
+    const { error } = await supabase.from('proposals').insert({
+      demand_id: parseInt(demandId),
+      provider_id: session.data.session.user.id,
+      valor: parseFloat(document.getElementById('valor').value),
+      prazo: document.getElementById('prazo').value,
+      mensagem: document.getElementById('mensagem').value,
+      status: 'pendente'
+    });
+
+    if (error) {
+      alert('Erro ao enviar: ' + error.message);
+      btn.textContent = 'Enviar proposta';
+      btn.disabled = false;
+    } else {
+      // Atualiza status da demanda para garantir que apareça como "em propostas"
+      await supabase.from('demands').update({ status: 'em_propostas' }).eq('id', demandId);
+      
       document.getElementById('detailCard').style.display = 'none';
       document.getElementById('propostaForm').style.display = 'none';
       document.getElementById('successState').classList.add('show');
-    }, 500);
+    }
   });
+
+  init();
 </script>
+<script src="../js/mobile-nav.js"></script>
 </body>
 </html>

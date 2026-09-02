@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Central de Ajuda · Bizuxo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  body { background: var(--surface-soft); }
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  .text-accent { color: var(--accent); }
+  .text-alert { color: var(--alert); }
+
+  .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(11,11,13,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.08); padding: 16px 0; }
+  .nav-inner { display: flex; justify-content: space-between; align-items: center; }
+  .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; color: #fff; }
+  .nav-logo span { color: var(--accent); }
+  .nav-cta { background: var(--surface); color: var(--ink); padding: 10px 20px; border-radius: 100px; font-weight: 700; font-size: 0.85rem; }
+
+  .page-hero { background: var(--bg-app); color: #fff; padding: 140px 0 80px; text-align: center; }
+  .page-hero h1 { font-size: clamp(2rem, 4vw, 2.8rem); max-width: 18ch; margin: 0 auto 16px; }
+  .page-hero p { color: #B6B8BE; font-size: 1.05rem; max-width: 55ch; margin: 0 auto 32px; }
+  .breadcrumb { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; font-size: 0.85rem; color: #8B8E96; }
+
+  .search-box {
+    max-width: 640px; margin: 0 auto; position: relative;
+  }
+  .search-input {
+    width: 100%; padding: 18px 24px 18px 52px; border: none; border-radius: 100px;
+    background: var(--bg-elevated); color: #fff; font-family: var(--font-body); font-size: 1rem;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .search-input:focus { outline: none; border-color: var(--accent); }
+  .search-input::placeholder { color: #8B8E96; }
+  .search-icon { position: absolute; left: 22px; top: 50%; transform: translateY(-50%); font-size: 1.1rem; color: #8B8E96; }
+
+  section { padding: 60px 0; }
+  .section-title { font-size: 1.8rem; margin-bottom: 32px; }
+
+  .categories-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+  .category-card {
+    background: var(--surface); padding: 28px 24px; border-radius: var(--radius-lg);
+    cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .category-card:hover { transform: translateY(-4px); box-shadow: 0 6px 20px rgba(16,17,19,0.06); }
+  .category-icon { font-size: 2rem; margin-bottom: 12px; }
+  .category-card h3 { font-size: 1.1rem; margin-bottom: 6px; }
+  .category-card p { font-size: 0.85rem; color: var(--ink-soft); line-height: 1.45; }
+  .category-count { font-size: 0.75rem; color: var(--ink-faint); margin-top: 12px; display: block; }
+
+  .faq-section { background: var(--surface); }
+  .faq-tabs { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; }
+  .faq-tab {
+    padding: 8px 18px; border-radius: 100px; background: var(--surface-soft);
+    font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border);
+  }
+  .faq-tab.active, .faq-tab:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  .faq-list { max-width: 800px; margin: 0 auto; }
+  .faq-item {
+    background: var(--surface-soft); border-radius: var(--radius-md); margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .faq-question {
+    padding: 20px 24px; font-family: var(--font-display); font-weight: 600; font-size: 1rem;
+    display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .faq-question:hover { background: #EDEDEA; }
+  .faq-question::after { content: '+'; font-size: 1.4rem; color: var(--ink-soft); transition: transform 0.2s; }
+  .faq-item.open .faq-question::after { content: '−'; }
+  .faq-answer {
+    padding: 0 24px; max-height: 0; overflow: hidden; transition: max-height 0.3s, padding 0.3s;
+    color: var(--ink-soft); font-size: 0.92rem; line-height: 1.6;
+  }
+  .faq-item.open .faq-answer { max-height: 300px; padding: 0 24px 20px; }
+
+  .contact-section { background: var(--surface-soft); }
+  .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+  .contact-card {
+    background: var(--surface); padding: 28px 24px; border-radius: var(--radius-lg); text-align: center;
+  }
+  .contact-icon { font-size: 2rem; margin-bottom: 12px; }
+  .contact-card h3 { font-size: 1.05rem; margin-bottom: 8px; }
+  .contact-card p { font-size: 0.85rem; color: var(--ink-soft); line-height: 1.45; margin-bottom: 14px; }
+  .contact-link { color: var(--accent); font-weight: 600; font-size: 0.9rem; }
+  .contact-card.alert-style .contact-link { color: var(--alert); }
+
+  footer { background: var(--bg-app); color: #8B8E96; padding: 60px 0 30px; font-size: 0.85rem; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+  .footer-brand { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; color: #fff; margin-bottom: 12px; }
+  .footer-brand span { color: var(--accent); }
+  .footer-col h4 { color: #fff; font-size: 0.9rem; margin-bottom: 16px; }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 10px; }
+  .footer-col a { color: #8B8E96; }
+  .footer-col a:hover { color: var(--accent); }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px; text-align: center; }
+
+  @media (max-width: 768px) {
+    .footer-grid { grid-template-columns: 1fr; gap: 32px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="landing.html" class="nav-logo">Bizu<span>xo</span></a>
+      <a href="index.html" class="nav-cta">Entrar no App</a>
+    </div>
+  </nav>
+
+  <header class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="landing.html">Início</a> / <span>Central de Ajuda</span></div>
+      <h1>Como podemos te <span class="text-accent">ajudar</span> hoje?</h1>
+      <p>Busque por um tema, navegue pelas categorias ou fale direto com nosso time.</p>
+
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" placeholder="Ex: como cancelar um serviço, alterar senha, receber pagamento...">
+      </div>
+    </div>
+  </header>
+
+  <section style="background: var(--surface-soft);">
+    <div class="container">
+      <h2 class="section-title" style="text-align: center;">Categorias</h2>
+      <div class="categories-grid">
+        <div class="category-card">
+          <div class="category-icon">👤</div>
+          <h3>Minha conta</h3>
+          <p>Cadastro, login, perfil, alterar dados pessoais.</p>
+          <span class="category-count">23 artigos</span>
+        </div>
+        <div class="category-card">
+          <div class="category-icon">💳</div>
+          <h3>Pagamentos</h3>
+          <p>Como pagar, reembolsos, faturas, Pix, cartão.</p>
+          <span class="category-count">18 artigos</span>
+        </div>
+        <div class="category-card">
+          <div class="category-icon">🔧</div>
+          <h3>Serviços</h3>
+          <p>Como contratar, acompanhar OS, avaliar, cancelar.</p>
+          <span class="category-count">31 artigos</span>
+        </div>
+        <div class="category-card">
+          <div class="category-icon">🛡️</div>
+          <h3>Segurança</h3>
+          <p>Verificação, denúncias, privacidade, conta bloqueada.</p>
+          <span class="category-count">12 artigos</span>
+        </div>
+        <div class="category-card">
+          <div class="category-icon">🏢</div>
+          <h3>Para condomínios</h3>
+          <p>Como integrar, relatórios, mural digital.</p>
+          <span class="category-count">9 artigos</span>
+        </div>
+        <div class="category-card">
+          <div class="category-icon">💼</div>
+          <h3>Para prestadores</h3>
+          <p>Cadastro, documentos, destaque, saques.</p>
+          <span class="category-count">27 artigos</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq-section">
+    <div class="container">
+      <h2 class="section-title" style="text-align: center;">Perguntas frequentes</h2>
+      <p style="text-align: center; color: var(--ink-soft); margin-bottom: 32px;">Os bizus mais pedidos pelos usuários.</p>
+
+      <div class="faq-tabs">
+        <div class="faq-tab active">Todos</div>
+        <div class="faq-tab">Clientes</div>
+        <div class="faq-tab">Prestadores</div>
+        <div class="faq-tab">Conta</div>
+      </div>
+
+      <div class="faq-list">
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">Como faço meu primeiro pedido de serviço?</div>
+          <div class="faq-answer">
+            Depois de criar sua conta, basta clicar em "Novo serviço", descrever o que precisa (pode ser por texto, foto ou áudio), e enviar. Prestadores da sua região recebem o pedido e enviam orçamentos. Você compara e escolhe o melhor.
+          </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">É seguro pagar pelo app?</div>
+          <div class="faq-answer">
+            Sim. Utilizamos criptografia de nível bancário e processadores certificados pela PCI-DSS. O valor só é liberado ao prestador após você confirmar que o serviço foi realizado corretamente.
+          </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">Como funciona a verificação de prestadores?</div>
+          <div class="faq-answer">
+            Todo prestador passa por validação de CPF/CNPJ, foto com documento, verificação de antecedentes e checagem de telefone. Só depois disso o perfil é aprovado.
+          </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">Posso cancelar um serviço contratado?</div>
+          <div class="faq-answer">
+            Sim. Você pode cancelar até o profissional chegar ao local. Após o início do serviço, é possível abrir uma contestação caso o resultado não seja o combinado. Nossa equipe media o caso.
+          </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">Quanto tempo demora o saque como prestador?</div>
+          <div class="faq-answer">
+            Após a confirmação do serviço, o valor fica disponível em até 2 dias úteis. O saque para sua conta bancária leva mais 1 dia útil.
+          </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">O Bizuxo cobra taxa dos prestadores?</div>
+          <div class="faq-answer">
+            Sim, cobramos uma taxa de serviço sobre cada trabalho concluído. A taxa varia de 10% a 15% dependendo da categoria. Não há taxa de cadastro, mensalidade ou taxa para receber propostas.
+          </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">Como recupero minha senha?</div>
+          <div class="faq-answer">
+            Na tela de login, clique em "esqueci a senha" e informe seu e-mail. Você receberá um link para redefinir a senha. O link vale por 1 hora por segurança.
+          </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">Posso mudar de cliente para prestador (e vice-versa)?</div>
+          <div class="faq-answer">
+            Sim! Você pode ter os dois perfis ativos ao mesmo tempo. Basta acessar Configurações > Tipo de conta e adicionar o segundo perfil.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact-section">
+    <div class="container">
+      <h2 class="section-title" style="text-align: center;">Fale com a gente</h2>
+      <p style="text-align: center; color: var(--ink-soft); margin-bottom: 40px;">Não achou a resposta? Nosso time humano responde rapidinho.</p>
+      <div class="contact-grid">
+        <div class="contact-card">
+          <div class="contact-icon">💬</div>
+          <h3>Chat no app</h3>
+          <p>Atendimento em tempo real, das 7h às 23h, todos os dias.</p>
+          <a href="#" class="contact-link">Abrir chat →</a>
+        </div>
+        <div class="contact-card">
+          <div class="contact-icon">📧</div>
+          <h3>E-mail</h3>
+          <p>Respondemos em até 4 horas em dias úteis.</p>
+          <a href="mailto:ajuda@bizuxo.com.br" class="contact-link">ajuda@bizuxo.com.br</a>
+        </div>
+        <div class="contact-card alert-style">
+          <div class="contact-icon">🚨</div>
+          <h3>Emergência</h3>
+          <p>Problema urgente de segurança? Fale direto com nossa equipe.</p>
+          <a href="mailto:seguranca@bizuxo.com.br" class="contact-link">seguranca@bizuxo.com.br</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">Bizu<span>xo</span></div>
+          <p style="max-width: 280px; line-height: 1.6;">O ponto de encontro entre quem precisa e quem resolve. Feito com 💚 e ❤️ no Brasil.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Plataforma</h4>
+          <ul>
+            <li><a href="como-funciona.html">Como funciona</a></li>
+            <li><a href="condominios.html">Para condomínios</a></li>
+            <li><a href="seguranca.html">Segurança</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Empresa</h4>
+          <ul>
+            <li><a href="sobre-nos.html">Sobre nós</a></li>
+            
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Suporte</h4>
+          <ul>
+            <li><a href="central-ajuda.html">Central de Ajuda</a></li>
+            <li><a href="#">Termos de Uso</a></li>
+            <li><a href="privacidade.html">Privacidade</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom"><p>&copy; 2026 Bizuxo Tecnologia Ltda. Todos os direitos reservados.</p></div>
+    </div>
+  </footer>
+
+  <script>
+    function toggleFaq(el) {
+      el.classList.toggle('open');
+    }
+  </script>
+</body>
+</html>

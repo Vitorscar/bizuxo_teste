@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Para Condomínios · Bizuxo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  body { background: var(--surface-soft); }
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  .text-accent { color: var(--accent); }
+  .text-alert { color: var(--alert); }
+
+  .navbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(11,11,13,0.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.08); padding: 16px 0;
+  }
+  .nav-inner { display: flex; justify-content: space-between; align-items: center; }
+  .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; color: #fff; }
+  .nav-logo span { color: var(--accent); }
+  .nav-cta { background: var(--surface); color: var(--ink); padding: 10px 20px; border-radius: 100px; font-weight: 700; font-size: 0.85rem; }
+
+  .page-hero {
+    background: var(--bg-app); color: #fff; padding: 140px 0 80px; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .page-hero h1 { font-size: clamp(2rem, 4vw, 3rem); max-width: 18ch; margin: 0 auto 16px; }
+  .page-hero p { color: #B6B8BE; font-size: 1.05rem; max-width: 60ch; margin: 0 auto 32px; }
+  .breadcrumb { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; font-size: 0.85rem; color: #8B8E96; }
+  .breadcrumb a:hover { color: var(--accent); }
+
+  .btn { display: inline-block; padding: 16px 32px; border-radius: var(--radius-sm); font-family: var(--font-display); font-weight: 700; }
+  .btn-accent { background: var(--accent); color: #fff; }
+
+  section { padding: 80px 0; }
+  .section-title { font-size: 2rem; text-align: center; margin-bottom: 12px; }
+  .section-sub { text-align: center; color: var(--ink-soft); margin-bottom: 56px; max-width: 60ch; margin-left: auto; margin-right: auto; }
+
+  .pain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+  .pain-card {
+    background: var(--surface); padding: 28px; border-radius: var(--radius-lg);
+    border-left: 4px solid var(--alert);
+  }
+  .pain-card h3 { font-size: 1.05rem; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+  .pain-card p { font-size: 0.9rem; color: var(--ink-soft); line-height: 1.55; }
+
+  .solution-section { background: var(--surface); }
+  .solution-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+  .solution-card {
+    background: var(--surface-soft); padding: 28px; border-radius: var(--radius-lg);
+    border-left: 4px solid var(--accent);
+  }
+  .solution-card h3 { font-size: 1.05rem; margin-bottom: 8px; }
+  .solution-card p { font-size: 0.9rem; color: var(--ink-soft); line-height: 1.55; }
+  .solution-icon { font-size: 1.8rem; margin-bottom: 12px; }
+
+  .metrics-section { background: var(--bg-app); color: #fff; text-align: center; }
+  .metrics-section h2 { color: #fff; }
+  .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 32px; max-width: 900px; margin: 0 auto; }
+  .metric-item {
+    background: var(--bg-elevated); border: 1px solid rgba(255,255,255,0.08);
+    padding: 32px 24px; border-radius: var(--radius-lg);
+  }
+  .metric-num { font-family: var(--font-display); font-size: 2.5rem; font-weight: 800; color: var(--accent); margin-bottom: 8px; }
+  .metric-label { font-size: 0.9rem; color: #B6B8BE; }
+
+  .cases-section { background: var(--surface-soft); }
+  .case-card {
+    background: var(--surface); padding: 32px; border-radius: var(--radius-lg);
+    max-width: 720px; margin: 0 auto 24px; border-left: 4px solid var(--accent);
+  }
+  .case-card blockquote { font-style: italic; font-size: 1rem; color: var(--ink); margin-bottom: 16px; line-height: 1.6; }
+  .case-author { display: flex; align-items: center; gap: 12px; }
+  .case-avatar {
+    width: 48px; height: 48px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-ink);
+    display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700;
+  }
+  .case-name { font-weight: 700; }
+  .case-role { font-size: 0.85rem; color: var(--ink-soft); }
+
+  .partnership-section { background: var(--surface); }
+  .partnership-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; max-width: 900px; margin: 0 auto; }
+  .partnership-content h3 { font-size: 1.5rem; margin-bottom: 16px; }
+  .partnership-content ul { list-style: none; }
+  .partnership-content li {
+    padding: 10px 0; font-size: 0.95rem; display: flex; gap: 10px; align-items: flex-start;
+  }
+  .partnership-content li::before { content: '✓'; color: var(--accent); font-weight: 800; }
+  .partnership-form {
+    background: var(--surface-soft); padding: 32px; border-radius: var(--radius-lg);
+  }
+  .partnership-form h4 { margin-bottom: 20px; }
+  .field { margin-bottom: 14px; }
+  label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px; }
+  input, select, textarea {
+    width: 100%; padding: 12px 14px; border: 1.5px solid transparent; border-radius: var(--radius-sm);
+    background: var(--surface); font-family: var(--font-body); font-size: 0.92rem;
+  }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  textarea { min-height: 90px; resize: vertical; }
+
+  footer { background: var(--bg-app); color: #8B8E96; padding: 60px 0 30px; font-size: 0.85rem; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+  .footer-brand { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; color: #fff; margin-bottom: 12px; }
+  .footer-brand span { color: var(--accent); }
+  .footer-col h4 { color: #fff; font-size: 0.9rem; margin-bottom: 16px; }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 10px; }
+  .footer-col a { color: #8B8E96; }
+  .footer-col a:hover { color: var(--accent); }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px; text-align: center; }
+
+  @media (max-width: 768px) {
+    .partnership-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; gap: 32px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="landing.html" class="nav-logo">Bizu<span>xo</span></a>
+      <a href="index.html" class="nav-cta">Entrar no App</a>
+    </div>
+  </nav>
+
+  <header class="page-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="landing.html">Início</a> / <span>Para Condomínios</span>
+      </div>
+      <h1>Seu condomínio merece mais que um <span class="text-accent">quadro de avisos</span>.</h1>
+      <p>Uma plataforma oficial de serviços para síndicos, administradoras e moradores. Menos reclamações, mais soluções.</p>
+    </div>
+  </header>
+
+  <!-- DORES -->
+  <section style="background: var(--surface-soft);">
+    <div class="container">
+      <h2 class="section-title">As dores que todo síndico conhece</h2>
+      <p class="section-sub">Se você administra condomínio, já passou por isso.</p>
+      <div class="pain-grid">
+        <div class="pain-card">
+          <h3>😩 Indicações sem garantia</h3>
+          <p>Moradores indicam profissionais que somem, cobram a mais ou fazem serviço ruim. E a culpa cai no síndico.</p>
+        </div>
+        <div class="pain-card">
+          <h3>📞 WhatsApp sobrecarregado</h3>
+          <p>Grupo do condomínio lotado de pedidos, e você no meio tentando responder tudo sem ferramentas adequadas.</p>
+        </div>
+        <div class="pain-card">
+          <h3>💸 Falta de controle</h3>
+          <p>Difícil saber quem foi contratado, quando, por qual valor. Prestação de contas vira pesadelo.</p>
+        </div>
+        <div class="pain-card">
+          <h3>⚠️ Risco jurídico</h3>
+          <p>Contratar sem CNPJ, sem contrato, sem nota. Um acidente no condomínio pode virar processo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOLUÇÕES -->
+  <section class="solution-section">
+    <div class="container">
+      <h2 class="section-title">Como o Bizuxo resolve</h2>
+      <p class="section-sub">Uma plataforma oficial para seu condomínio, com benefícios exclusivos.</p>
+      <div class="solution-grid">
+        <div class="solution-card">
+          <div class="solution-icon">🏢</div>
+          <h3>Mural digital oficial</h3>
+          <p>Integramos ao sistema do seu condomínio. Moradores acessam a lista de profissionais aprovados direto no app do prédio.</p>
+        </div>
+        <div class="solution-card">
+          <div class="solution-icon">🔍</div>
+          <h3>Prestadores verificados</h3>
+          <p>Todos com CNPJ, antecedentes checados, avaliações reais. Você indica com tranquilidade.</p>
+        </div>
+        <div class="solution-card">
+          <div class="solution-icon">📊</div>
+          <h3>Relatórios para síndico</h3>
+          <p>Acompanhe quantos serviços foram solicitados, categorias mais pedidas e avaliações. Dados para assembleia.</p>
+        </div>
+        <div class="solution-card">
+          <div class="solution-icon">🛡️</div>
+          <h3>Serviços da área comum</h3>
+          <p>Manutenção predial, jardinagem, limpeza. Contrate prestadores corporativos com nota fiscal e garantia.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MÉTRICAS -->
+  <section class="metrics-section">
+    <div class="container">
+      <h2 class="section-title">Resultados em condomínios parceiros</h2>
+      <p class="section-sub" style="color: #B6B8BE;">Em 6 meses de parceria com administradoras de Brasília.</p>
+      <div class="metrics-grid">
+        <div class="metric-item">
+          <div class="metric-num">-80%</div>
+          <div class="metric-label">reclamações sobre serviços</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-num">+45%</div>
+          <div class="metric-label">satisfação dos moradores</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-num">12min</div>
+          <div class="metric-label">tempo médio de resposta</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-num">0</div>
+          <div class="metric-label">custo para o condomínio</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CASES -->
+  <section class="cases-section">
+    <div class="container">
+      <h2 class="section-title">Quem já usa, recomenda</h2>
+      <p class="section-sub">Síndicos e administradoras reais, resultados reais.</p>
+
+      <div class="case-card">
+        <blockquote>"Antes eu passava 3 horas por semana no WhatsApp indicando profissionais. Hoje os moradores acessam o Bizuxo direto. Minha vida mudou."</blockquote>
+        <div class="case-author">
+          <div class="case-avatar">RM</div>
+          <div>
+            <div class="case-name">Ricardo Mendes</div>
+            <div class="case-role">Síndico · Ed. Solar das Águas, Águas Claras</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="case-card">
+        <blockquote>"Fechamos parceria para 18 condomínios. A taxa de conflitos entre moradores e prestadores caiu drasticamente. Virou nosso diferencial."</blockquote>
+        <div class="case-author">
+          <div class="case-avatar">JA</div>
+          <div>
+            <div class="case-name">Juliana Alves</div>
+            <div class="case-role">Diretora · Administradora ProGestão</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARCERIA / CONTATO -->
+  <section class="partnership-section">
+    <div class="container">
+      <h2 class="section-title">Seja um condomínio parceiro</h2>
+      <p class="section-sub">Integração gratuita, sem compromisso. Agende uma conversa.</p>
+
+      <div class="partnership-grid">
+        <div class="partnership-content">
+          <h3>O que você ganha</h3>
+          <ul>
+            <li>Implantação gratuita em até 7 dias</li>
+            <li>Treinamento da equipe do condomínio</li>
+            <li>Material de divulgação para murais e elevadores</li>
+            <li>Desconto exclusivo para moradores (até 15%)</li>
+            <li>Suporte dedicado via gerente de conta</li>
+            <li>Relatórios mensais de uso</li>
+          </ul>
+        </div>
+
+        <div class="partnership-form">
+          <h4>Solicite uma visita</h4>
+          <form>
+            <div class="field">
+              <label>Nome do responsável</label>
+              <input type="text" placeholder="Seu nome completo" required>
+            </div>
+            <div class="field">
+              <label>E-mail corporativo</label>
+              <input type="email" placeholder="voce@administradora.com" required>
+            </div>
+            <div class="field">
+              <label>Tipo</label>
+              <select required>
+                <option value="">Selecione...</option>
+                <option>Síndico profissional</option>
+                <option>Síndico morador</option>
+                <option>Administradora</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Quantidade de condomínios/unidades</label>
+              <input type="text" placeholder="Ex: 5 condomínios / 800 unidades">
+            </div>
+            <div class="field">
+              <label>Mensagem (opcional)</label>
+              <textarea placeholder="Conte um pouco sobre sua necessidade..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-accent" style="width: 100%;">Solicitar contato</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">Bizu<span>xo</span></div>
+          <p style="max-width: 280px; line-height: 1.6;">O ponto de encontro entre quem precisa e quem resolve. Feito com 💚 e ❤️ no Brasil.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Plataforma</h4>
+          <ul>
+            <li><a href="como-funciona.html">Como funciona</a></li>
+            <li><a href="condominios.html">Para condomínios</a></li>
+            <li><a href="seguranca.html">Segurança</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Empresa</h4>
+          <ul>
+            <li><a href="sobre-nos.html">Sobre nós</a></li>
+           
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Suporte</h4>
+          <ul>
+            <li><a href="central-ajuda.html">Central de Ajuda</a></li>
+            <li><a href="#">Termos de Uso</a></li>
+            <li><a href="privacidade.html">Privacidade</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom"><p>&copy; 2026 Bizuxo Tecnologia Ltda. Todos os direitos reservados.</p></div>
+    </div>
+  </footer>
+
+</body>
+</html>

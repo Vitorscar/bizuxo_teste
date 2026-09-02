@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Demandas Disponíveis · Bizuxo </title>
+<title>Demandas Disponíveis · Bizuxo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
@@ -21,19 +21,15 @@
       <a class="nav-item active alert" href="demandas-disponiveis.html"><span class="nav-icon">🔍</span> Demandas Disponíveis</a>
       <a class="nav-item" href="minhas-propostas.html"><span class="nav-icon">📨</span> Minhas Propostas</a>
       <a class="nav-item" href="ordens-servico.html"><span class="nav-icon">🛠️</span> Ordens de Serviço</a>
-<a class="nav-item" href="historico-financeiro.html"><span class="nav-icon">💳</span> Histórico Financeiro</a>
+      <a class="nav-item" href="historico-financeiro.html"><span class="nav-icon">💳</span> Histórico Financeiro</a>
       <a class="nav-item" href="meu-perfil-prestador.html"><span class="nav-icon">⚙️</span> Meus Dados</a>
       <a class="nav-item" href="meus-trabalhos.html"><span class="nav-icon">💼</span> Meus Trabalhos</a>
       <a class="nav-item" href="../index.html" style="color:var(--alert);"><span class="nav-icon">🚪</span> Sair</a>
     </nav>
     <div class="sidebar-foot">
-      Olá, Carlos<br>Águas Claras, DF
-<div
-  class="role-tag"
-  style="color: #FF3B30 !important; border-color: rgba(255, 59, 48, 0.45) !important;"
->
-  conta prestador
-</div>
+      <span id="userName">Carregando...</span><br>
+      <span id="userLoc" style="color: #8B8E96; font-size: 0.75rem;">...</span>
+      <div class="role-tag" style="color: #FF3B30 !important; border-color: rgba(255, 59, 48, 0.45) !important;">conta prestador</div>
     </div>
   </aside>
 
@@ -64,51 +60,87 @@
   </main>
 </div>
 
-<script>
-  const DEMANDS = [
-    { id: 823, title: "Instalação de chuveiro elétrico", category: "eletrica", categoryLabel: "Elétrica",
-      desc: "Chuveiro elétrico novo, só falta instalar. Tenho o material.", date: "27/08", loc: "Águas Claras", proposals: 3 },
-    { id: 771, title: "Instalação de ventilador de teto", category: "eletrica", categoryLabel: "Elétrica",
-      desc: "Ventilador novo já comprado, falta só instalar.", date: "02/08", loc: "Águas Claras", proposals: 0 },
-    { id: 918, title: "Vazamento na pia da cozinha", category: "hidraulica", categoryLabel: "Hidráulica",
-      desc: "Vazamento pequeno embaixo da pia, precisa de reparo urgente.", date: "29/08", loc: "Taguatinga", proposals: 1 },
-    { id: 902, title: "Pintura de sala e corredor", category: "pintura", categoryLabel: "Pintura",
-      desc: "Aproximadamente 40m², tinta já escolhida (branco gelo).", date: "30/08", loc: "Sudoeste", proposals: 2 },
-  ];
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-cliente.js"></script>
+<script src="../js/auth.js"></script>
 
+<script>
+  let allDemandas = [];
   let activeFilter = "all";
   let searchTerm = "";
 
-  function render(){
+  async function init() {
+    const session = await supabase.auth.getSession();
+    if (!session.data.session) { window.location.href = '../index.html'; return; }
+
+    // Carregar dados do prestador para a sidebar
+    const { data: profile } = await supabase.from('profiles').select('nome, cidade').eq('id', session.data.session.user.id).single();
+    if (profile) {
+      document.getElementById('userName').textContent = `Olá, ${profile.nome.split(' ')[0]}`;
+      document.getElementById('userLoc').textContent = profile.cidade || 'Local não definido';
+    }
+
+    await carregarDemandas();
+  }
+
+  async function carregarDemandas() {
+    // Busca demandas abertas ou em propostas, trazendo o nome do serviço e contagem de propostas
+    const { data, error } = await supabase
+      .from('demands')
+      .select(`
+        id, titulo, descricao, cidade, bairro, created_at, status,
+        service_types(nome),
+        proposals(count)
+      `)
+      .in('status', ['aberta', 'em_propostas'])
+      .order('created_at', { ascending: false });
+
+    if (error) { console.error(error); return; }
+    allDemandas = data || [];
+    render();
+  }
+
+  function formatarData(dataStr) {
+    const data = new Date(dataStr);
+    return data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+  }
+
+  function render() {
     const list = document.getElementById("list");
     const empty = document.getElementById("empty");
-    const filtered = DEMANDS.filter(d => {
-      const matchesFilter = activeFilter === "all" || d.category === activeFilter;
-      const matchesSearch = !searchTerm ||
-        d.title.toLowerCase().includes(searchTerm) || d.loc.toLowerCase().includes(searchTerm);
+    
+    const filtered = allDemandas.filter(d => {
+      const cat = d.service_types?.nome?.toLowerCase() || '';
+      const matchesFilter = activeFilter === "all" || cat.includes(activeFilter);
+      const matchesSearch = !searchTerm || 
+        d.titulo.toLowerCase().includes(searchTerm) || 
+        (d.bairro + ' ' + d.cidade).toLowerCase().includes(searchTerm);
       return matchesFilter && matchesSearch;
     });
 
     document.getElementById("results-count").textContent = `${filtered.length} demanda${filtered.length !== 1 ? "s" : ""} na sua região`;
-
     list.innerHTML = "";
     empty.style.display = filtered.length ? "none" : "block";
 
     filtered.forEach(d => {
+      const propostasCount = d.proposals[0]?.count || 0;
       const el = document.createElement("a");
       el.href = `detalhe-demanda-prestador.html?id=${d.id}`;
       el.className = "list-row";
       el.innerHTML = `
         <div class="avatar avatar-md">✉️</div>
         <div class="list-row-main">
-          <div class="list-row-title">${d.title}</div>
+          <div class="list-row-title">${d.titulo}</div>
           <div class="list-row-sub">
-            <span>📍 ${d.loc}</span><span class="sep">·</span><span>${d.categoryLabel}</span><span class="sep">·</span><span>${d.date}</span>
+            <span>📍 ${d.bairro}, ${d.cidade}</span><span class="sep">·</span>
+            <span>${d.service_types?.nome || 'Serviço'}</span><span class="sep">·</span>
+            <span>${formatarData(d.created_at)}</span>
           </div>
-          <div class="list-row-desc">"${d.desc}"</div>
+          <div class="list-row-desc">"${d.descricao.substring(0, 90)}${d.descricao.length > 90 ? '...' : ''}"</div>
         </div>
         <div class="list-row-side">
-          <span class="list-row-date">${d.proposals} proposta${d.proposals !== 1 ? "s" : ""} até agora</span>
+          <span class="list-row-date">${propostasCount} proposta${propostasCount !== 1 ? "s" : ""} até agora</span>
           <span class="list-row-action">Enviar proposta →</span>
         </div>`;
       list.appendChild(el);
@@ -129,7 +161,8 @@
     render();
   });
 
-  render();
+  init();
 </script>
+<script src="../js/mobile-nav.js"></script>
 </body>
 </html>

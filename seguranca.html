@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Segurança · Bizuxo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  body { background: var(--surface-soft); }
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  .text-accent { color: var(--accent); }
+  .text-alert { color: var(--alert); }
+
+  .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(11,11,13,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.08); padding: 16px 0; }
+  .nav-inner { display: flex; justify-content: space-between; align-items: center; }
+  .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; color: #fff; }
+  .nav-logo span { color: var(--accent); }
+  .nav-cta { background: var(--surface); color: var(--ink); padding: 10px 20px; border-radius: 100px; font-weight: 700; font-size: 0.85rem; }
+
+  .page-hero { background: var(--bg-app); color: #fff; padding: 140px 0 80px; text-align: center; }
+  .page-hero h1 { font-size: clamp(2rem, 4vw, 3rem); max-width: 16ch; margin: 0 auto 16px; }
+  .page-hero p { color: #B6B8BE; font-size: 1.05rem; max-width: 55ch; margin: 0 auto; }
+  .breadcrumb { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; font-size: 0.85rem; color: #8B8E96; }
+
+  section { padding: 80px 0; }
+  .section-title { font-size: 2rem; text-align: center; margin-bottom: 12px; }
+  .section-sub { text-align: center; color: var(--ink-soft); margin-bottom: 56px; }
+
+  .shield-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+  .shield-card { background: var(--surface); padding: 28px; border-radius: var(--radius-lg); }
+  .shield-icon { font-size: 2rem; margin-bottom: 12px; }
+  .shield-card h3 { font-size: 1.1rem; margin-bottom: 8px; }
+  .shield-card p { font-size: 0.9rem; color: var(--ink-soft); line-height: 1.55; }
+
+  .tech-section { background: var(--bg-app); color: #fff; }
+  .tech-section h2 { color: #fff; }
+  .tech-section .section-sub { color: #B6B8BE; }
+  .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+  .tech-item {
+    background: var(--bg-elevated); border: 1px solid rgba(255,255,255,0.08);
+    padding: 20px; border-radius: var(--radius-md);
+  }
+  .tech-item strong { display: block; color: var(--accent); font-family: var(--font-display); margin-bottom: 6px; }
+  .tech-item p { font-size: 0.88rem; color: #B6B8BE; line-height: 1.5; }
+
+  .tips-section { background: var(--surface); }
+  .tips-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .tips-card { background: var(--surface-soft); padding: 28px; border-radius: var(--radius-lg); }
+  .tips-card.cliente { border-top: 4px solid var(--accent); }
+  .tips-card.prestador { border-top: 4px solid var(--alert); }
+  .tips-card h3 { font-size: 1.2rem; margin-bottom: 20px; }
+  .tips-card ul { list-style: none; }
+  .tips-card li {
+    padding: 10px 0; font-size: 0.92rem; display: flex; gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .tips-card li:last-child { border-bottom: none; }
+  .tips-card li::before { content: '✓'; color: var(--accent); font-weight: 800; flex-shrink: 0; }
+  .tips-card.prestador li::before { color: var(--alert); }
+
+  .emergency-section { background: var(--surface-soft); text-align: center; }
+  .emergency-box {
+    background: var(--alert-soft); border: 1.5px dashed var(--alert);
+    padding: 32px; border-radius: var(--radius-lg); max-width: 640px; margin: 0 auto;
+  }
+  .emergency-box h3 { font-size: 1.3rem; margin-bottom: 12px; color: var(--alert-ink); }
+  .emergency-box p { font-size: 0.95rem; color: var(--ink); line-height: 1.55; margin-bottom: 16px; }
+  .emergency-contact {
+    display: inline-block; background: var(--alert); color: #fff; padding: 12px 24px;
+    border-radius: var(--radius-sm); font-family: var(--font-display); font-weight: 700;
+  }
+
+  footer { background: var(--bg-app); color: #8B8E96; padding: 60px 0 30px; font-size: 0.85rem; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+  .footer-brand { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; color: #fff; margin-bottom: 12px; }
+  .footer-brand span { color: var(--accent); }
+  .footer-col h4 { color: #fff; font-size: 0.9rem; margin-bottom: 16px; }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 10px; }
+  .footer-col a { color: #8B8E96; }
+  .footer-col a:hover { color: var(--accent); }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px; text-align: center; }
+
+  @media (max-width: 768px) {
+    .tips-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; gap: 32px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="landing.html" class="nav-logo">Bizu<span>xo</span></a>
+      <a href="index.html" class="nav-cta">Entrar no App</a>
+    </div>
+  </nav>
+
+  <header class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="landing.html">Início</a> / <span>Segurança</span></div>
+      <h1>Sua segurança é o nosso <span class="text-accent">bizu</span> principal.</h1>
+      <p>Tecnologia, processos e pessoas trabalhando para que cada encontro no Bizuxo seja confiável.</p>
+    </div>
+  </header>
+
+  <section style="background: var(--surface-soft);">
+    <div class="container">
+      <h2 class="section-title">Pilares de proteção</h2>
+      <p class="section-sub">Seis camadas que blindam sua experiência.</p>
+      <div class="shield-grid">
+        <div class="shield-card">
+          <div class="shield-icon">🪪</div>
+          <h3>Verificação de identidade</h3>
+          <p>Todo prestador passa por validação de CPF/CNPJ, foto com documento e checagem de antecedentes.</p>
+        </div>
+        <div class="shield-card">
+          <div class="shield-icon">⭐</div>
+          <h3>Avaliações reais</h3>
+          <p>Só avalia quem realmente contratou. Zero avaliações falsas, zero bots.</p>
+        </div>
+        <div class="shield-card">
+          <div class="shield-icon">💳</div>
+          <h3>Pagamento protegido</h3>
+          <p>O valor só é liberado ao prestador após confirmação do serviço. Sem surpresas.</p>
+        </div>
+        <div class="shield-card">
+          <div class="shield-icon">📞</div>
+          <h3>Chat interno</h3>
+          <p>Converse sem expor seu telefone pessoal. Todas as mensagens ficam registradas no app.</p>
+        </div>
+        <div class="shield-card">
+          <div class="shield-icon">🎧</div>
+          <h3>Suporte humano</h3>
+          <p>Time de atendimento 7 dias por semana para mediar qualquer conflito.</p>
+        </div>
+        <div class="shield-card">
+          <div class="shield-icon">🛡️</div>
+          <h3>Garantia Bizuxo</h3>
+          <p>Se o serviço não for entregue como combinado, reembolsamos ou reenviamos um profissional.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tech-section">
+    <div class="container">
+      <h2 class="section-title">Tecnologia por trás</h2>
+      <p class="section-sub">Infraestrutura de nível bancário, aplicada ao seu dia a dia.</p>
+      <div class="tech-grid">
+        <div class="tech-item">
+          <strong>Criptografia TLS 1.3</strong>
+          <p>Todas as comunicações entre app e servidor são criptografadas de ponta a ponta.</p>
+        </div>
+        <div class="tech-item">
+          <strong>PCI-DSS Level 1</strong>
+          <p>Padrão máximo de segurança para processamento de cartões de crédito.</p>
+        </div>
+        <div class="tech-item">
+          <strong>Autenticação 2FA</strong>
+          <p>Opcional, mas recomendado. Camada extra de proteção para sua conta.</p>
+        </div>
+        <div class="tech-item">
+          <strong>Monitoramento 24/7</strong>
+          <p>Sistemas detectam atividades suspeitas e bloqueiam tentativas de fraude automaticamente.</p>
+        </div>
+        <div class="tech-item">
+          <strong>Backups diários</strong>
+          <p>Seus dados estão seguros em múltiplas regiões geográficas com redundância.</p>
+        </div>
+        <div class="tech-item">
+          <strong>Pen-tests trimestrais</strong>
+          <p>Especialistas independentes testam nossa segurança a cada 3 meses.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tips-section">
+    <div class="container">
+      <h2 class="section-title">Dicas para você</h2>
+      <p class="section-sub">Boas práticas para aproveitar o Bizuxo com tranquilidade.</p>
+      <div class="tips-grid">
+        <div class="tips-card cliente">
+          <h3>🟢 Para clientes</h3>
+          <ul>
+            <li>Sempre contrate pelo app. Pagamentos por fora não têm garantia Bizuxo.</li>
+            <li>Confira as avaliações recentes do prestador antes de contratar.</li>
+            <li>Combinem detalhes do serviço (escopo, prazo, materiais) por escrito no chat.</li>
+            <li>Não compartilhe senhas, código do cartão ou dados bancários.</li>
+            <li>Em caso de dúvida sobre o profissional, peça o documento verificado.</li>
+            <li>Avalie sempre: ajuda outros clientes e melhora a plataforma.</li>
+          </ul>
+        </div>
+        <div class="tips-card prestador">
+          <h3>🔴 Para prestadores</h3>
+          <ul>
+            <li>Mantenha seu perfil atualizado. Fotos reais e descrição clara geram confiança.</li>
+            <li>Responda rápido: clientes valorizam profissionais ágeis.</li>
+            <li>Formalize tudo no chat do app — inclusive combinados verbais.</li>
+            <li>Não peça pagamento antecipado por fora da plataforma.</li>
+            <li>Se o cliente pedir algo fora do combinado, registre no app antes de executar.</li>
+            <li>Cumpra horários. Pontualidade é a avaliação mais importante.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="emergency-section">
+    <div class="container">
+      <div class="emergency-box">
+        <h3>🚨 Aconteceu algo suspeito?</h3>
+        <p>Denuncie imediatamente. Nossa equipe analisa cada caso em até 2 horas em dias úteis e em até 6 horas em finais de semana.</p>
+        <a href="mailto:seguranca@bizuxo.com.br" class="emergency-contact">seguranca@bizuxo.com.br</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">Bizu<span>xo</span></div>
+          <p style="max-width: 280px; line-height: 1.6;">O ponto de encontro entre quem precisa e quem resolve. Feito com 💚 e ❤️ no Brasil.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Plataforma</h4>
+          <ul>
+            <li><a href="como-funciona.html">Como funciona</a></li>
+            <li><a href="condominios.html">Para condomínios</a></li>
+            <li><a href="seguranca.html">Segurança</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Empresa</h4>
+          <ul>
+            <li><a href="sobre-nos.html">Sobre nós</a></li>
+           
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Suporte</h4>
+          <ul>
+            <li><a href="central-ajuda.html">Central de Ajuda</a></li>
+            <li><a href="#">Termos de Uso</a></li>
+            <li><a href="privacidade.html">Privacidade</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom"><p>&copy; 2026 Bizuxo Tecnologia Ltda. Todos os direitos reservados.</p></div>
+    </div>
+  </footer>
+
+</body>
+</html>

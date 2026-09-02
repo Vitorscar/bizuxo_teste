@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Como Funciona · Bizuxo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  body { background: var(--surface-soft); }
+  .page-hero {
+    background: var(--bg-app); color: #fff; padding: 140px 0 80px; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .page-hero::before {
+    content: ''; position: absolute; top: -30%; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(5,193,103,0.12) 0%, rgba(255,59,48,0.05) 50%, transparent 70%);
+    pointer-events: none;
+  }
+  .page-hero h1 { font-size: clamp(2rem, 4vw, 3rem); max-width: 18ch; margin: 0 auto 16px; position: relative; }
+  .page-hero p { color: #B6B8BE; font-size: 1.05rem; max-width: 55ch; margin: 0 auto; position: relative; }
+  .breadcrumb { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; font-size: 0.85rem; color: #8B8E96; position: relative; }
+  .breadcrumb a:hover { color: var(--accent); }
+
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  .text-accent { color: var(--accent); }
+  .text-alert { color: var(--alert); }
+
+  section { padding: 80px 0; }
+  .section-title { font-size: 2rem; text-align: center; margin-bottom: 12px; }
+  .section-sub { text-align: center; color: var(--ink-soft); margin-bottom: 56px; }
+
+  .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 48px; }
+  .step-card {
+    background: var(--surface); padding: 28px; border-radius: var(--radius-lg);
+    border-top: 3px solid transparent; transition: transform 0.2s;
+  }
+  .step-card:hover { transform: translateY(-4px); }
+  .step-card.cliente { border-top-color: var(--accent); }
+  .step-card.prestador { border-top-color: var(--alert); }
+  .step-num-big {
+    font-family: var(--font-display); font-size: 2.5rem; font-weight: 800; line-height: 1;
+    margin-bottom: 12px;
+  }
+  .cliente .step-num-big { color: var(--accent); }
+  .prestador .step-num-big { color: var(--alert); }
+  .step-card h3 { font-size: 1.1rem; margin-bottom: 8px; }
+  .step-card p { font-size: 0.9rem; color: var(--ink-soft); line-height: 1.55; }
+
+  .comparison-section { background: var(--surface); }
+  .comparison-table {
+    max-width: 720px; margin: 0 auto; background: var(--surface-soft);
+    border-radius: var(--radius-lg); overflow: hidden;
+  }
+  .comparison-row {
+    display: grid; grid-template-columns: 2fr 1fr 1fr;
+    padding: 16px 24px; align-items: center; border-bottom: 1px solid var(--border);
+  }
+  .comparison-row.header {
+    background: var(--bg-app); color: #fff; font-family: var(--font-display);
+    font-weight: 700; font-size: 0.9rem;
+  }
+  .comparison-row:last-child { border-bottom: none; }
+  .check { color: var(--accent); font-weight: 700; }
+  .cross { color: var(--ink-faint); }
+
+  .benefits-section { background: var(--bg-app); color: #fff; }
+  .benefits-section h2 { color: #fff; }
+  .benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; }
+  .benefit-card {
+    background: var(--bg-elevated); border: 1px solid rgba(255,255,255,0.08);
+    padding: 24px; border-radius: var(--radius-md);
+  }
+  .benefit-icon { font-size: 1.8rem; margin-bottom: 12px; }
+  .benefit-card h4 { font-size: 1.05rem; margin-bottom: 8px; }
+  .benefit-card p { font-size: 0.88rem; color: #B6B8BE; line-height: 1.55; }
+
+  .cta-section { text-align: center; background: var(--surface-soft); }
+  .btn { display: inline-block; padding: 16px 32px; border-radius: var(--radius-sm); font-family: var(--font-display); font-weight: 700; }
+  .btn-accent { background: var(--accent); color: #fff; }
+  .btn-alert { background: var(--alert); color: #fff; }
+  .cta-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 32px; }
+
+  /* NAV */
+  .navbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(11,11,13,0.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.08); padding: 16px 0;
+  }
+  .nav-inner { display: flex; justify-content: space-between; align-items: center; }
+  .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; color: #fff; }
+  .nav-logo span { color: var(--accent); }
+  .nav-cta {
+    background: var(--surface); color: var(--ink); padding: 10px 20px;
+    border-radius: 100px; font-weight: 700; font-size: 0.85rem;
+  }
+
+  /* FOOTER */
+  footer { background: var(--bg-app); color: #8B8E96; padding: 60px 0 30px; font-size: 0.85rem; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+  .footer-brand { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; color: #fff; margin-bottom: 12px; }
+  .footer-brand span { color: var(--accent); }
+  .footer-col h4 { color: #fff; font-size: 0.9rem; margin-bottom: 16px; }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 10px; }
+  .footer-col a { color: #8B8E96; }
+  .footer-col a:hover { color: var(--accent); }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px; text-align: center; }
+
+  @media (max-width: 768px) {
+    .steps-grid { grid-template-columns: 1fr; }
+    .comparison-row { grid-template-columns: 1.5fr 1fr 1fr; padding: 14px 18px; font-size: 0.85rem; }
+    .footer-grid { grid-template-columns: 1fr; gap: 32px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="landing.html" class="nav-logo">Bizu<span>xo</span></a>
+      <a href="index.html" class="nav-cta">Entrar no App</a>
+    </div>
+  </nav>
+
+  <header class="page-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="landing.html">Início</a> / <span>Como Funciona</span>
+      </div>
+      <h1>Encontrar solução nunca foi tão <span class="text-accent">simples</span>.</h1>
+      <p>Três passos para clientes, três passos para prestadores. Sem intermediários, sem enrolação.</p>
+    </div>
+  </header>
+
+  <!-- CLIENTE -->
+  <section style="background: var(--surface-soft);">
+    <div class="container">
+      <h2 class="section-title">🟢 Para quem <span class="text-accent">precisa</span></h2>
+      <p class="section-sub">Do problema ao "já resolvi" em poucos minutos.</p>
+      <div class="steps-grid">
+        <div class="step-card cliente">
+          <div class="step-num-big">01</div>
+          <h3>Descreva o bizu</h3>
+          <p>Diga o que precisa em poucas palavras. Pode ser uma foto, áudio ou texto. Ex: "Torneira vazando, urgente".</p>
+        </div>
+        <div class="step-card cliente">
+          <div class="step-num-big">02</div>
+          <h3>Receba propostas</h3>
+          <p>Profissionais avaliados da sua região enviam orçamentos. Compare preços, tempo e avaliações reais.</p>
+        </div>
+        <div class="step-card cliente">
+          <div class="step-num-big">03</div>
+          <h3>Resolva e avalie</h3>
+          <p>Escolha o melhor, pague com segurança pelo app, acompanhe o serviço e deixe sua avaliação.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRESTADOR -->
+  <section style="background: var(--surface);">
+    <div class="container">
+      <h2 class="section-title">🔴 Para quem <span class="text-alert">resolve</span></h2>
+      <p class="section-sub">Seu talento, sua agenda, sua renda. Do seu jeito.</p>
+      <div class="steps-grid">
+        <div class="step-card prestador">
+          <div class="step-num-big">01</div>
+          <h3>Crie seu perfil</h3>
+          <p>Mostre suas habilidades, fotos de trabalhos anteriores e defina sua região de atendimento.</p>
+        </div>
+        <div class="step-card prestador">
+          <div class="step-num-big">02</div>
+          <h3>Receba demandas</h3>
+          <p>Os pedidos chegam até você no horário que estiver livre. Sem gastar com anúncios ou marketing.</p>
+        </div>
+        <div class="step-card prestador">
+          <div class="step-num-big">03</div>
+          <h3>Construa reputação</h3>
+          <p>Quanto mais boas avaliações, mais destaque você tem. Ganhe o selo de "Prestador Destaque".</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARAÇÃO -->
+  <section class="comparison-section">
+    <div class="container">
+      <h2 class="section-title">Bizuxo vs. Grupo de WhatsApp</h2>
+      <p class="section-sub">Por que trocar a "indicação aleatória" por uma plataforma confiável?</p>
+      <div class="comparison-table">
+        <div class="comparison-row header">
+          <div>Recurso</div>
+          <div style="text-align: center;">Bizuxo</div>
+          <div style="text-align: center;">WhatsApp</div>
+        </div>
+        <div class="comparison-row">
+          <div>Profissional verificado</div>
+          <div class="check" style="text-align: center;">✓ Sim</div>
+          <div class="cross" style="text-align: center;">✗ Não</div>
+        </div>
+        <div class="comparison-row">
+          <div>Avaliações reais de clientes</div>
+          <div class="check" style="text-align: center;">✓ Sim</div>
+          <div class="cross" style="text-align: center;">✗ Não</div>
+        </div>
+        <div class="comparison-row">
+          <div>Pagamento seguro pelo app</div>
+          <div class="check" style="text-align: center;">✓ Sim</div>
+          <div class="cross" style="text-align: center;">✗ Não</div>
+        </div>
+        <div class="comparison-row">
+          <div>Orçamento formalizado</div>
+          <div class="check" style="text-align: center;">✓ Sim</div>
+          <div class="cross" style="text-align: center;">✗ Não</div>
+        </div>
+        <div class="comparison-row">
+          <div>Suporte em caso de problema</div>
+          <div class="check" style="text-align: center;">✓ Sim</div>
+          <div class="cross" style="text-align: center;">✗ Não</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BENEFÍCIOS -->
+  <section class="benefits-section">
+    <div class="container">
+      <h2 class="section-title">Benefícios para todos</h2>
+      <p class="section-sub" style="color: #B6B8BE;">Uma plataforma que entrega valor real para os dois lados.</p>
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div class="benefit-icon">⚡</div>
+          <h4>Velocidade</h4>
+          <p>Respostas em minutos, não em horas. Seu problema não espera.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">🛡️</div>
+          <h4>Segurança</h4>
+          <p>Pagamentos protegidos e profissionais com identidade verificada.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">⭐</div>
+          <h4>Qualidade</h4>
+          <p>Sistema de avaliação transparente. Só fica quem entrega resultado.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">💰</div>
+          <h4>Preço justo</h4>
+          <div style="font-size:0.88rem;color:#B6B8BE;line-height:1.55;">Sem taxas escondidas. Você sabe exatamente quanto vai pagar ou receber.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="container">
+      <h2 class="section-title">Pronto para testar?</h2>
+      <p class="section-sub">Escolha seu lado do X e comece agora.</p>
+      <div class="cta-actions">
+        <a href="index.html" class="btn btn-accent">🟢 Sou Cliente</a>
+        <a href="index.html" class="btn btn-alert">🔴 Sou Prestador</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">Bizu<span>xo</span></div>
+          <p style="max-width: 280px; line-height: 1.6;">O ponto de encontro entre quem precisa e quem resolve. Feito com 💚 e ❤️ no Brasil.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Plataforma</h4>
+          <ul>
+            <li><a href="como-funciona.html">Como funciona</a></li>
+            <li><a href="condominios.html">Para condomínios</a></li>
+            <li><a href="seguranca.html">Segurança</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Empresa</h4>
+          <ul>
+            <li><a href="sobre-nos.html">Sobre nós</a></li>
+            
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Suporte</h4>
+          <ul>
+            <li><a href="central-ajuda.html">Central de Ajuda</a></li>
+            <li><a href="#">Termos de Uso</a></li>
+            <li><a href="privacidade.html">Privacidade</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom"><p>&copy; 2026 Bizuxo Tecnologia Ltda. Todos os direitos reservados.</p></div>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -5,368 +5,61 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Painel · Bizuxo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
-
+<!-- (Mantenha todo o seu <style> original aqui, ele está perfeito) -->
 <style>
-  /* ============================================================
-     Complementos visuais para o Dashboard
-     ============================================================ */
-
-  .stat-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 16px;
-    margin-bottom: 32px;
-  }
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  .stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(16, 17, 19, 0.06);
-    border-color: var(--ink-faint);
-  }
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 32px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; display: flex; flex-direction: column; gap: 6px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+  .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(16, 17, 19, 0.06); border-color: var(--ink-faint); }
   .stat-card.accent { border-top: 3px solid var(--accent); }
-  .stat-value {
-    font-family: var(--font-display);
-    font-size: 1.85rem;
-    font-weight: 800;
-    color: var(--ink);
-    line-height: 1;
-  }
-  .stat-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--ink-soft);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-
-  /* ============================================================
-     NOVA SEÇÃO: Solicitação Rápida por Categoria
-     ============================================================ */
+  .stat-value { font-family: var(--font-display); font-size: 1.85rem; font-weight: 800; color: var(--ink); line-height: 1; }
+  .stat-label { font-size: 0.75rem; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.06em; }
   .quick-services-section { margin-bottom: 32px; }
-  .section-subtitle {
-    font-family: var(--font-display);
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--ink);
-    margin: 0 0 16px 0;
-  }
-  .quick-services-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-    gap: 16px;
-  }
-  .quick-service-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 20px 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: center;
-  }
-  .quick-service-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(5, 193, 103, 0.1);
-  }
-  .quick-service-card:active { transform: scale(0.96); }
+  .section-subtitle { font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: var(--ink); margin: 0 0 16px 0; }
+  .quick-services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 16px; }
+  .quick-service-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px 12px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; transition: all 0.2s ease; text-align: center; }
+  .quick-service-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(5, 193, 103, 0.1); }
   .quick-service-card .icon { font-size: 2rem; }
-  .quick-service-card .label {
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--ink);
-    line-height: 1.2;
-  }
-
-  .section-heading {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin: 36px 0 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--border);
-  }
-  .section-heading h2 {
-    font-family: var(--font-display);
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--ink);
-    margin: 0;
-  }
-  .section-heading a {
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--accent-ink);
-    text-decoration: none;
-    transition: opacity 0.15s;
-  }
+  .quick-service-card .label { font-size: 0.82rem; font-weight: 600; color: var(--ink); line-height: 1.2; }
+  .section-heading { display: flex; justify-content: space-between; align-items: baseline; margin: 36px 0 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .section-heading h2 { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: var(--ink); margin: 0; }
+  .section-heading a { font-size: 0.82rem; font-weight: 600; color: var(--accent-ink); text-decoration: none; transition: opacity 0.15s; }
   .section-heading a:hover { opacity: 0.7; }
-
-  .cta-banner {
-    background: linear-gradient(135deg, var(--bg-app) 0%, #151619 100%);
-    color: #fff;
-    border-radius: var(--radius-lg);
-    padding: 28px 28px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 24px;
-    margin-top: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 12px 32px rgba(11, 11, 13, 0.15);
-  }
+  .cta-banner { background: linear-gradient(135deg, var(--bg-app) 0%, #151619 100%); color: #fff; border-radius: var(--radius-lg); padding: 28px 28px; display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-top: 8px; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 12px 32px rgba(11, 11, 13, 0.15); }
   .cta-banner h3 { font-size: 1.2rem; margin: 0 0 6px; font-weight: 700; }
   .cta-banner p { font-size: 0.88rem; color: #B6B8BE; margin: 0; max-width: 40ch; line-height: 1.5; }
   .cta-banner .btn { width: auto; padding: 12px 24px; flex-shrink: 0; }
-
-  /* ============================================================
-     TOAST NOTIFICATIONS (Alertas Elegantes)
-     ============================================================ */
-  .toast-container {
-    position: fixed;
-    bottom: 90px;
-    right: 24px;
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .toast {
-    background: var(--bg-app);
-    color: #fff;
-    padding: 14px 20px;
-    border-radius: var(--radius-sm);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 0.88rem;
-    font-weight: 500;
-    animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    min-width: 280px;
-    border-left: 4px solid var(--accent);
-  }
-  @keyframes slideIn {
-    from { transform: translateX(120%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-  }
-  @keyframes slideOut {
-    from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(120%); opacity: 0; }
-  }
-
-  /* ============================================================
-     📱 BARRA DE NAVEGAÇÃO MOBILE (Estilo App)
-     ============================================================ */
-  .mobile-nav {
-    display: none; /* Escondido no PC por padrão */
-  }
-
+  .toast-container { position: fixed; bottom: 90px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+  .toast { background: var(--bg-app); color: #fff; padding: 14px 20px; border-radius: var(--radius-sm); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); display: flex; align-items: center; gap: 12px; font-size: 0.88rem; font-weight: 500; animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; min-width: 280px; border-left: 4px solid var(--accent); }
+  @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(120%); opacity: 0; } }
+  .mobile-nav { display: none; }
   @media (max-width: 768px) {
-    .sidebar { display: none; }
-    .app-shell { grid-template-columns: 1fr; }
-    .main-content { padding: 20px 16px 100px 16px !important; }
-
-    .mobile-nav {
-      display: grid;
-      grid-template-columns: 1fr 1fr 72px 1fr 1fr; /* 5 colunas: 4 itens + 1 central */
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 64px;
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-      align-items: stretch;
-      z-index: 9999;
-      padding-bottom: env(safe-area-inset-bottom);
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
-      isolation: isolate;
-    }
-
-    /* Container para cada item de navegação */
-    .mobile-nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      color: var(--ink-faint);
-      font-size: 0.68rem;
-      font-weight: 600;
-      gap: 3px;
-      height: 100%;
-      position: relative;
-      transition: color 0.2s ease, transform 0.15s ease;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-      user-select: none;
-    }
-
-    .mobile-nav-item .nav-icon {
-      font-size: 1.35rem;
-      line-height: 1;
-      transition: transform 0.2s ease;
-    }
-
-    .mobile-nav-item:active {
-      transform: scale(0.88);
-    }
-    .mobile-nav-item:active .nav-icon {
-      transform: scale(0.9);
-    }
-
-    .mobile-nav-item.active {
-      color: var(--accent);
-    }
-
-    /* Indicador visual de ativo - bolinha acima do ícone */
-    .mobile-nav-item.active::before {
-      content: '';
-      position: absolute;
-      top: 6px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 5px;
-      height: 5px;
-      background: var(--accent);
-      border-radius: 50%;
-      box-shadow: 0 0 8px rgba(5, 193, 103, 0.5);
-    }
-
-    /* Badge de notificação (exemplo para Demandas) */
-    .nav-badge {
-      position: absolute;
-      top: 8px;
-      right: 50%;
-      margin-right: -22px;
-      background: #ff4757;
-      color: #fff;
-      font-size: 0.6rem;
-      font-weight: 700;
-      min-width: 16px;
-      height: 16px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 4px;
-      line-height: 1;
-    }
-
-    /* ============================================================
-       ✨ BOTÃO FLUTUANTE CENTRAL (FAB - Floating Action Button)
-       ============================================================ */
-    .mobile-nav-fab-wrapper {
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      position: relative;
-    }
-
-    .mobile-nav-fab {
-      width: 54px;
-      height: 54px;
-      background: var(--accent);
-      color: #fff;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.9rem;
-      font-weight: 300;
-      text-decoration: none;
-      box-shadow: 0 4px 15px rgba(5, 193, 103, 0.4);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      margin-top: -22px; /* Eleva o botão para fora da barra */
-      border: 3px solid var(--surface); /* Anel de separação */
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      position: relative;
-      z-index: 10;
-    }
-
-    .mobile-nav-fab:active {
-      transform: scale(0.9);
-      box-shadow: 0 2px 8px rgba(5, 193, 103, 0.3);
-    }
-
-    /* Pequeno brilho no FAB */
-    .mobile-nav-fab::after {
-      content: '';
-      position: absolute;
-      top: -6px;
-      left: -6px;
-      right: -6px;
-      bottom: -6px;
-      border-radius: 50%;
-      background: rgba(5, 193, 103, 0.15);
-      z-index: -1;
-      animation: pulse-ring 2s ease-in-out infinite;
-    }
-
-    @keyframes pulse-ring {
-      0% { transform: scale(0.9); opacity: 0.7; }
-      70% { transform: scale(1.2); opacity: 0; }
-      100% { transform: scale(1.2); opacity: 0; }
-    }
-
-    /* Label do FAB (opcional - pode ser ocultado em telas muito pequenas) */
-    .mobile-nav-fab-label {
-      position: absolute;
-      top: calc(100% - 16px);
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.6rem;
-      font-weight: 700;
-      color: var(--accent);
-      letter-spacing: 0.04em;
-      white-space: nowrap;
-      pointer-events: none;
-    }
-
-    /* Ajustes responsivos dos cards */
-    .stat-grid { grid-template-columns: 1fr 1fr; }
-    .quick-services-grid { grid-template-columns: repeat(2, 1fr); }
-    .cta-banner { flex-direction: column; text-align: center; padding: 24px 20px; }
-    .cta-banner p { max-width: 100%; }
-    .cta-banner .btn { width: 100%; }
-    .toast-container { bottom: 90px; right: 16px; left: 16px; }
-    .toast { min-width: auto; width: 100%; }
+    .sidebar { display: none; } .app-shell { grid-template-columns: 1fr; } .main-content { padding: 20px 16px 100px 16px !important; }
+    .mobile-nav { display: grid; grid-template-columns: 1fr 1fr 72px 1fr 1fr; position: fixed; bottom: 0; left: 0; width: 100%; height: 64px; background: var(--surface); border-top: 1px solid var(--border); align-items: stretch; z-index: 9999; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05); isolation: isolate; }
+    .mobile-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: var(--ink-faint); font-size: 0.68rem; font-weight: 600; gap: 3px; height: 100%; position: relative; transition: color 0.2s ease, transform 0.15s ease; -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none; }
+    .mobile-nav-item .nav-icon { font-size: 1.35rem; line-height: 1; transition: transform 0.2s ease; }
+    .mobile-nav-item:active { transform: scale(0.88); } .mobile-nav-item:active .nav-icon { transform: scale(0.9); }
+    .mobile-nav-item.active { color: var(--accent); }
+    .mobile-nav-item.active::before { content: ''; position: absolute; top: 6px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 8px rgba(5, 193, 103, 0.5); }
+    .nav-badge { position: absolute; top: 8px; right: 50%; margin-right: -22px; background: #ff4757; color: #fff; font-size: 0.6rem; font-weight: 700; min-width: 16px; height: 16px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 4px; line-height: 1; }
+    .mobile-nav-fab-wrapper { display: flex; align-items: flex-start; justify-content: center; position: relative; }
+    .mobile-nav-fab { width: 54px; height: 54px; background: var(--accent); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.9rem; font-weight: 300; text-decoration: none; box-shadow: 0 4px 15px rgba(5, 193, 103, 0.4); transition: transform 0.2s ease, box-shadow 0.2s ease; margin-top: -22px; border: 3px solid var(--surface); touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; position: relative; z-index: 10; }
+    .mobile-nav-fab:active { transform: scale(0.9); box-shadow: 0 2px 8px rgba(5, 193, 103, 0.3); }
+    .mobile-nav-fab::after { content: ''; position: absolute; top: -6px; left: -6px; right: -6px; bottom: -6px; border-radius: 50%; background: rgba(5, 193, 103, 0.15); z-index: -1; animation: pulse-ring 2s ease-in-out infinite; }
+    @keyframes pulse-ring { 0% { transform: scale(0.9); opacity: 0.7; } 70% { transform: scale(1.2); opacity: 0; } 100% { transform: scale(1.2); opacity: 0; } }
+    .stat-grid { grid-template-columns: 1fr 1fr; } .quick-services-grid { grid-template-columns: repeat(2, 1fr); } .cta-banner { flex-direction: column; text-align: center; padding: 24px 20px; } .cta-banner p { max-width: 100%; } .cta-banner .btn { width: 100%; } .toast-container { bottom: 90px; right: 16px; left: 16px; } .toast { min-width: auto; width: 100%; }
   }
-
-  @media (max-width: 480px) {
-    .stat-grid { grid-template-columns: 1fr; }
-    .mobile-nav-item { font-size: 0.62rem; }
-    .mobile-nav-item .nav-icon { font-size: 1.2rem; }
-    .mobile-nav-fab { width: 48px; height: 48px; font-size: 1.7rem; margin-top: -18px; }
-  }
-
+  @media (max-width: 480px) { .stat-grid { grid-template-columns: 1fr; } .mobile-nav-item { font-size: 0.62rem; } .mobile-nav-item .nav-icon { font-size: 1.2rem; } .mobile-nav-fab { width: 48px; height: 48px; font-size: 1.7rem; margin-top: -18px; } }
   .status-recebendo { background: var(--amber-soft); color: var(--amber); }
   .status-selecionado { background: var(--accent-soft); color: var(--accent-ink); }
+  .status-andamento { background: var(--accent-soft); color: var(--accent-ink); }
 </style>
 </head>
 <body>
 
 <div class="app-shell">
-  <!-- Sidebar (VISÍVEL APENAS NO PC) -->
   <aside class="sidebar">
     <div class="brand" style="margin-bottom: 8px;">Bizu<span>xo</span></div>
     <nav class="sidebar-nav">
@@ -378,13 +71,12 @@
       <a class="nav-item" href="../index.html" style="color: var(--alert); margin-top: auto;"><span class="nav-icon">🚪</span> Sair</a>
     </nav>
     <div class="sidebar-foot">
-      <div style="font-weight: 600; color: #fff; margin-bottom: 4px;">Olá, Maria</div>
-      <div style="color: #8B8E96; font-size: 0.75rem; margin-bottom: 10px;">Águas Claras, DF</div>
+      <div id="userName" style="font-weight: 600; color: #fff; margin-bottom: 4px;">Carregando...</div>
+      <div id="userLoc" style="color: #8B8E96; font-size: 0.75rem; margin-bottom: 10px;">...</div>
       <div class="role-tag">conta cliente</div>
     </div>
   </aside>
 
-  <!-- Conteúdo Principal -->
   <main class="main-content">
     <div class="page-topbar">
       <div>
@@ -396,7 +88,6 @@
       </a>
     </div>
 
-    <!-- Estatísticas -->
     <div class="stat-grid">
       <div class="stat-card accent">
         <div class="stat-value" id="statAtivas">0</div>
@@ -412,32 +103,16 @@
       </div>
     </div>
 
-    <!-- Solicitação Rápida -->
     <div class="quick-services-section">
       <h3 class="section-subtitle">⚡ Solicitar serviço rápido</h3>
       <div class="quick-services-grid">
-        <div class="quick-service-card" onclick="solicitarServicoRapido('Eletricista', '⚡')">
-          <span class="icon">⚡</span><span class="label">Eletricista</span>
-        </div>
-        <div class="quick-service-card" onclick="solicitarServicoRapido('Diarista', '🧹')">
-          <span class="icon">🧹</span><span class="label">Diarista</span>
-        </div>
-        <div class="quick-service-card" onclick="solicitarServicoRapido('Manicure', '💅')">
-          <span class="icon">💅</span><span class="label">Manicure</span>
-        </div>
-        <div class="quick-service-card" onclick="solicitarServicoRapido('Chaveiro', '🔑')">
-          <span class="icon">🔑</span><span class="label">Chaveiro</span>
-        </div>
-        <div class="quick-service-card" onclick="solicitarServicoRapido('Marido de Aluguel', '🛠️')">
-          <span class="icon">🛠️</span><span class="label">Marido de Aluguel</span>
-        </div>
-        <div class="quick-service-card" onclick="solicitarServicoRapido('Encanador', '🚿')">
-          <span class="icon">🚿</span><span class="label">Encanador</span>
-        </div>
+        <div class="quick-service-card" onclick="solicitarServicoRapido('Eletricista', '⚡')"><span class="icon">⚡</span><span class="label">Eletricista</span></div>
+        <div class="quick-service-card" onclick="solicitarServicoRapido('Diarista', '🧹')"><span class="icon">🧹</span><span class="label">Diarista</span></div>
+        <div class="quick-service-card" onclick="solicitarServicoRapido('Encanador', '🚿')"><span class="icon">🚿</span><span class="label">Encanador</span></div>
+        <div class="quick-service-card" onclick="solicitarServicoRapido('Marido de Aluguel', '🛠️')"><span class="icon">🛠️</span><span class="label">Marido de Aluguel</span></div>
       </div>
     </div>
 
-    <!-- Banner CTA -->
     <div class="cta-banner">
       <div>
         <h3>Precisa de algo mais específico?</h3>
@@ -446,14 +121,12 @@
       <a class="btn btn-accent" href="nova-demanda.html">Publicar demanda</a>
     </div>
 
-    <!-- Lista: Demandas Recentes -->
     <div class="section-heading">
       <h2>Demandas recentes</h2>
       <a href="minhas-demandas.html">ver todas →</a>
     </div>
     <div id="demandasRecentes"></div>
 
-    <!-- Lista: Serviços em Andamento -->
     <div class="section-heading">
       <h2>Serviços em andamento</h2>
       <a href="servicos-contratados.html">ver todos →</a>
@@ -462,128 +135,125 @@
   </main>
 </div>
 
-<!-- ============================================================
-     📱 BARRA DE NAVEGAÇÃO INFERIOR (VISÍVEL APENAS NO CELULAR)
-     Estrutura melhorada com Grid de 5 colunas e FAB central elevado
-     ============================================================ -->
 <nav class="mobile-nav" aria-label="Navegação principal">
-
-  <!-- Item 1: Início -->
-  <a href="dashboard-cliente.html" class="mobile-nav-item active" aria-label="Início" aria-current="page">
-    <span class="nav-icon">▤</span>
-    <span>Início</span>
-  </a>
-
-  <!-- Item 2: Demandas (com badge de notificação) -->
-  <a href="minhas-demandas.html" class="mobile-nav-item" aria-label="Minhas Demandas">
-    <span class="nav-icon">✉</span>
-    <span>Demandas</span>
-    <span class="nav-badge" id="badgeDemandas" style="display: none;">3</span>
-  </a>
-
-  <!-- Coluna central: FAB -->
-  <div class="mobile-nav-fab-wrapper">
-    <a href="nova-demanda.html" class="mobile-nav-fab" title="Nova Demanda" aria-label="Criar nova demanda">
-      <span>+</span>
-    </a>
-  </div>
-
-  <!-- Item 3: Serviços -->
-  <a href="servicos-contratados.html" class="mobile-nav-item" aria-label="Serviços Contratados">
-    <span class="nav-icon">🛠️</span>
-    <span>Serviços</span>
-  </a>
-
-  <!-- Item 4: Perfil -->
-  <a href="meu-perfil-cliente.html" class="mobile-nav-item" aria-label="Meu Perfil">
-    <span class="nav-icon">⚙️</span>
-    <span>Perfil</span>
-  </a>
-
+  <a href="dashboard-cliente.html" class="mobile-nav-item active"><span class="nav-icon">▤</span><span>Início</span></a>
+  <a href="minhas-demandas.html" class="mobile-nav-item"><span class="nav-icon">✉</span><span>Demandas</span><span class="nav-badge" id="badgeDemandas" style="display: none;">0</span></a>
+  <div class="mobile-nav-fab-wrapper"><a href="nova-demanda.html" class="mobile-nav-fab"><span>+</span></a></div>
+  <a href="servicos-contratados.html" class="mobile-nav-item"><span class="nav-icon">🛠️</span><span>Serviços</span></a>
+  <a href="meu-perfil-cliente.html" class="mobile-nav-item"><span class="nav-icon">⚙️</span><span>Perfil</span></a>
 </nav>
 
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-cliente.js"></script>
+<script src="../js/auth.js"></script>
+
 <script>
-  // ============================================================
-  // Lógica de Solicitação Rápida
-  // ============================================================
-  function solicitarServicoRapido(categoria, icone) {
-    showToast(`${icone} Buscando ${categoria}s na sua região (Águas Claras, DF)...`, 'info');
-    setTimeout(() => {
-      const qtdPrestadores = Math.floor(Math.random() * 4) + 2;
-      showToast(`✅ Sucesso! Alerta enviado para ${qtdPrestadores} ${categoria}s próximos.`, 'success');
-      const statAtivas = document.getElementById('statAtivas');
-      statAtivas.textContent = parseInt(statAtivas.textContent) + 1;
+  async function init() {
+    const session = await supabase.auth.getSession();
+    if (!session.data.session) { window.location.href = '../index.html'; return; }
+    const userId = session.data.session.user.id;
 
-      // Atualiza badge de demandas
+    // 1. Carregar perfil
+    const { data: profile } = await supabase.from('profiles').select('nome, cidade').eq('id', userId).single();
+    if (profile) {
+      document.getElementById('userName').textContent = `Olá, ${profile.nome.split(' ')[0]}`;
+      document.getElementById('userLoc').textContent = profile.cidade || 'Local não definido';
+    }
+
+    // 2. Buscar Demandas
+    const { data: demands } = await supabase
+      .from('demands')
+      .select('id, titulo, cidade, created_at, status, proposals(count)')
+      .eq('client_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(3);
+
+    // 3. Buscar Ordens de Serviço
+    const { data: orders } = await supabase
+      .from('orders')
+      .select('id, titulo, valor, status, profiles!orders_provider_id_fkey(nome)')
+      .eq('client_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(3);
+
+    // 4. Calcular Estatísticas
+    const demandasAtivas = (demands || []).filter(d => d.status === 'aberta' || d.status === 'em_propostas').length;
+    const totalPropostas = (demands || []).reduce((sum, d) => sum + (d.proposals[0]?.count || 0), 0);
+    const servicosConcluidos = (orders || []).filter(o => o.status === 'concluido').length;
+
+    document.getElementById('statAtivas').textContent = demandasAtivas;
+    document.getElementById('statPropostas').textContent = totalPropostas;
+    document.getElementById('statConcluidos').textContent = servicosConcluidos;
+
+    if (totalPropostas > 0) {
       const badge = document.getElementById('badgeDemandas');
-      if (badge) {
-        const current = parseInt(badge.textContent) || 0;
-        badge.textContent = current + 1;
-        badge.style.display = 'flex';
-      }
-    }, 1500);
-  }
-
-  function showToast(message, type = 'info') {
-    let container = document.getElementById('toastContainer');
-    if (!container) {
-      container = document.createElement('div');
-      container.id = 'toastContainer';
-      container.className = 'toast-container';
-      document.body.appendChild(container);
-    }
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `<span>${message}</span>`;
-    container.appendChild(toast);
-
-    // Limita a quantidade de toasts simultâneos a 3
-    while (container.children.length > 3) {
-      container.removeChild(container.firstChild);
-    }
-
-    setTimeout(() => {
-      toast.style.animation = 'slideOut 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards';
-      setTimeout(() => {
-        if (toast.parentNode) toast.parentNode.removeChild(toast);
-      }, 400);
-    }, 4000);
-  }
-
-  // ============================================================
-  // Dados e Renderização
-  // ============================================================
-  const DEMANDS = [
-    { id: 823, title: "Instalação de chuveiro elétrico", loc: "Águas Claras", date: "27/08", status: "recebendo", statusLabel: "Recebendo propostas", proposals: 3 },
-    { id: 819, title: "Revisão de disjuntor", loc: "Águas Claras", date: "25/08", status: "selecionado", statusLabel: "Prestador selecionado", proposals: 2 },
-  ];
-  const SERVICES = [
-    { id: 1088, title: "Instalação elétrica — cômodo extra", provider: "Carlos Silva", avatar: "👨‍🔧", loc: "Águas Claras", date: "28/08", value: "R$ 250,00", status: "andamento", statusLabel: "Em andamento" },
-  ];
-
-  // Atualiza estatísticas
-  document.getElementById('statAtivas').textContent = DEMANDS.filter(d => d.status !== 'concluido' && d.status !== 'cancelado').length;
-  document.getElementById('statPropostas').textContent = DEMANDS.reduce((sum, d) => sum + (d.proposals || 0), 0);
-  document.getElementById('statConcluidos').textContent = 4;
-
-  // Inicializa badge de demandas se houver propostas pendentes
-  const totalPropostas = DEMANDS.reduce((sum, d) => sum + (d.proposals || 0), 0);
-  if (totalPropostas > 0) {
-    const badge = document.getElementById('badgeDemandas');
-    if (badge) {
       badge.textContent = totalPropostas;
       badge.style.display = 'flex';
     }
+
+    // 5. Renderizar Listas
+    renderDemandas(demands);
+    renderServicos(orders);
   }
 
-  // Renderiza demandas recentes
-  const demandasEl = document.getElementById('demandasRecentes');
-  demandasEl.innerHTML = DEMANDS.length === 0
-    ? `<div class="empty-state"><h3>Nenhuma demanda recente</h3></div>`
-    : DEMANDS.map(d => `
+  function renderDemandas(demands) {
+    const el = document.getElementById('demandasRecentes');
+    if (!demands || demands.length === 0) {
+      el.innerHTML = `<div class="empty-state"><h3>Nenhuma demanda recente</h3></div>`;
+      return;
+    }
+    el.innerHTML = demands.map(d => {
+      const statusClass = d.status === 'em_propostas' ? 'status-recebendo' : 'status-selecionado';
+      const statusLabel = d.status === 'em_propostas' ? 'Recebendo propostas' : 'Em análise';
+      const date = new Date(d.created_at).toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
+      return `
       <a href="detalhe-demanda.html?id=${d.id}" class="list-row">
         <div class="avatar avatar-md" style="background: var(--surface-soft);">✉️</div>
         <div class="list-row-main">
-          <div class="list-row-title">${d.title}</div>
+          <div class="list-row-title">${d.titulo}</div>
           <div class="list-row-sub">
-            <span>📍 ${d.loc}</span><span class="sep">·</span>
+            <span>📍 ${d.cidade}</span><span class="sep">·</span><span>${date}</span>
+          </div>
+        </div>
+        <div class="list-row-side">
+          <span class="status-badge ${statusClass}">${statusLabel}</span>
+          <span class="list-row-date">${d.proposals[0]?.count || 0} propostas</span>
+        </div>
+      </a>`;
+    }).join('');
+  }
+
+  function renderServicos(orders) {
+    const el = document.getElementById('servicosAndamento');
+    if (!orders || orders.length === 0) {
+      el.innerHTML = `<div class="empty-state"><h3>Nenhum serviço em andamento</h3></div>`;
+      return;
+    }
+    el.innerHTML = orders.map(o => {
+      const providerName = o.profiles?.nome || 'Prestador';
+      const valorFmt = o.valor ? `R$ ${parseFloat(o.valor).toFixed(2)}` : 'A combinar';
+      return `
+      <a href="acompanhar-servico.html?id=${o.id}" class="list-row">
+        <div class="avatar avatar-md" style="background: var(--accent-soft); color: var(--accent-ink); font-size: 1.2rem;">🛠️</div>
+        <div class="list-row-main">
+          <div class="list-row-title">${o.titulo}</div>
+          <div class="list-row-sub"><span>👤 ${providerName}</span></div>
+        </div>
+        <div class="list-row-side">
+          <span class="status-badge status-andamento">${o.status === 'agendado' ? 'Agendado' : 'Em andamento'}</span>
+          <span class="list-row-value">${valorFmt}</span>
+        </div>
+      </a>`;
+    }).join('');
+  }
+
+  function solicitarServicoRapido(categoria, icone) {
+    window.location.href = `nova-demanda.html?categoria=${encodeURIComponent(categoria)}`;
+  }
+
+  init();
+</script>
+<script src="../js/mobile-nav.js"></script>
+</body>
+</html>

@@ -13,6 +13,12 @@
   .intro h1{ font-size:1.35rem; margin:0 0 6px; }
   .intro p{ font-size:0.85rem; color:var(--ink-soft); margin:0; }
   .terms{ font-size:0.75rem; color:var(--ink-faint); text-align:center; margin-top:14px; }
+  
+  .chip-select .chip.selected {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
 </style>
 </head>
 <body>
@@ -20,7 +26,7 @@
 <div class="container-mobile">
   <header class="header-dark">
     <div class="header-top">
-      <div class="brand">Bizu<span>xo</span>div>
+      <div class="brand">Bizu<span>xo</span></div>
       <a class="pill-link" href="dashboard-cliente.html">Cancelar</a>
     </div>
     <h2 style="font-size:1.1rem; margin:0;">Publicar nova demanda</h2>
@@ -56,7 +62,7 @@
 
         <div class="field">
           <label for="descricao">Descreva o que precisa ser feito</label>
-          <textarea id="descricao" placeholder="Quanto mais detalhes, melhores serão as propostas dos prestadores..." required></textarea>
+          <textarea id="descricao" rows="4" placeholder="Quanto mais detalhes, melhores serão as propostas dos prestadores..." required></textarea>
         </div>
 
         <div class="field">
@@ -79,13 +85,60 @@
         </div>
       </div>
 
-      <button type="submit" class="btn btn-accent" id="publishBtn">Publicar demanda e receber propostas</button>
+      <button type="submit" class="btn btn-accent" id="publishBtn" style="width: 100%; margin-top: 16px;">Publicar demanda e receber propostas</button>
       <div class="terms">os prestadores da sua região serão notificados assim que você publicar</div>
     </form>
   </div>
 </div>
 
+<!-- Scripts de Conexão -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-cliente.js"></script>
+<script src="../js/auth.js"></script>
+
 <script>
+  // 1. Verificar autenticação
+  async function verificarAuth() {
+    const session = await supabase.auth.getSession();
+    if (!session.data.session) {
+      window.location.href = '../index.html';
+    }
+  }
+  verificarAuth();
+
+  // 2. Mapeamento de Categorias (será preenchido pelo banco)
+  let mapaCategorias = {};
+
+  async function carregarCategorias() {
+    console.log("📡 Carregando tipos de serviço...");
+    const { data, error } = await supabase
+      .from('service_types')
+      .select('id, nome');
+    
+    if (!error && data) {
+      data.forEach(item => {
+        // Normaliza o nome para minúsculo, sem acentos e sem hífens para bater com o data-value do HTML
+        // Ex: "Ar-condicionado" vira "arcondicionado"
+        const chave = item.nome.toLowerCase()
+          .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+          .replace('-', '');
+        mapaCategorias[chave] = item.id;
+      });
+      console.log("✅ Categorias carregadas:", mapaCategorias);
+    } else {
+      console.warn("⚠️ Erro ao carregar categorias do banco, usando fallback:", error);
+      // Fallback de segurança caso o banco falhe
+      mapaCategorias = {
+        'eletrica': 1, 'hidraulica': 2, 'pintura': 3, 'marcenaria': 4,
+        'arcondicionado': 5, 'limpeza': 6, 'mudancas': 7, 'montagem': 8
+      };
+    }
+  }
+
+  // Carrega as categorias assim que a página abre
+  carregarCategorias();
+
+  // 3. Lógica dos Chips de Categoria
   const chips = document.querySelectorAll('#categoriaChips .chip');
   let categoriaSelecionada = null;
 
@@ -97,11 +150,20 @@
     });
   });
 
-  document.getElementById('novaDemandaForm').addEventListener('submit', (e) => {
+  // 4. Envio do Formulário para o Supabase
+  document.getElementById('novaDemandaForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
     if (!categoriaSelecionada) {
-      alert('Selecione o tipo de serviço.');
+      alert('⚠️ Por favor, selecione o tipo de serviço.');
+      return;
+    }
+
+    // Pega o ID correto a partir do mapa que carregamos
+    const idCategoria = mapaCategorias[categoriaSelecionada];
+
+    if (!idCategoria) {
+      alert('⚠️ Categoria não identificada. Tente recarregar a página.');
       return;
     }
 
@@ -110,11 +172,40 @@
     btn.textContent = 'Publicando...';
     btn.disabled = true;
 
-    // Lógica Supabase: insert em 'demands' com status 'aberta' e categoria = categoriaSelecionada
-    setTimeout(() => {
+    try {
+      const session = await supabase.auth.getSession();
+      const userId = session.data.session.user.id;
+
+      // Insere a demanda no banco de dados
+      const { data, error } = await supabase
+        .from('demands')
+        .insert({
+          client_id: userId,
+          service_type_id: idCategoria, // Usamos o ID já mapeado!
+          titulo: document.getElementById('titulo').value.trim(),
+          descricao: document.getElementById('descricao').value.trim(),
+          cidade: document.getElementById('cidade').value.trim(),
+          bairro: document.getElementById('bairro').value.trim(),
+          data_limite: document.getElementById('data_limite').value || null,
+          status: 'aberta'
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      console.log('✅ Demanda criada com sucesso:', data);
       window.location.href = 'minhas-demandas.html';
-    }, 600);
+
+    } catch (err) {
+      console.error('❌ Erro ao publicar demanda:', err);
+      alert('Erro ao publicar: ' + err.message);
+      
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }
   });
 </script>
+<script src="../js/mobile-nav.js"></script>
 </body>
 </html>

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bizuxo | O ponto de encontro entre problema e solução</title>
+<meta name="description" content="Conectando quem precisa a quem resolve. Encontre profissionais confiáveis ou aumente sua renda com o Bizuxo.">
+
+<!-- Fontes -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  /* ============================================================
+     BIZUXO DESIGN SYSTEM (Baseado no seu style.css)
+     ============================================================ */
+  :root {
+    --bg-app: #0B0B0D;
+    --bg-elevated: #1B1C1F;
+    --surface: #FFFFFF;
+    --surface-soft: #F4F4F2;
+    --ink: #101113;
+    --ink-soft: #6B6E76;
+    --ink-faint: #9A9CA3;
+    --border: #E7E7E4;
+
+    --accent: #05C167;
+    --accent-ink: #04572C;
+    --accent-soft: #E1F9EC;
+    --alert: #FF3B30;
+    --alert-ink: #8C1810;
+    --alert-soft: #FFE9E7;
+    --amber: #B8790A;
+    --amber-soft: #FFF3DC;
+
+    --radius-lg: 20px;
+    --radius-md: 14px;
+    --radius-sm: 10px;
+    --font-display: 'Sora', sans-serif;
+    --font-body: 'Inter', sans-serif;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--surface-soft);
+    color: var(--ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+  a { color: inherit; text-decoration: none; transition: color 0.2s; }
+  a:hover { color: var(--accent); }
+  h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.2; letter-spacing: -0.02em; }
+  
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  /* Utilitários de Texto e Cor */
+  .text-accent { color: var(--accent); }
+  .text-alert { color: var(--alert); }
+  .text-gradient-x {
+    background: linear-gradient(90deg, var(--accent) 0%, #FF8A00 50%, var(--alert) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ============================================================
+     COMPONENTES DA LANDING PAGE
+     ============================================================ */
+
+  /* NAV */
+  .navbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(11, 11, 13, 0.9); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding: 16px 0;
+  }
+  .nav-inner { display: flex; justify-content: space-between; align-items: center; }
+  .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; color: #fff; }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 32px; align-items: center; }
+  .nav-links a { color: #B6B8BE; font-size: 0.9rem; font-weight: 500; }
+  .nav-links a:hover { color: #fff; }
+  .nav-cta {
+    background: var(--surface); color: var(--ink); padding: 10px 20px;
+    border-radius: 100px; font-weight: 700; font-size: 0.85rem;
+  }
+  .nav-cta:hover { background: var(--accent); color: #fff; }
+
+  /* HERO */
+  .hero {
+    background: var(--bg-app); color: #fff; padding: 160px 0 100px;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%);
+    width: 800px; height: 800px;
+    background: radial-gradient(circle, rgba(5, 193, 103, 0.15) 0%, rgba(255, 59, 48, 0.05) 50%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero h1 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800; max-width: 16ch; margin: 0 auto 24px; }
+  .hero p { font-size: 1.15rem; color: #B6B8BE; max-width: 50ch; margin: 0 auto 40px; }
+  
+  .hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 16px 32px; border-radius: var(--radius-sm); font-family: var(--font-display);
+    font-weight: 700; font-size: 1rem; border: none; cursor: pointer; transition: transform 0.15s, opacity 0.15s;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-accent { background: var(--accent); color: #fff; box-shadow: 0 4px 20px rgba(5, 193, 103, 0.3); }
+  .btn-alert { background: var(--alert); color: #fff; box-shadow: 0 4px 20px rgba(255, 59, 48, 0.3); }
+  .btn-outline-light { background: transparent; border: 1.5px solid rgba(255,255,255,0.2); color: #fff; }
+  .btn-outline-light:hover { border-color: #fff; }
+
+  /* MANIFESTO / O X */
+  .manifesto { padding: 100px 0; text-align: center; background: var(--surface); }
+  .manifesto h2 { font-size: 2rem; margin-bottom: 48px; }
+  .x-diagram {
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    font-family: var(--font-display); font-weight: 700; font-size: 1.1rem;
+    margin: 0 auto; max-width: 400px;
+  }
+  .x-row { display: flex; justify-content: space-between; width: 100%; }
+  .x-center { 
+    font-size: 3rem; font-weight: 800; line-height: 1; margin: 8px 0;
+  }
+  .x-desc { font-family: var(--font-body); font-size: 0.9rem; color: var(--ink-soft); font-weight: 400; margin-top: 24px; max-width: 45ch; }
+
+  /* COMO FUNCIONA (Dual) */
+  .how-it-works { padding: 100px 0; background: var(--surface-soft); }
+  .section-header { text-align: center; margin-bottom: 64px; }
+  .section-header h2 { font-size: 2.2rem; margin-bottom: 12px; }
+  .section-header p { color: var(--ink-soft); font-size: 1.05rem; }
+
+  .dual-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .path-card {
+    background: var(--surface); border-radius: var(--radius-lg); padding: 40px 32px;
+    border-top: 4px solid transparent; transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .path-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(16,17,19,0.08); }
+  .path-card.cliente { border-top-color: var(--accent); }
+  .path-card.prestador { border-top-color: var(--alert); }
+  
+  .path-card h3 { font-size: 1.5rem; margin-bottom: 8px; }
+  .path-card .subtitle { color: var(--ink-soft); font-size: 0.9rem; margin-bottom: 32px; }
+  
+  .step { display: flex; gap: 16px; margin-bottom: 24px; }
+  .step-num {
+    width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 800; font-size: 0.9rem; flex-shrink: 0;
+  }
+  .cliente .step-num { background: var(--accent-soft); color: var(--accent-ink); }
+  .prestador .step-num { background: var(--alert-soft); color: var(--alert-ink); }
+  .step-text h4 { font-size: 1rem; margin-bottom: 4px; }
+  .step-text p { font-size: 0.88rem; color: var(--ink-soft); line-height: 1.5; }
+
+  /* DEPOIMENTOS */
+  .testimonials { padding: 100px 0; background: var(--bg-app); color: #fff; }
+  .testimonials h2 { text-align: center; font-size: 2.2rem; margin-bottom: 64px; }
+  .testi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+  .testi-card {
+    background: var(--bg-elevated); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-md); padding: 28px;
+  }
+  .testi-stars { color: #FFC107; font-size: 1rem; margin-bottom: 16px; letter-spacing: 2px; }
+  .testi-text { font-size: 0.95rem; color: #D1D3D8; line-height: 1.6; margin-bottom: 24px; font-style: italic; }
+  .testi-author { display: flex; align-items: center; gap: 12px; }
+  .testi-avatar {
+    width: 40px; height: 40px; border-radius: 50%; background: var(--surface-soft);
+    display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--ink);
+  }
+  .testi-name { font-weight: 600; font-size: 0.9rem; }
+  .testi-role { font-size: 0.78rem; color: var(--ink-faint); }
+
+  /* CTA FINAL */
+  .final-cta { padding: 100px 0; text-align: center; background: var(--surface); }
+  .final-cta h2 { font-size: 2.5rem; margin-bottom: 16px; }
+  .final-cta p { color: var(--ink-soft); margin-bottom: 40px; font-size: 1.1rem; }
+
+  /* FOOTER */
+  footer { background: var(--bg-app); color: #8B8E96; padding: 60px 0 30px; font-size: 0.85rem; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+  .footer-brand { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; color: #fff; margin-bottom: 12px; }
+  .footer-brand span { color: var(--accent); }
+  .footer-col h4 { color: #fff; font-size: 0.9rem; margin-bottom: 16px; }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 10px; }
+  .footer-col a:hover { color: var(--accent); }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px; text-align: center; }
+
+  /* RESPONSIVO */
+  @media (max-width: 768px) {
+    .nav-links { display: none; } /* Simplificado para mobile, ideal seria um menu hambúrguer */
+    .hero { padding: 120px 0 60px; }
+    .hero h1 { font-size: 2.2rem; }
+    .dual-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; gap: 32px; text-align: center; }
+    .x-row { font-size: 0.95rem; }
+  }
+  .x-desc {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="#" class="nav-logo">Bizu<span>xo</span></a>
+      <div class="nav-links">
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#para-clientes">Para Clientes</a>
+        <a href="#para-prestadores">Para Prestadores</a>
+        <a href="index.html" class="nav-cta">Entrar no App</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="container">
+      <h1>
+        O ponto de encontro entre <span class="text-accent">problema</span> e <span class="text-alert">solução</span>.
+      </h1>
+      <p>
+        Esqueça os grupos de WhatsApp e a insegurança. No Bizuxo, você encontra profissionais confiáveis em poucos cliques, ou enche sua agenda de serviços.
+      </p>
+      <div class="hero-actions">
+        <a href="cadastro-cliente.html" class="btn btn-accent">
+          🟢 Preciso de um serviço
+        </a>
+        <a href="cadastro-prestador.html" class="btn btn-alert">
+          🔴 Quero oferecer serviços
+        </a>
+      </div>
+      
+      <!-- Stats de Prova Social (do seu login) -->
+      <div style="display: flex; justify-content: center; gap: 48px; margin-top: 64px; flex-wrap: wrap; opacity: 0.8;">
+        <div style="text-align: center;">
+          <div style="font-family: var(--font-display); font-size: 1.8rem; font-weight: 800; color: var(--accent);">2.400+</div>
+          <div style="font-size: 0.8rem; color: #8B8E96;">prestadores ativos</div>
+        </div>
+        <div style="text-align: center;">
+          <div style="font-family: var(--font-display); font-size: 1.8rem; font-weight: 800; color: var(--accent);">18k</div>
+          <div style="font-size: 0.8rem; color: #8B8E96;">serviços fechados</div>
+        </div>
+        <div style="text-align: center;">
+          <div style="font-family: var(--font-display); font-size: 1.8rem; font-weight: 800; color: var(--accent);">4.8</div>
+          <div style="font-size: 0.8rem; color: #8B8E96;">avaliação média</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MANIFESTO / O X -->
+  <section class="manifesto">
+    <div class="container">
+      <h2>Não somos apenas um app.<br>Somos o <span class="text-gradient-x">X</span> da questão.</h2>
+      
+      <div class="x-diagram">
+        <div class="x-row">
+          <span class="text-accent">🟢 QUEM PRECISA</span>
+          <span class="text-alert">🔴 QUEM RESOLVE</span>
+        </div>
+        <div style="font-size: 1.5rem; color: var(--ink-faint);">\ /</div>
+        <div class="x-center text-gradient-x">X</div>
+        <div style="font-size: 1.5rem; color: var(--ink-faint);">/ \</div>
+        <div class="x-row" style="justify-content: center;">
+          <span style="color: var(--ink);">PROBLEMA RESOLVIDO</span>
+        </div>
+      </div>
+      
+      <p class="x-desc">
+        "Bizu" é a dica que te salva. "Xo" é o encontro. Bizuxo é o lugar onde todo problema vira solução, porque sempre existe alguém com o bizu certo.
+      </p>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section id="como-funciona" class="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <h2>Como funciona o encontro?</h2>
+        <p>Dois caminhos, uma mesma plataforma simples e direta.</p>
+      </div>
+
+      <div class="dual-grid">
+        <!-- Lado Cliente -->
+        <div class="path-card cliente" id="para-clientes">
+          <h3 class="text-accent">Para Clientes</h3>
+          <p class="subtitle">Seu problema encontrou solução.</p>
+          
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-text">
+              <h4>Descreva o bizu</h4>
+              <p>Diga o que precisa em poucas palavras. Ex: "Torneira vazando na cozinha".</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-text">
+              <h4>Receba propostas</h4>
+              <p>Profissionais avaliados perto de você enviam orçamentos rápidos.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-text">
+              <h4>Resolva e avalie</h4>
+              <p>Escolha o melhor, pague com segurança pelo app e avalie o serviço.</p>
+            </div>
+          </div>
+          <a href="index.html" class="btn btn-accent" style="width: 100%; margin-top: 16px;">Encontrar Profissional</a>
+        </div>
+
+        <!-- Lado Prestador -->
+        <div class="path-card prestador" id="para-prestadores">
+          <h3 class="text-alert">Para Prestadores</h3>
+          <p class="subtitle">Seu talento encontra demanda.</p>
+          
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-text">
+              <h4>Crie seu perfil</h4>
+              <p>Mostre suas habilidades, fotos de trabalhos e defina sua região de atendimento.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-text">
+              <h4>Receba demandas</h4>
+              <p>Sem gastar com anúncios. Os pedidos chegam até você no horário que estiver livre.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-text">
+              <h4>Construa reputação</h4>
+              <p>Quanto mais boas avaliações, mais você aparece como "Prestador Destaque".</p>
+            </div>
+          </div>
+          <a href="index.html" class="btn btn-alert" style="width: 100%; margin-top: 16px;">Começar a Atender</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEPOIMENTOS -->
+  <section class="testimonials">
+    <div class="container">
+      <h2>Quem usa, já resolveu.</h2>
+      <div class="testi-grid">
+        <div class="testi-card">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-text">"Precisei de um eletricista às 20h. Em 15 minutos o Carlos já estava aqui. Muito melhor do que ficar pedindo indicação em grupo de condomínio."</p>
+          <div class="testi-author">
+            <div class="testi-avatar">AM</div>
+            <div>
+              <div class="testi-name">Ana Maria</div>
+              <div class="testi-role">Cliente · Asa Norte, DF</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testi-card">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-text">"Encho meus horários vagos da tarde com pequenos reparos. O app é direto, sem burocracia, e o dinheiro cai na conta na hora."</p>
+          <div class="testi-author">
+            <div class="testi-avatar" style="background: var(--alert-soft); color: var(--alert-ink);">RJ</div>
+            <div>
+              <div class="testi-name">Roberto J.</div>
+              <div class="testi-role">Prestador · Marido de Aluguel</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testi-card">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-text">"A administração do nosso condomínio fechou parceria com o Bizuxo. A taxa de reclamação de moradores sobre serviços caiu 80%."</p>
+          <div class="testi-author">
+            <div class="testi-avatar">FS</div>
+            <div>
+              <div class="testi-name">Fernanda S.</div>
+              <div class="testi-role">Síndica Profissional</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="final-cta">
+    <div class="container">
+      <h2>Tem problema? <span class="text-gradient-x">Tem Bizuxo.</span></h2>
+      <p>Junte-se a milhares de pessoas que já pararam de procurar e começaram a resolver.</p>
+      <div class="hero-actions">
+        <a href="index.html" class="btn btn-dark" style="background: var(--ink); color: #fff;">Criar conta grátis agora</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">Bizu<span>xo</span></div>
+          <p style="max-width: 280px; line-height: 1.6;">
+            O ponto de encontro entre quem precisa e quem resolve. Feito com 💚 e ❤️ no Brasil.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Plataforma</h4>
+          <ul>
+            <li><a href="#">Como funciona</a></li>
+            <li><a href="#">Para condomínios</a></li>
+            <li><a href="#">Segurança</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Empresa</h4>
+          <ul>
+            <li><a href="#">Sobre nós</a></li>
+          
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Suporte</h4>
+          <ul>
+            <li><a href="#">Central de Ajuda</a></li>
+            <li><a href="termos.html">Termos de Uso</a></li>
+            <li><a href="#">Privacidade</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Bizuxo Tecnologia Ltda. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

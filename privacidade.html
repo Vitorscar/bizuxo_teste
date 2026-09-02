@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Política de Privacidade · Bizuxo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  body { background: var(--surface-soft); }
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  .text-accent { color: var(--accent); }
+
+  .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(11,11,13,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.08); padding: 16px 0; }
+  .nav-inner { display: flex; justify-content: space-between; align-items: center; }
+  .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; color: #fff; }
+  .nav-logo span { color: var(--accent); }
+  .nav-cta { background: var(--surface); color: var(--ink); padding: 10px 20px; border-radius: 100px; font-weight: 700; font-size: 0.85rem; }
+
+  .page-hero { background: var(--bg-app); color: #fff; padding: 140px 0 80px; text-align: center; }
+  .page-hero h1 { font-size: clamp(2rem, 4vw, 2.8rem); max-width: 16ch; margin: 0 auto 16px; }
+  .page-hero p { color: #B6B8BE; font-size: 1rem; }
+  .page-hero .meta { color: #8B8E96; font-size: 0.85rem; margin-top: 20px; }
+  .breadcrumb { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; font-size: 0.85rem; color: #8B8E96; }
+
+  .layout { display: grid; grid-template-columns: 260px 1fr; gap: 56px; padding: 60px 0; }
+  .toc {
+    position: sticky; top: 100px; align-self: start;
+    background: var(--surface); padding: 24px; border-radius: var(--radius-md);
+    max-height: calc(100vh - 120px); overflow-y: auto;
+  }
+  .toc h4 { font-size: 0.85rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 14px; }
+  .toc ul { list-style: none; }
+  .toc li { margin-bottom: 8px; }
+  .toc a { color: var(--ink); font-size: 0.88rem; display: block; padding: 4px 0; transition: color 0.2s; }
+  .toc a:hover { color: var(--accent); }
+
+  .policy-content { background: var(--surface); padding: 40px; border-radius: var(--radius-lg); }
+  .policy-content h2 { font-size: 1.5rem; margin: 40px 0 16px; color: var(--ink); scroll-margin-top: 100px; }
+  .policy-content h2:first-of-type { margin-top: 0; }
+  .policy-content h3 { font-size: 1.1rem; margin: 28px 0 12px; }
+  .policy-content p { font-size: 0.95rem; line-height: 1.7; color: var(--ink); margin-bottom: 16px; }
+  .policy-content ul { margin: 0 0 16px 20px; font-size: 0.95rem; line-height: 1.7; color: var(--ink); }
+  .policy-content li { margin-bottom: 8px; }
+  .policy-content strong { color: var(--ink); }
+  .policy-content .highlight {
+    background: var(--accent-soft); border-left: 3px solid var(--accent);
+    padding: 16px 20px; border-radius: var(--radius-sm); margin: 20px 0;
+  }
+
+  .dpo-box {
+    background: var(--surface-soft); padding: 24px; border-radius: var(--radius-md);
+    margin-top: 32px; border: 1px solid var(--border);
+  }
+  .dpo-box h4 { font-size: 1rem; margin-bottom: 12px; }
+  .dpo-box p { font-size: 0.9rem; color: var(--ink-soft); margin-bottom: 8px; }
+  .dpo-box a { color: var(--accent); font-weight: 600; }
+
+  footer { background: var(--bg-app); color: #8B8E96; padding: 60px 0 30px; font-size: 0.85rem; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+  .footer-brand { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; color: #fff; margin-bottom: 12px; }
+  .footer-brand span { color: var(--accent); }
+  .footer-col h4 { color: #fff; font-size: 0.9rem; margin-bottom: 16px; }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 10px; }
+  .footer-col a { color: #8B8E96; }
+  .footer-col a:hover { color: var(--accent); }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px; text-align: center; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; gap: 32px; padding: 40px 0; }
+    .toc { position: static; max-height: none; }
+    .policy-content { padding: 28px 22px; }
+    .footer-grid { grid-template-columns: 1fr; gap: 32px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="landing.html" class="nav-logo">Bizu<span>xo</span></a>
+      <a href="index.html" class="nav-cta">Entrar no App</a>
+    </div>
+  </nav>
+
+  <header class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="landing.html">Início</a> / <span>Privacidade</span></div>
+      <h1>Política de <span class="text-accent">Privacidade</span></h1>
+      <p>Seus dados são seus. Aqui explicamos como cuidamos deles.</p>
+      <div class="meta">Última atualização: 1 de setembro de 2026</div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="layout">
+      <aside class="toc">
+        <h4>Nesta página</h4>
+        <ul>
+          <li><a href="#intro">1. Introdução</a></li>
+          <li><a href="#coletados">2. Dados coletados</a></li>
+          <li><a href="#finalidades">3. Como usamos</a></li>
+          <li><a href="#compartilhamento">4. Compartilhamento</a></li>
+          <li><a href="#cookies">5. Cookies</a></li>
+          <li><a href="#seguranca">6. Segurança</a></li>
+          <li><a href="#direitos">7. Seus direitos (LGPD)</a></li>
+          <li><a href="#retencao">8. Retenção</a></li>
+          <li><a href="#menores">9. Menores de idade</a></li>
+          <li><a href="#mudancas">10. Mudanças</a></li>
+          <li><a href="#contato">11. Contato e DPO</a></li>
+        </ul>
+      </aside>
+
+      <main class="policy-content">
+        <h2 id="intro">1. Introdução</h2>
+        <p>A <strong>Bizuxo Tecnologia Ltda.</strong> ("Bizuxo", "nós", "nosso") respeita sua privacidade e está comprometida em proteger seus dados pessoais em conformidade com a Lei Geral de Proteção de Dados (LGPD - Lei nº 13.709/2018) e demais legislações aplicáveis.</p>
+        <p>Esta Política de Privacidade explica, de forma clara e transparente, quais dados coletamos, por que os coletamos, como os usamos e quais são os seus direitos.</p>
+
+        <h2 id="coletados">2. Quais dados coletamos</h2>
+        <h3>Dados que você nos fornece</h3>
+        <ul>
+          <li><strong>Cadastro:</strong> nome completo, e-mail, telefone, CPF/CNPJ, endereço.</li>
+          <li><strong>Perfil de prestador:</strong> categorias de serviço, região de atendimento, fotos de trabalhos, CNPJ, antecedentes.</li>
+          <li><strong>Pagamentos:</strong> dados de cartão (processados por parceiros certificados), chave Pix, conta bancária.</li>
+          <li><strong>Comunicações:</strong> mensagens trocadas no chat, avaliações, reclamações.</li>
+        </ul>
+        <h3>Dados coletados automaticamente</h3>
+        <ul>
+          <li>Endereço IP, tipo de dispositivo, sistema operacional, navegador.</li>
+          <li>Localização aproximada (com sua permissão, para mostrar prestadores próximos).</li>
+          <li>Dados de uso: páginas visitadas, tempo de sessão, cliques.</li>
+          <li>Logs de acesso e erros técnicos.</li>
+        </ul>
+
+        <h2 id="finalidades">3. Como usamos seus dados</h2>
+        <p>Utilizamos seus dados para as seguintes finalidades:</p>
+        <ul>
+          <li>Permitir o uso da plataforma (autenticação, matchmaking cliente-prestador).</li>
+          <li>Processar pagamentos e emitir notas fiscais.</li>
+          <li>Verificar identidade e prevenir fraudes.</li>
+          <li>Comunicar atualizações, novidades e promoções (se você consentir).</li>
+          <li>Melhorar nossos produtos por meio de análises agregadas e anônimas.</li>
+          <li>Cumprir obrigações legais e regulatórias.</li>
+        </ul>
+
+        <h2 id="compartilhamento">4. Com quem compartilhamos</h2>
+        <p><strong>Não vendemos seus dados.</strong> Compartilhamos apenas nas seguintes situações:</p>
+        <ul>
+          <li><strong>Entre cliente e prestador:</strong> quando você contrata ou é contratado, dados essenciais para a realização do serviço são compartilhados.</li>
+          <li><strong>Parceiros operacionais:</strong> processadores de pagamento, serviços de e-mail, hospedagem em nuvem — todos sob contrato com cláusulas de proteção de dados.</li>
+          <li><strong>Obrigação legal:</strong> quando requisitado por autoridade judicial ou administrativa competente.</li>
+          <li><strong>Proteção de direitos:</strong> em casos de fraude, abuso ou violação dos Termos de Uso.</li>
+        </ul>
+
+        <h2 id="cookies">5. Cookies e tecnologias similares</h2>
+        <p>Utilizamos cookies essenciais para o funcionamento da plataforma e cookies analíticos (com seu consentimento) para entender como você usa o Bizuxo.</p>
+        <div class="highlight">
+          Você pode gerenciar suas preferências de cookies a qualquer momento nas configurações do seu navegador ou no nosso <strong>banner de consentimento</strong>.
+        </div>
+
+        <h2 id="seguranca">6. Como protegemos seus dados</h2>
+        <p>Adotamos medidas técnicas e administrativas rigorosas:</p>
+        <ul>
+          <li>Criptografia TLS 1.3 em todas as comunicações.</li>
+          <li>Dados sensíveis armazenados criptografados em repouso.</li>
+          <li>Acesso restrito a colaboradores autorizados, com autenticação multifator.</li>
+          <li>Testes de segurança e pen-tests trimestrais.</li>
+          <li>Treinamento contínuo da equipe em LGPD.</li>
+        </ul>
+
+        <h2 id="direitos">7. Seus direitos (LGPD)</h2>
+        <p>Como titular de dados, você tem direito a:</p>
+        <ul>
+          <li><strong>Confirmação e acesso:</strong> saber se tratamos seus dados e obter uma cópia.</li>
+          <li><strong>Correção:</strong> atualizar dados incompletos, inexatos ou desatualizados.</li>
+          <li><strong>Anonimização, bloqueio ou eliminação:</strong> de dados desnecessários ou tratados em desconformidade.</li>
+          <li><strong>Portabilidade:</strong> transferir seus dados a outro fornecedor de serviço.</li>
+          <li><strong>Eliminação:</strong> dos dados tratados com seu consentimento (quando aplicável).</li>
+          <li><strong>Revogação do consentimento:</strong> a qualquer momento.</li>
+          <li><strong>Oposição:</strong> ao tratamento quando descumprida a LGPD.</li>
+        </ul>
+        <p>Para exercer qualquer direito, basta entrar em contato pelos canais indicados na seção 11.</p>
+
+        <h2 id="retencao">8. Retenção de dados</h2>
+        <p>Mantemos seus dados enquanto sua conta estiver ativa. Após o encerramento, retemos por até <strong>5 anos</strong> para cumprimento de obrigações legais (como contábeis e fiscais) ou para defesa em processos judiciais. Depois disso, os dados são excluídos ou anonimizados de forma irreversível.</p>
+
+        <h2 id="menores">9. Menores de idade</h2>
+        <p>O Bizuxo é destinado a pessoas com <strong>18 anos ou mais</strong>. Não coletamos intencionalmente dados de menores de idade. Se você é responsável por um menor que criou uma conta, entre em contato para que possamos excluí-la.</p>
+
+        <h2 id="mudancas">10. Mudanças nesta política</h2>
+        <p>Podemos atualizar esta Política periodicamente. Quando houver mudanças relevantes, comunicaremos por e-mail ou notificação no app. A data da última atualização está no topo desta página.</p>
+
+        <h2 id="contato">11. Contato e DPO</h2>
+        <p>Para exercer seus direitos, tirar dúvidas sobre privacidade ou falar com nosso <strong>Encarregado de Proteção de Dados (DPO)</strong>:</p>
+
+        <div class="dpo-box">
+          <h4>🛡️ Encarregado de Proteção de Dados</h4>
+          <p><strong>Nome:</strong> Equipe de Privacidade Bizuxo</p>
+          <p><strong>E-mail:</strong> <a href="mailto:privacidade@bizuxo.com.br">privacidade@bizuxo.com.br</a></p>
+          <p><strong>Endereço:</strong> Brasília/DF, Brasil</p>
+          <p style="margin-top: 12px; font-size: 0.85rem;">Respondemos todas as solicitações em até <strong>15 dias úteis</strong>, conforme prazos da LGPD.</p>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">Bizu<span>xo</span></div>
+          <p style="max-width: 280px; line-height: 1.6;">O ponto de encontro entre quem precisa e quem resolve. Feito com 💚 e ❤️ no Brasil.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Plataforma</h4>
+          <ul>
+            <li><a href="como-funciona.html">Como funciona</a></li>
+            <li><a href="condominios.html">Para condomínios</a></li>
+            <li><a href="seguranca.html">Segurança</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Empresa</h4>
+          <ul>
+            <li><a href="sobre-nos.html">Sobre nós</a></li>
+           
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Suporte</h4>
+          <ul>
+            <li><a href="central-ajuda.html">Central de Ajuda</a></li>
+            <li><a href="#">Termos de Uso</a></li>
+            <li><a href="privacidade.html">Privacidade</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom"><p>&copy; 2026 Bizuxo Tecnologia Ltda. Todos os direitos reservados.</p></div>
+    </div>
+  </footer>
+
+</body>
+</html>
