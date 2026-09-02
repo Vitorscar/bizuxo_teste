@@ -14,7 +14,6 @@
      Complementos visuais para o Dashboard
      ============================================================ */
   
-  /* Grid de Estatísticas */
   .stat-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -53,7 +52,7 @@
   }
 
   /* ============================================================
-     NOVA SEÇÃO: Solicitação Rápida (Ícones)
+     NOVA SEÇÃO: Solicitação Rápida por Categoria
      ============================================================ */
   .quick-services-section { margin-bottom: 32px; }
   .section-subtitle {
@@ -95,7 +94,6 @@
     line-height: 1.2;
   }
 
-  /* Cabeçalho de Seção */
   .section-heading {
     display: flex;
     justify-content: space-between;
@@ -120,7 +118,6 @@
   }
   .section-heading a:hover { opacity: 0.7; }
 
-  /* Banner CTA Premium */
   .cta-banner {
     background: linear-gradient(135deg, var(--bg-app) 0%, #151619 100%);
     color: #fff;
@@ -139,11 +136,11 @@
   .cta-banner .btn { width: auto; padding: 12px 24px; flex-shrink: 0; }
 
   /* ============================================================
-     Toast Notifications (Alertas Elegantes)
+     TOAST NOTIFICATIONS (Alertas Elegantes)
      ============================================================ */
   .toast-container {
     position: fixed;
-    bottom: 24px;
+    bottom: 90px; /* Subido para não ficar atrás da mobile-nav */
     right: 24px;
     z-index: 9999;
     display: flex;
@@ -165,20 +162,79 @@
     min-width: 280px;
     border-left: 4px solid var(--accent);
   }
-  .toast.error { border-left-color: var(--alert); }
   @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
   @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(120%); opacity: 0; } }
 
-  /* Ajuste para Mobile */
+  /* ============================================================
+     📱 BARRA DE NAVEGAÇÃO MOBILE (Estilo App)
+     ============================================================ */
+  .mobile-nav {
+    display: none; /* Escondido no PC por padrão */
+  }
+
   @media (max-width: 768px) {
+    /* Esconde a sidebar lateral no celular */
+    .sidebar { display: none; }
+    
+    /* Ajusta o grid principal para ocupar 100% da largura */
+    .app-shell { grid-template-columns: 1fr; }
+    .main-content { padding: 20px 16px 90px 16px !important; } /* 90px de padding embaixo para a barra não cobrir conteúdo */
+
+    /* Exibe e estiliza a barra inferior */
+    .mobile-nav {
+      display: flex;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 65px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      justify-content: space-around;
+      align-items: center;
+      z-index: 9999;
+      padding-bottom: env(safe-area-inset-bottom); /* Respeita a barra do iPhone */
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+    }
+
+    .mobile-nav a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: var(--ink-faint);
+      font-size: 0.7rem;
+      font-weight: 600;
+      gap: 4px;
+      flex: 1;
+      height: 100%;
+      transition: color 0.2s, transform 0.1s;
+    }
+
+    .mobile-nav a .nav-icon {
+      font-size: 1.4rem;
+      line-height: 1;
+    }
+
+    .mobile-nav a:active {
+      transform: scale(0.9);
+    }
+
+    .mobile-nav a.active {
+      color: var(--accent); /* Cor verde do Bizuxo quando ativo */
+    }
+
+    /* Ajustes responsivos dos cards */
     .stat-grid { grid-template-columns: 1fr 1fr; }
     .quick-services-grid { grid-template-columns: repeat(2, 1fr); }
     .cta-banner { flex-direction: column; text-align: center; padding: 24px 20px; }
     .cta-banner p { max-width: 100%; }
     .cta-banner .btn { width: 100%; }
-    .toast-container { bottom: 16px; right: 16px; left: 16px; }
+    .toast-container { bottom: 80px; right: 16px; left: 16px; }
     .toast { min-width: auto; width: 100%; }
   }
+
   @media (max-width: 480px) {
     .stat-grid { grid-template-columns: 1fr; }
   }
@@ -190,26 +246,16 @@
 <body>
 
 <div class="app-shell">
-  <!-- Sidebar -->
+  <!-- Sidebar (VISÍVEL APENAS NO PC) -->
   <aside class="sidebar">
     <div class="brand" style="margin-bottom: 8px;">Bizu<span>xo</span></div>
     <nav class="sidebar-nav">
-      <a class="nav-item active" href="dashboard-cliente.html">
-        <span class="nav-icon">▤</span> Visão Geral
-      </a>
-      <a class="nav-item" href="minhas-demandas.html">
-        <span class="nav-icon">✉</span> Minhas Demandas
-      </a>
-      <a class="nav-item" href="servicos-contratados.html">
-        <span class="nav-icon">🛠️</span> Serviços Contratados
-      </a>
-      <a class="nav-item" href="meu-perfil-cliente.html">
-        <span class="nav-icon">⚙️</span> Meus Dados
-      </a>
+      <a class="nav-item active" href="dashboard-cliente.html"><span class="nav-icon">▤</span> Visão Geral</a>
+      <a class="nav-item" href="minhas-demandas.html"><span class="nav-icon">✉</span> Minhas Demandas</a>
+      <a class="nav-item" href="servicos-contratados.html"><span class="nav-icon">🛠️</span> Serviços Contratados</a>
+      <a class="nav-item" href="meu-perfil-cliente.html"><span class="nav-icon">⚙️</span> Meus Dados</a>
       <div style="flex:1"></div>
-      <a class="nav-item" href="../index.html" style="color: var(--alert); margin-top: auto;">
-        <span class="nav-icon">🚪</span> Sair
-      </a>
+      <a class="nav-item" href="../index.html" style="color: var(--alert); margin-top: auto;"><span class="nav-icon">🚪</span> Sair</a>
     </nav>
     <div class="sidebar-foot">
       <div style="font-weight: 600; color: #fff; margin-bottom: 4px;">Olá, Maria</div>
@@ -246,35 +292,27 @@
       </div>
     </div>
 
-    <!-- ============================================================
-         NOVA SEÇÃO: Solicitação Rápida por Categoria
-         ============================================================ -->
+    <!-- Solicitação Rápida -->
     <div class="quick-services-section">
       <h3 class="section-subtitle">⚡ Solicitar serviço rápido</h3>
       <div class="quick-services-grid">
         <div class="quick-service-card" onclick="solicitarServicoRapido('Eletricista', '⚡')">
-          <span class="icon">⚡</span>
-          <span class="label">Eletricista</span>
+          <span class="icon">⚡</span><span class="label">Eletricista</span>
         </div>
         <div class="quick-service-card" onclick="solicitarServicoRapido('Diarista', '🧹')">
-          <span class="icon">🧹</span>
-          <span class="label">Diarista</span>
+          <span class="icon">🧹</span><span class="label">Diarista</span>
         </div>
         <div class="quick-service-card" onclick="solicitarServicoRapido('Manicure', '💅')">
-          <span class="icon">💅</span>
-          <span class="label">Manicure</span>
+          <span class="icon">💅</span><span class="label">Manicure</span>
         </div>
         <div class="quick-service-card" onclick="solicitarServicoRapido('Chaveiro', '🔑')">
-          <span class="icon">🔑</span>
-          <span class="label">Chaveiro</span>
+          <span class="icon">🔑</span><span class="label">Chaveiro</span>
         </div>
         <div class="quick-service-card" onclick="solicitarServicoRapido('Marido de Aluguel', '🛠️')">
-          <span class="icon">🛠️</span>
-          <span class="label">Marido de Aluguel</span>
+          <span class="icon">🛠️</span><span class="label">Marido de Aluguel</span>
         </div>
         <div class="quick-service-card" onclick="solicitarServicoRapido('Encanador', '🚿')">
-          <span class="icon">🚿</span>
-          <span class="label">Encanador</span>
+          <span class="icon">🚿</span><span class="label">Encanador</span>
         </div>
       </div>
     </div>
@@ -293,42 +331,51 @@
       <h2>Demandas recentes</h2>
       <a href="minhas-demandas.html">ver todas →</a>
     </div>
-    <div id="demandasRecentes">
-      <!-- Preenchido via JS -->
-    </div>
+    <div id="demandasRecentes"></div>
 
     <!-- Lista: Serviços em Andamento -->
     <div class="section-heading">
       <h2>Serviços em andamento</h2>
       <a href="servicos-contratados.html">ver todos →</a>
     </div>
-    <div id="servicosAndamento">
-      <!-- Preenchido via JS -->
-    </div>
-
+    <div id="servicosAndamento"></div>
   </main>
 </div>
 
-<script>
-  // ============================================================
-  // LÓGICA DE SOLICITAÇÃO RÁPIDA (ALERTA A PRESTADORES)
-  // ============================================================
-  function solicitarServicoRapido(categoria, icone) {
-    // 1. Feedback imediato de que o sistema está trabalhando
-    showToast(`${icone} Buscando ${categoria}s na sua região (Águas Claras, DF)...`, 'info');
+<!-- ============================================================
+     📱 BARRA DE NAVEGAÇÃO INFERIOR (VISÍVEL APENAS NO CELULAR)
+     ============================================================ -->
+<nav class="mobile-nav">
+  <a href="dashboard-cliente.html" class="active">
+    <span class="nav-icon">▤</span>
+    <span>Início</span>
+  </a>
+  <a href="minhas-demandas.html">
+    <span class="nav-icon">✉</span>
+    <span>Demandas</span>
+  </a>
+  <a href="servicos-contratados.html">
+    <span class="nav-icon">🛠️</span>
+    <span>Serviços</span>
+  </a>
+  <a href="meu-perfil-cliente.html">
+    <span class="nav-icon">⚙️</span>
+    <span>Perfil</span>
+  </a>
+</nav>
 
-    // 2. Simula o tempo de processamento e envio de push notification para os prestadores
+<script>
+  // Lógica de Solicitação Rápida
+  function solicitarServicoRapido(categoria, icone) {
+    showToast(`${icone} Buscando ${categoria}s na sua região (Águas Claras, DF)...`, 'info');
     setTimeout(() => {
-      const qtdPrestadores = Math.floor(Math.random() * 4) + 2; // Simula entre 2 e 5 prestadores
-      showToast(`✅ Sucesso! O alerta foi enviado para ${qtdPrestadores} ${categoria}s próximos. Eles entrarão em contato em breve.`, 'success');
-      
-      // Opcional: Atualizar estatística visualmente
+      const qtdPrestadores = Math.floor(Math.random() * 4) + 2;
+      showToast(`✅ Sucesso! Alerta enviado para ${qtdPrestadores} ${categoria}s próximos.`, 'success');
       const statAtivas = document.getElementById('statAtivas');
       statAtivas.textContent = parseInt(statAtivas.textContent) + 1;
     }, 1500);
   }
 
-  // Sistema de Notificações Toast (Substituto elegante do alert())
   function showToast(message, type = 'info') {
     let container = document.getElementById('toastContainer');
     if (!container) {
@@ -337,89 +384,57 @@
       container.className = 'toast-container';
       document.body.appendChild(container);
     }
-
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     toast.innerHTML = `<span>${message}</span>`;
     container.appendChild(toast);
-
-    // Remove o toast após 4 segundos com animação de saída
     setTimeout(() => {
       toast.style.animation = 'slideOut 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards';
-      setTimeout(() => {
-        if (toast.parentNode) toast.parentNode.removeChild(toast);
-      }, 400);
+      setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 400);
     }, 4000);
   }
 
-  // ============================================================
-  // DADOS SIMULADOS E RENDERIZAÇÃO (Mantidos do seu código)
-  // ============================================================
+  // Dados e Renderização
   const DEMANDS = [
     { id: 823, title: "Instalação de chuveiro elétrico", loc: "Águas Claras", date: "27/08", status: "recebendo", statusLabel: "Recebendo propostas", proposals: 3 },
     { id: 819, title: "Revisão de disjuntor", loc: "Águas Claras", date: "25/08", status: "selecionado", statusLabel: "Prestador selecionado", proposals: 2 },
   ];
-
   const SERVICES = [
     { id: 1088, title: "Instalação elétrica — cômodo extra", provider: "Carlos Silva", avatar: "👨‍🔧", loc: "Águas Claras", date: "28/08", value: "R$ 250,00", status: "andamento", statusLabel: "Em andamento" },
   ];
 
-  const activeDemands = DEMANDS.filter(d => d.status !== 'concluido' && d.status !== 'cancelado').length;
-  const totalProposals = DEMANDS.reduce((sum, d) => sum + (d.proposals || 0), 0);
-  const completedServices = 4;
-
-  document.getElementById('statAtivas').textContent = activeDemands;
-  document.getElementById('statPropostas').textContent = totalProposals;
-  document.getElementById('statConcluidos').textContent = completedServices;
+  document.getElementById('statAtivas').textContent = DEMANDS.filter(d => d.status !== 'concluido' && d.status !== 'cancelado').length;
+  document.getElementById('statPropostas').textContent = DEMANDS.reduce((sum, d) => sum + (d.proposals || 0), 0);
+  document.getElementById('statConcluidos').textContent = 4;
 
   const demandasEl = document.getElementById('demandasRecentes');
-  if (DEMANDS.length === 0) {
-    demandasEl.innerHTML = `<div class="empty-state"><h3>Nenhuma demanda recente</h3><p>Publique sua primeira demanda para começar.</p></div>`;
-  } else {
-    DEMANDS.forEach(d => {
-      const el = document.createElement('a');
-      el.href = `detalhe-demanda.html?id=${d.id}`;
-      el.className = 'list-row';
-      el.innerHTML = `
-        <div class="avatar avatar-md" style="background: var(--surface-soft);">✉️</div>
-        <div class="list-row-main">
-          <div class="list-row-title">${d.title}</div>
-          <div class="list-row-sub">
-            <span>📍 ${d.loc}</span><span class="sep">·</span><span>DEM #${d.id}</span><span class="sep">·</span><span>${d.proposals} proposta${d.proposals !== 1 ? 's' : ''}</span>
-          </div>
-        </div>
-        <div class="list-row-side">
-          <span class="status-badge status-${d.status}">${d.statusLabel}</span>
-          <span class="list-row-date">${d.date}</span>
-        </div>`;
-      demandasEl.appendChild(el);
-    });
-  }
+  demandasEl.innerHTML = DEMANDS.length === 0 ? `<div class="empty-state"><h3>Nenhuma demanda recente</h3></div>` : DEMANDS.map(d => `
+    <a href="detalhe-demanda.html?id=${d.id}" class="list-row">
+      <div class="avatar avatar-md" style="background: var(--surface-soft);">✉️</div>
+      <div class="list-row-main">
+        <div class="list-row-title">${d.title}</div>
+        <div class="list-row-sub"><span>📍 ${d.loc}</span><span class="sep">·</span><span>DEM #${d.id}</span><span class="sep">·</span><span>${d.proposals} proposta${d.proposals !== 1 ? 's' : ''}</span></div>
+      </div>
+      <div class="list-row-side">
+        <span class="status-badge status-${d.status}">${d.statusLabel}</span>
+        <span class="list-row-date">${d.date}</span>
+      </div>
+    </a>`).join('');
 
   const servicosEl = document.getElementById('servicosAndamento');
-  if (SERVICES.length === 0) {
-    servicosEl.innerHTML = `<div class="empty-state"><h3>Nenhum serviço em andamento</h3><p>Seus serviços contratados aparecerão aqui.</p></div>`;
-  } else {
-    SERVICES.forEach(s => {
-      const el = document.createElement('a');
-      el.href = `acompanhar-servico.html?id=${s.id}`;
-      el.className = 'list-row';
-      el.innerHTML = `
-        <div class="avatar avatar-md" style="background: var(--accent-soft); color: var(--accent-ink); font-size: 1.2rem;">${s.avatar}</div>
-        <div class="list-row-main">
-          <div class="list-row-title">${s.title}</div>
-          <div class="list-row-sub">
-            <span>${s.provider}</span><span class="sep">·</span><span>📍 ${s.loc}</span>
-          </div>
-        </div>
-        <div class="list-row-side">
-          <span class="status-badge status-${s.status}">${s.statusLabel}</span>
-          <span class="list-row-value">${s.value}</span>
-          <span class="list-row-date">Prev: ${s.date}</span>
-        </div>`;
-      servicosEl.appendChild(el);
-    });
-  }
+  servicosEl.innerHTML = SERVICES.length === 0 ? `<div class="empty-state"><h3>Nenhum serviço em andamento</h3></div>` : SERVICES.map(s => `
+    <a href="acompanhar-servico.html?id=${s.id}" class="list-row">
+      <div class="avatar avatar-md" style="background: var(--accent-soft); color: var(--accent-ink); font-size: 1.2rem;">${s.avatar}</div>
+      <div class="list-row-main">
+        <div class="list-row-title">${s.title}</div>
+        <div class="list-row-sub"><span>${s.provider}</span><span class="sep">·</span><span>📍 ${s.loc}</span></div>
+      </div>
+      <div class="list-row-side">
+        <span class="status-badge status-${s.status}">${s.statusLabel}</span>
+        <span class="list-row-value">${s.value}</span>
+        <span class="list-row-date">Prev: ${s.date}</span>
+      </div>
+    </a>`).join('');
 </script>
 </body>
 </html>
