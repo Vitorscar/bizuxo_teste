@@ -7,8 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
-<!-- (Mantenha todo o seu <style> original aqui, ele está perfeito) -->
 <style>
+  /* (mantenha todo o CSS original) */
   .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 32px; }
   .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; display: flex; flex-direction: column; gap: 6px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
   .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(16, 17, 19, 0.06); border-color: var(--ink-faint); }
@@ -55,6 +55,7 @@
   .status-recebendo { background: var(--amber-soft); color: var(--amber); }
   .status-selecionado { background: var(--accent-soft); color: var(--accent-ink); }
   .status-andamento { background: var(--accent-soft); color: var(--accent-ink); }
+  .empty-state { text-align: center; padding: 30px 20px; color: var(--ink-faint); font-size: 0.9rem; }
 </style>
 </head>
 <body>
@@ -68,7 +69,7 @@
       <a class="nav-item" href="servicos-contratados.html"><span class="nav-icon">🛠️</span> Serviços Contratados</a>
       <a class="nav-item" href="meu-perfil-cliente.html"><span class="nav-icon">⚙️</span> Meus Dados</a>
       <div style="flex:1"></div>
-      <a class="nav-item" href="../index.html" style="color: var(--alert); margin-top: auto;"><span class="nav-icon">🚪</span> Sair</a>
+      <a class="nav-item" href="#" id="logoutBtn" style="color: var(--alert); margin-top: auto;"><span class="nav-icon">🚪</span> Sair</a>
     </nav>
     <div class="sidebar-foot">
       <div id="userName" style="font-weight: 600; color: #fff; margin-bottom: 4px;">Carregando...</div>
@@ -143,115 +144,220 @@
   <a href="meu-perfil-cliente.html" class="mobile-nav-item"><span class="nav-icon">⚙️</span><span>Perfil</span></a>
 </nav>
 
-<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase-cliente.js"></script>
 <script src="../js/auth.js"></script>
 
 <script>
+  // ==========================================
+  // ESTADO GLOBAL
+  // ==========================================
+  let currentProfileId = null; // ID do perfil (tabela profiles.id)
+
+  // ==========================================
+  // INICIALIZAÇÃO
+  // ==========================================
   async function init() {
-    const session = await supabase.auth.getSession();
-    if (!session.data.session) { window.location.href = '../index.html'; return; }
-    const userId = session.data.session.user.id;
-
-    // 1. Carregar perfil
-    const { data: profile } = await supabase.from('profiles').select('nome, cidade').eq('id', userId).single();
-    if (profile) {
-      document.getElementById('userName').textContent = `Olá, ${profile.nome.split(' ')[0]}`;
-      document.getElementById('userLoc').textContent = profile.cidade || 'Local não definido';
+    const supabase = window.supabaseClient;
+    if (!supabase) {
+      window.location.href = '../index.html';
+      return;
     }
 
-    // 2. Buscar Demandas
-    const { data: demands } = await supabase
-      .from('demands')
-      .select('id, titulo, cidade, created_at, status, proposals(count)')
-      .eq('client_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(3);
-
-    // 3. Buscar Ordens de Serviço
-    const { data: orders } = await supabase
-      .from('orders')
-      .select('id, titulo, valor, status, profiles!orders_provider_id_fkey(nome)')
-      .eq('client_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(3);
-
-    // 4. Calcular Estatísticas
-    const demandasAtivas = (demands || []).filter(d => d.status === 'aberta' || d.status === 'em_propostas').length;
-    const totalPropostas = (demands || []).reduce((sum, d) => sum + (d.proposals[0]?.count || 0), 0);
-    const servicosConcluidos = (orders || []).filter(o => o.status === 'concluido').length;
-
-    document.getElementById('statAtivas').textContent = demandasAtivas;
-    document.getElementById('statPropostas').textContent = totalPropostas;
-    document.getElementById('statConcluidos').textContent = servicosConcluidos;
-
-    if (totalPropostas > 0) {
-      const badge = document.getElementById('badgeDemandas');
-      badge.textContent = totalPropostas;
-      badge.style.display = 'flex';
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      window.location.href = '../index.html';
+      return;
     }
 
-    // 5. Renderizar Listas
-    renderDemandas(demands);
-    renderServicos(orders);
+    // Busca o perfil para obter o ID (client_id nas demandas)
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, full_name, city, uf')
+      .eq('user_id', session.user.id)
+      .single();
+
+    if (profileError || !profile) {
+      console.error('Erro ao carregar perfil:', profileError);
+      document.getElementById('userName').textContent = 'Olá, Usuário';
+      document.getElementById('userLoc').textContent = 'Local não definido';
+      return;
+    }
+
+    currentProfileId = profile.id;
+    document.getElementById('userName').textContent = `Olá, ${(profile.full_name || 'Usuário').split(' ')[0]}`;
+    const local = profile.city ? `${profile.city}${profile.uf ? ', ' + profile.uf : ''}` : 'Local não definido';
+    document.getElementById('userLoc').textContent = local;
+
+    // Carrega dados iniciais
+    await atualizarDashboard(supabase);
+
+    // Configura realtime
+    configurarRealtime(supabase);
   }
 
-  function renderDemandas(demands) {
+  // ==========================================
+  // ATUALIZAR DASHBOARD
+  // ==========================================
+  async function atualizarDashboard(supabase) {
+    try {
+      // Busca demandas do cliente usando currentProfileId
+      const { data: demandas, error: errDemandas } = await supabase
+        .from('demands')
+        .select('id, title, city, neighborhood, status, created_at')
+        .eq('client_id', currentProfileId)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (errDemandas) throw errDemandas;
+
+      // Conta propostas (se tabela existir)
+      let propostasCount = 0;
+      const demandasIds = (demandas || []).map(d => d.id);
+      if (demandasIds.length > 0) {
+        try {
+          const { count, error: errPropostas } = await supabase
+            .from('proposals')
+            .select('id', { count: 'exact', head: true })
+            .in('demand_id', demandasIds);
+          if (!errPropostas) propostasCount = count || 0;
+        } catch (e) {
+          console.warn('Tabela proposals não encontrada');
+        }
+      }
+
+      // Calcula estatísticas
+      const demandasAtivas = (demandas || []).filter(d =>
+        ['OPEN', 'ABERTA', 'EM_PROPOSTAS', 'EM_ANDAMENTO'].includes(d.status)
+      ).length;
+
+      const servicosConcluidos = (demandas || []).filter(d =>
+        ['CONCLUIDO', 'CONCLUIDA', 'COMPLETED', 'completed'].includes(d.status)
+      ).length;
+
+      // Atualiza UI
+      document.getElementById('statAtivas').textContent = demandasAtivas;
+      document.getElementById('statPropostas').textContent = propostasCount;
+      document.getElementById('statConcluidos').textContent = servicosConcluidos;
+
+      const badge = document.getElementById('badgeDemandas');
+      if (propostasCount > 0) {
+        badge.textContent = propostasCount;
+        badge.style.display = 'flex';
+      } else {
+        badge.style.display = 'none';
+      }
+
+      // Renderiza listas
+      renderDemandas(demandas || []);
+      renderServicosEmAndamento(demandas || []);
+
+    } catch (error) {
+      console.error('Erro ao atualizar dashboard:', error);
+      // Exibe listas vazias em caso de erro
+      renderDemandas([]);
+      renderServicosEmAndamento([]);
+    }
+  }
+
+  // ==========================================
+  // RENDERIZAÇÃO
+  // ==========================================
+  function renderDemandas(demandas) {
     const el = document.getElementById('demandasRecentes');
-    if (!demands || demands.length === 0) {
+    if (!demandas || demandas.length === 0) {
       el.innerHTML = `<div class="empty-state"><h3>Nenhuma demanda recente</h3></div>`;
       return;
     }
-    el.innerHTML = demands.map(d => {
-      const statusClass = d.status === 'em_propostas' ? 'status-recebendo' : 'status-selecionado';
-      const statusLabel = d.status === 'em_propostas' ? 'Recebendo propostas' : 'Em análise';
-      const date = new Date(d.created_at).toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
+
+    el.innerHTML = demandas.slice(0, 3).map(d => {
+      const statusMap = {
+        'OPEN': { class: 'status-recebendo', label: 'Aberta' },
+        'ABERTA': { class: 'status-recebendo', label: 'Aberta' },
+        'EM_PROPOSTAS': { class: 'status-recebendo', label: 'Recebendo propostas' },
+        'EM_ANDAMENTO': { class: 'status-andamento', label: 'Em andamento' },
+        'CONCLUIDO': { class: 'status-selecionado', label: 'Concluída' },
+        'CONCLUIDA': { class: 'status-selecionado', label: 'Concluída' }
+      };
+      const st = statusMap[d.status] || { class: 'status-recebendo', label: d.status };
+      const local = d.city || d.neighborhood || 'Local não definido';
+      const date = d.created_at ? new Date(d.created_at).toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}) : '';
       return `
-      <a href="detalhe-demanda.html?id=${d.id}" class="list-row">
-        <div class="avatar avatar-md" style="background: var(--surface-soft);">✉️</div>
+      <a href="detalhe-demanda-cliente.html?id=${d.id}" class="list-row">
+        <div class="avatar avatar-md" style="background: var(--surface-soft);">📋</div>
         <div class="list-row-main">
-          <div class="list-row-title">${d.titulo}</div>
-          <div class="list-row-sub">
-            <span>📍 ${d.cidade}</span><span class="sep">·</span><span>${date}</span>
-          </div>
+          <div class="list-row-title">${d.title}</div>
+          <div class="list-row-sub"><span>📍 ${local}</span><span class="sep">·</span><span>${date}</span></div>
         </div>
         <div class="list-row-side">
-          <span class="status-badge ${statusClass}">${statusLabel}</span>
-          <span class="list-row-date">${d.proposals[0]?.count || 0} propostas</span>
+          <span class="status-badge ${st.class}">${st.label}</span>
         </div>
       </a>`;
     }).join('');
   }
 
-  function renderServicos(orders) {
+  function renderServicosEmAndamento(demandas) {
     const el = document.getElementById('servicosAndamento');
-    if (!orders || orders.length === 0) {
+    const emAndamento = (demandas || []).filter(d =>
+      ['EM_ANDAMENTO', 'ANDAMENTO', 'OPEN'].includes(d.status)
+    ).slice(0, 3);
+
+    if (emAndamento.length === 0) {
       el.innerHTML = `<div class="empty-state"><h3>Nenhum serviço em andamento</h3></div>`;
       return;
     }
-    el.innerHTML = orders.map(o => {
-      const providerName = o.profiles?.nome || 'Prestador';
-      const valorFmt = o.valor ? `R$ ${parseFloat(o.valor).toFixed(2)}` : 'A combinar';
+
+    el.innerHTML = emAndamento.map(d => {
+      const local = d.city || d.neighborhood || 'Local não definido';
       return `
-      <a href="acompanhar-servico.html?id=${o.id}" class="list-row">
-        <div class="avatar avatar-md" style="background: var(--accent-soft); color: var(--accent-ink); font-size: 1.2rem;">🛠️</div>
+      <a href="detalhe-demanda-cliente.html?id=${d.id}" class="list-row">
+        <div class="avatar avatar-md" style="background: var(--accent-soft);">🛠️</div>
         <div class="list-row-main">
-          <div class="list-row-title">${o.titulo}</div>
-          <div class="list-row-sub"><span>👤 ${providerName}</span></div>
+          <div class="list-row-title">${d.title}</div>
+          <div class="list-row-sub"><span>📍 ${local}</span></div>
         </div>
         <div class="list-row-side">
-          <span class="status-badge status-andamento">${o.status === 'agendado' ? 'Agendado' : 'Em andamento'}</span>
-          <span class="list-row-value">${valorFmt}</span>
+          <span class="status-badge status-andamento">Em andamento</span>
         </div>
       </a>`;
     }).join('');
   }
 
+  // ==========================================
+  // REALTIME
+  // ==========================================
+  function configurarRealtime(supabase) {
+    supabase
+      .channel('dashboard-cliente')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'demands', filter: `client_id=eq.${currentProfileId}` },
+        () => atualizarDashboard(supabase)
+      )
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'proposals' },
+        () => atualizarDashboard(supabase)
+      )
+      .subscribe();
+    console.log('✅ Realtime configurado');
+  }
+
+  // ==========================================
+  // LOGOUT
+  // ==========================================
+  document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+    e.preventDefault();
+    await window.supabaseClient.auth.signOut();
+    window.location.href = '../index.html';
+  });
+
+  // ==========================================
+  // SERVIÇO RÁPIDO
+  // ==========================================
   function solicitarServicoRapido(categoria, icone) {
     window.location.href = `nova-demanda.html?categoria=${encodeURIComponent(categoria)}`;
   }
 
+  // Inicializar
   init();
 </script>
 <script src="../js/mobile-nav.js"></script>

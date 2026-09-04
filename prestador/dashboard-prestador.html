@@ -108,196 +108,88 @@
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase-cliente.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/cadastro.js"></script>
+<script src="../js/auth.js"></script>
+<!-- Supabase e Scripts Base -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-cliente.js"></script>
+<script src="../js/utils.js"></script>
 <script src="../js/auth.js"></script>
 
 <script>
-  async function init() {
-    const session = await supabase.auth.getSession();
-    if (!session.data.session) { window.location.href = '../index.html'; return; }
-    const userId = session.data.session.user.id;
-
-    // 1. Perfil
-    const { data: profile } = await supabase.from('profiles').select('nome, cidade').eq('id', userId).single();
-    if (profile) {
-      document.getElementById('userName').textContent = `Olá, ${profile.nome.split(' ')[0]}`;
-      document.getElementById('userLoc').textContent = profile.cidade || 'Local não definido';
-    }
-
-    // 2. Buscar Propostas do Prestador (com join na demanda para pegar título e cliente)
-    const { data: proposals } = await supabase
-      .from('proposals')
-      .select(`
-        id, valor, status, created_at,
-        demands(titulo, cidade, client_id, profiles!demands_client_id_fkey(nome))
-      `)
-      .eq('provider_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(3);
-
-    // 3. Buscar Ordens de Serviço do Prestador
-    const { data: orders } = await supabase
-      .from('orders')
-      .select(`
-        id, titulo, valor, status, created_at,
-        profiles!orders_client_id_fkey(nome)
-      `)
-      .eq('provider_id', userId)
-      .in('status', ['agendado', 'em_andamento'])
-      .order('created_at', { ascending: false })
-      .limit(3);
-
-    // 4. Buscar total de demandas disponíveis (mock inteligente: busca count na cidade do prestador ou geral)
-    const { count: countDisponiveis } = await supabase
-      .from('demands')
-      .select('*', { count: 'exact', head: true })
-      .in('status', ['aberta', 'em_propostas']);
-
-    // 5. Atualizar Estatísticas
-    document.getElementById('statDisponiveis').textContent = countDisponiveis || 0;
-    document.getElementById('statPropostas').textContent = (proposals || []).length;
-    document.getElementById('statAndamento').textContent = (orders || []).length;
-
-    // 6. Renderizar
-    renderPropostas(proposals);
-    renderServicos(orders);
-  }
-
-  function renderPropostas(proposals) {
-    const el = document.getElementById('propostasRecentes');
-    if (!proposals || proposals.length === 0) {
-      el.innerHTML = `<div class="empty-state"><h3>Nenhuma proposta recente</h3><p>Busque demandas disponíveis e envie sua primeira proposta.</p></div>`;
-      return;
-    }
-    el.innerHTML = proposals.map(p => {
-      const statusClass = p.status === 'aceita' ? 'status-aceita' : (p.status === 'pendente' ? 'status-pendente' : 'status-recusada');
-      const statusLabel = p.status === 'aceita' ? 'Proposta aceita' : (p.status === 'pendente' ? 'Aguardando cliente' : 'Recusada');
-      const date = new Date(p.created_at).toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
-      const clientName = p.demands?.profiles?.nome || 'Cliente';
-      const valorFmt = `R$ ${parseFloat(p.valor).toFixed(2)}`;
-
-      return `
-      <a href="detalhe-proposta.html?id=${p.id}" class="list-row">
-        <div class="avatar avatar-md" style="background: var(--surface-soft);">📨</div>
-        <div class="list-row-main">
-          <div class="list-row-title">${p.demands?.titulo || 'Demanda'}</div>
-          <div class="list-row-sub">
-            <span>👤 ${clientName}</span><span class="sep">·</span>
-            <span>📍 ${p.demands?.cidade || 'N/A'}</span><span class="sep">·</span>
-            <span>📅 ${date}</span>
-          </div>
-        </div>
-        <div class="list-row-side">
-          <span class="status-badge ${statusClass}">${statusLabel}</span>
-          <span class="list-row-value">${valorFmt}</span>
-        </div>
-      </a>`;
-    }).join('');
-  }
-
-  function renderServicos(orders) {
-    const el = document.getElementById('servicosAndamento');
-    if (!orders || orders.length === 0) {
-      el.innerHTML = `<div class="empty-state"><h3>Nenhum serviço em andamento</h3><p>Seus serviços ativos aparecerão aqui assim que uma proposta for aceita.</p></div>`;
-      return;
-    }
-    el.innerHTML = orders.map(o => {
-      const clientName = o.profiles?.nome || 'Cliente';
-      const valorFmt = o.valor ? `R$ ${parseFloat(o.valor).toFixed(2)}` : 'A combinar';
-      const date = new Date(o.created_at).toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
-      const statusLabel = o.status === 'agendado' ? 'Agendado' : 'Em andamento';
-
-      return `
-      <a href="acompanhar-servico-prestador.html?id=${o.id}" class="list-row">
-        <div class="avatar avatar-md" style="background: var(--accent-soft); color: var(--accent-ink); font-size: 1.2rem;">🛠️</div>
-        <div class="list-row-main">
-          <div class="list-row-title">${o.titulo}</div>
-          <div class="list-row-sub">
-            <span>👤 ${clientName}</span><span class="sep">·</span>
-            <span>📅 Prev: ${date}</span>
-          </div>
-        </div>
-        <div class="list-row-side">
-          <span class="status-badge status-andamento">${statusLabel}</span>
-          <span class="list-row-value">${valorFmt}</span>
-        </div>
-      </a>`;
-    }).join('');
-  }
-
-  init();
-</script>
-<script src="../js/mobile-nav.js"></script>
-<script>
+  // ==========================================
+  // FUNÇÃO ÚNICA DE INICIALIZAÇÃO (CORRIGIDA)
+  // ==========================================
   async function init() {
     console.log("🚀 1. Iniciando dashboard...");
     
-    // 1. Verificar Sessão
-    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-    console.log("🔑 2. Sessão:", sessionData, "Erro:", sessionError);
-    
-    if (!sessionData.session) {
-      console.warn("⚠️ Usuário não logado. Redirecionando...");
-      window.location.href = '../index.html';
+    // 1. Verifica se o cliente do Supabase está pronto
+    if (!window.supabaseClient) {
+      console.error("❌ Supabase Client não encontrado. Recarregando...");
+      window.location.reload();
       return;
     }
-    
-    const userId = sessionData.session.user.id;
-    console.log("✅ 3. User ID identificado:", userId);
 
     try {
-      // 2. Buscar Perfil
+      // 2. Busca a sessão usando a variável CORRETA
+      const { data: sessionData, error: sessionError } = await window.supabaseClient.auth.getSession();
+      
+      if (sessionError || !sessionData.session) {
+        console.warn("⚠️ Usuário não logado. Redirecionando...");
+        window.location.href = '../index.html';
+        return;
+      }
+      
+      const userId = sessionData.session.user.id;
+      console.log("✅ 3. User ID identificado:", userId);
+
+      // 3. Buscar Perfil (COM OS NOMES DE COLUNA CORRETOS DA ETAPA 1)
       console.log("📡 4. Buscando perfil do usuário...");
-      const { data: profile, error: profileError } = await supabase
+      const { data: profile, error: profileError } = await window.supabaseClient
         .from('profiles')
-        .select('nome, cidade, tipo')
-        .eq('id', userId)
+        .select('full_name, city, entity_type') // ✅ Nomes corretos
+        .eq('user_id', userId)                   // ✅ Chave correta
         .single();
       
-      console.log("👤 Perfil retornado:", profile, "Erro:", profileError);
-
       if (profile) {
         const nomeEl = document.getElementById('userName');
         const locEl = document.getElementById('userLoc');
-        if(nomeEl) nomeEl.textContent = `Olá, ${profile.nome.split(' ')[0]}`;
-        if(locEl) locEl.textContent = profile.cidade || 'Local não definido';
+        if(nomeEl) nomeEl.textContent = `Olá, ${profile.full_name ? profile.full_name.split(' ')[0] : 'Profissional'}`;
+        if(locEl) locEl.textContent = profile.city || 'Local não definido';
+        console.log("👤 Perfil carregado com sucesso");
+      } else {
+        console.warn("Perfil não encontrado:", profileError);
       }
 
-      // 3. Buscar Propostas (Exemplo Prestador)
-      console.log("📡 5. Buscando propostas...");
-      const { data: proposals, error: propError } = await supabase
-        .from('proposals')
-        .select(`
-          id, valor, status, created_at,
-          demands(titulo, cidade, client_id, profiles!demands_client_id_fkey(nome))
-        `)
-        .eq('provider_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(3);
-      
-      console.log("📨 Propostas retornado:", proposals, "Erro:", propError);
+      // 4. Buscar Estatísticas (COM PROTEÇÃO TRY/CATCH PARA FASE 2)
+      let countPropostas = 0;
+      let countOrdens = 0;
+      let countDisponiveis = 0;
 
-      // 4. Buscar Ordens de Serviço
-      console.log("📡 6. Buscando ordens de serviço...");
-      const { data: orders, error: orderError } = await supabase
-        .from('orders')
-        .select(`
-          id, titulo, valor, status, created_at,
-          profiles!orders_client_id_fkey(nome)
-        `)
-        .eq('provider_id', userId)
-        .in('status', ['agendado', 'em_andamento'])
-        .order('created_at', { ascending: false })
-        .limit(3);
+      try {
+        const { count: c1 } = await window.supabaseClient.from('proposals').select('*', { count: 'exact', head: true }).eq('provider_id', userId);
+        countPropostas = c1 || 0;
+      } catch (e) { console.log("Tabela 'proposals' indisponível (Fase 2)"); }
 
-      console.log("🛠️ Ordens retornado:", orders, "Erro:", orderError);
+      try {
+        const { count: c2 } = await window.supabaseClient.from('orders').select('*', { count: 'exact', head: true }).eq('provider_id', userId).in('status', ['agendado', 'em_andamento']);
+        countOrdens = c2 || 0;
+      } catch (e) { console.log("Tabela 'orders' indisponível (Fase 2)"); }
 
-      // 5. Atualizar Estatísticas (com fallback para 0 se der erro)
-      document.getElementById('statPropostas').textContent = (proposals || []).length;
-      document.getElementById('statAndamento').textContent = (orders || []).length;
+      try {
+        const { count: c3 } = await window.supabaseClient.from('demands').select('*', { count: 'exact', head: true }).in('status', ['aberta', 'em_propostas']);
+        countDisponiveis = c3 || 0;
+      } catch (e) { console.log("Tabela 'demands' indisponível (Fase 2)"); }
 
-      // 6. Renderizar
-      renderPropostas(proposals);
-      renderServicos(orders);
+      // 5. Atualizar Estatísticas no DOM
+      document.getElementById('statDisponiveis').textContent = countDisponiveis;
+      document.getElementById('statPropostas').textContent = countPropostas;
+      document.getElementById('statAndamento').textContent = countOrdens;
+
+      // 6. Renderizar Listas (Vazias por enquanto, já que é Fase 1)
+      renderPropostas([]);
+      renderServicos([]);
 
       console.log("✅ 7. Dashboard carregado com sucesso!");
 
@@ -308,9 +200,10 @@
     }
   }
 
-  // Funções de renderização (mantenha as que você já tem, apenas adicione um console.log no início delas)
+  // ==========================================
+  // FUNÇÕES DE RENDERIZAÇÃO (SEGURAS)
+  // ==========================================
   function renderPropostas(proposals) {
-    console.log("🎨 Renderizando propostas. Quantidade:", proposals ? proposals.length : 0);
     const el = document.getElementById('propostasRecentes');
     if (!el) return;
     
@@ -318,37 +211,23 @@
       el.innerHTML = `<div class="empty-state"><h3>Nenhuma proposta recente</h3><p>Busque demandas disponíveis e envie sua primeira proposta.</p></div>`;
       return;
     }
-    // ... (mantenha o resto do seu código de renderização aqui) ...
-    el.innerHTML = proposals.map(p => {
-        const statusClass = p.status === 'aceita' ? 'status-aceita' : (p.status === 'pendente' ? 'status-pendente' : 'status-recusada');
-        const statusLabel = p.status === 'aceita' ? 'Proposta aceita' : (p.status === 'pendente' ? 'Aguardando cliente' : 'Recusada');
-        const date = new Date(p.created_at).toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
-        const clientName = p.demands?.profiles?.nome || 'Cliente';
-        const valorFmt = `R$ ${parseFloat(p.valor).toFixed(2)}`;
-        return `<a href="#" class="list-row"><div class="avatar avatar-md">📨</div><div class="list-row-main"><div class="list-row-title">${p.demands?.titulo || 'Demanda'}</div><div class="list-row-sub"><span>👤 ${clientName}</span><span class="sep">·</span><span>📅 ${date}</span></div></div><div class="list-row-side"><span class="status-badge ${statusClass}">${statusLabel}</span><span class="list-row-value">${valorFmt}</span></div></a>`;
-    }).join('');
+    // Lógica de renderização quando tiver dados da Fase 2
   }
 
   function renderServicos(orders) {
-    console.log("🎨 Renderizando serviços. Quantidade:", orders ? orders.length : 0);
     const el = document.getElementById('servicosAndamento');
     if (!el) return;
 
     if (!orders || orders.length === 0) {
-      el.innerHTML = `<div class="empty-state"><h3>Nenhum serviço em andamento</h3></div>`;
+      el.innerHTML = `<div class="empty-state"><h3>Nenhum serviço em andamento</h3><p>Seus serviços ativos aparecerão aqui assim que uma proposta for aceita.</p></div>`;
       return;
     }
-    // ... (mantenha o resto do seu código de renderização aqui) ...
-    el.innerHTML = orders.map(o => {
-        const clientName = o.profiles?.nome || 'Cliente';
-        const valorFmt = o.valor ? `R$ ${parseFloat(o.valor).toFixed(2)}` : 'A combinar';
-        const date = new Date(o.created_at).toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
-        return `<a href="#" class="list-row"><div class="avatar avatar-md">🛠️</div><div class="list-row-main"><div class="list-row-title">${o.titulo}</div><div class="list-row-sub"><span>👤 ${clientName}</span><span class="sep">·</span><span>📅 ${date}</span></div></div><div class="list-row-side"><span class="status-badge status-andamento">Em andamento</span><span class="list-row-value">${valorFmt}</span></div></a>`;
-    }).join('');
+    // Lógica de renderização quando tiver dados da Fase 2
   }
 
-  // Iniciar
+  // Iniciar o dashboard
   init();
 </script>
+<script src="../js/mobile-nav.js"></script>
 </body>
 </html>

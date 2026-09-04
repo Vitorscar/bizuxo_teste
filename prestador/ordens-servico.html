@@ -8,9 +8,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
 <style>
-  .row-action-btn{
-    width:auto; padding:9px 14px; font-size:0.78rem; border-radius:100px; font-family:var(--font-body); font-weight:700;
-  }
+  .row-action-btn{ width:auto; padding:9px 14px; font-size:0.78rem; border-radius:100px; font-family:var(--font-body); font-weight:700; cursor: pointer; }
+  .code-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+  .code-modal.active { display: flex; }
+  .code-modal-content { background: var(--surface); padding: 24px; border-radius: var(--radius-lg); width: 100%; max-width: 360px; text-align: center; }
+  .code-modal input { width: 100%; padding: 12px; font-size: 1.5rem; text-align: center; letter-spacing: 0.2em; font-weight: 700; margin: 16px 0; border: 2px solid var(--border); border-radius: var(--radius-sm); }
+  .code-modal input:focus { border-color: var(--accent); outline: none; }
 </style>
 </head>
 <body>
@@ -25,15 +28,9 @@
       <a class="nav-item active alert" href="ordens-servico.html"><span class="nav-icon">🛠️</span> Ordens de Serviço</a>
       <a class="nav-item" href="historico-financeiro.html"><span class="nav-icon">💳</span> Histórico Financeiro</a>
       <a class="nav-item" href="meu-perfil-prestador.html"><span class="nav-icon">⚙️</span> Meus Dados</a>
-      <a class="nav-item" href="meus-trabalhos.html">
-    <span class="nav-icon">💼</span> Meus Trabalhos
-</a>
-      <a class="nav-item" href="../index.html" style="color:var(--alert);"><span class="nav-icon">🚪</span> Sair</a>
+      <a class="nav-item" href="meus-trabalhos.html"><span class="nav-icon">💼</span> Meus Trabalhos</a>
+      <a class="nav-item" href="../index.html" style="color:var(--alert); margin-top:auto;"><span class="nav-icon">🚪</span> Sair</a>
     </nav>
-    <div class="sidebar-foot">
-      Olá, Carlos<br>Águas Claras, DF
-      <div class="role-tag alert">conta prestador</div>
-    </div>
   </aside>
 
   <main class="main-content">
@@ -49,39 +46,80 @@
     </div>
     <div class="chip-select" id="filters">
       <span class="chip selected" data-filter="all">Todas</span>
-      <span class="chip" data-filter="agendado">Agendadas</span>
-      <span class="chip" data-filter="andamento">Em andamento</span>
-      <span class="chip" data-filter="concluido">Concluídas</span>
+      <span class="chip" data-filter="pago_aguardando_inicio">Aguardando Início</span>
+      <span class="chip" data-filter="em_andamento">Em Andamento</span>
+      <span class="chip" data-filter="finalizado">Concluídas</span>
     </div>
 
     <div id="list" style="margin-top:22px;"></div>
     <div class="empty-state" id="empty" style="display:none;">
       <h3>Nenhuma ordem de serviço ainda</h3>
-      <p>Quando uma proposta sua for aceita, ela aparecerá aqui.</p>
+      <p>Quando uma proposta sua for aceita e paga, ela aparecerá aqui.</p>
     </div>
   </main>
 </div>
 
-<script>
-  const ORDERS = [
-    { id: 1088, title: "Instalação elétrica — cômodo extra", client: "Maria Oliveira", loc: "Águas Claras",
-      date: "28/08", value: "R$ 250,00", status: "andamento", statusLabel: "Em andamento", action: "Marcar como concluído" },
-    { id: 1095, title: "Limpeza de calha", client: "Pedro Santos", loc: "Águas Claras",
-      date: "02/09", value: "R$ 180,00", status: "agendado", statusLabel: "Agendado", action: "Iniciar atendimento" },
-    { id: 950, title: "Troca de resistência do chuveiro", client: "João Marcos", loc: "Águas Claras",
-      date: "15/08", value: "R$ 80,00", status: "concluido", statusLabel: "Concluído", action: "Ver avaliação" },
-  ];
+<!-- Modal para inserir código de início -->
+<div class="code-modal" id="startModal">
+  <div class="code-modal-content">
+    <h3 style="margin-top:0;">Iniciar Serviço</h3>
+    <p style="font-size:0.85rem; color:var(--ink-soft);">Peça ao cliente o <b>Código de Início</b> de 4 dígitos.</p>
+    <input type="text" id="startCodeInput" maxlength="4" placeholder="0000">
+    <div style="display:flex; gap:10px;">
+      <button class="btn btn-ghost" style="flex:1;" onclick="fecharModal('startModal')">Cancelar</button>
+      <button class="btn btn-accent" style="flex:1;" onclick="enviarCodigoInicio()">Confirmar</button>
+    </div>
+  </div>
+</div>
 
+<!-- Modal para exibir código de fim gerado -->
+<div class="code-modal" id="finishModal">
+  <div class="code-modal-content">
+    <h3 style="margin-top:0; color:var(--accent-ink);">Solicitação Enviada!</h3>
+    <p style="font-size:0.85rem; color:var(--ink-soft);">Informe este código ao cliente para que ele libere seu pagamento:</p>
+    <div style="background:var(--accent-soft); color:var(--accent-ink); font-size:2rem; font-weight:800; letter-spacing:0.15em; padding:16px; border-radius:var(--radius-md); margin:16px 0;" id="generatedFinishCode">
+      ----
+    </div>
+    <button class="btn btn-dark" style="width:100%;" onclick="fecharModal('finishModal')">Entendido</button>
+  </div>
+</div>
+
+<script type="module">
+  import { confirmarInicioServico, solicitarFinalizacao, regenerarCodigo } from '../js/pagamentos.js';
+
+  let allOrders = [];
   let activeFilter = "all";
   let searchTerm = "";
+  let currentOrderIdForAction = null;
 
-  function render(){
+  async function carregarOrdens() {
+    const session = await supabase.auth.getSession();
+    if (!session.data.session) { window.location.href = '../index.html'; return; }
+    const providerId = session.data.session.user.id;
+
+    const { data: orders, error } = await supabase
+      .from('ordens_servico')
+      .select('id, status, valor_total, codigo_inicio, codigo_fim, demands(titulo, cidade, profiles!demands_client_id_fkey(nome))')
+      .eq('provider_id', providerId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    allOrders = orders || [];
+    render();
+  }
+
+  function render() {
     const list = document.getElementById("list");
     const empty = document.getElementById("empty");
-    const filtered = ORDERS.filter(o => {
+    
+    const filtered = allOrders.filter(o => {
       const matchesFilter = activeFilter === "all" || o.status === activeFilter;
-      const matchesSearch = !searchTerm ||
-        o.title.toLowerCase().includes(searchTerm) || o.client.toLowerCase().includes(searchTerm);
+      const clienteNome = o.demands?.profiles?.nome || '';
+      const matchesSearch = !searchTerm || o.demands.titulo.toLowerCase().includes(searchTerm) || clienteNome.toLowerCase().includes(searchTerm);
       return matchesFilter && matchesSearch;
     });
 
@@ -91,24 +129,93 @@
     filtered.forEach(o => {
       const el = document.createElement("div");
       el.className = "list-row";
+      const valorFmt = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(o.valor_total);
+      const statusLabel = o.status.replace('_', ' ').toUpperCase();
+      
+      let actionHtml = '';
+      if (o.status === 'pago_aguardando_inicio') {
+        actionHtml = `<button class="btn btn-accent row-action-btn" onclick="abrirModalInicio('${o.id}')">▶ Iniciar Serviço</button>`;
+      } else if (o.status === 'em_andamento') {
+        actionHtml = `<button class="btn btn-outline row-action-btn" style="border-color:var(--accent); color:var(--accent-ink);" onclick="solicitarFim('${o.id}')">✓ Solicitar Finalização</button>`;
+      } else if (o.status === 'aguardando_confirmacao_fim') {
+        actionHtml = `<span style="font-size:0.78rem; color:var(--amber); font-weight:600;">⏳ Aguardando cliente</span>`;
+      } else if (o.status === 'finalizado') {
+        actionHtml = `<span style="font-size:0.78rem; color:var(--accent-ink); font-weight:600;">✅ Concluído</span>`;
+      }
+
       el.innerHTML = `
         <div class="avatar avatar-md">🛠️</div>
         <div class="list-row-main">
-          <div class="list-row-title">${o.title}</div>
-          <div class="list-row-sub"><span>${o.client}</span><span class="sep">·</span><span>📍 ${o.loc}</span><span class="sep">·</span><span>OS #${o.id}</span></div>
+          <div class="list-row-title">${escapeHTML(o.demands.titulo)}</div>
+          <div class="list-row-sub">
+            <span>👤 ${escapeHTML(clienteNome)}</span><span class="sep">·</span>
+            <span>📍 ${escapeHTML(o.demands.cidade)}</span><span class="sep">·</span>
+            <span>OS #${o.id.slice(0,4)}</span>
+          </div>
         </div>
         <div class="list-row-side">
-          <span class="status-badge status-${o.status}">${o.statusLabel}</span>
-          <span class="list-row-value">${o.value}</span>
-          <div style="display:flex; gap:6px;">
-            ${o.status !== 'concluido' ? `<a class="btn btn-outline row-action-btn" href="chat.html">💬</a>` : ''}
-            <button class="btn btn-outline row-action-btn">${o.action}</button>
+          <span class="status-badge status-${o.status === 'pago_aguardando_inicio' ? 'receiving' : (o.status === 'finalizado' ? 'done' : 'selected')}">${statusLabel}</span>
+          <span class="list-row-value">${valorFmt}</span>
+          <div style="display:flex; gap:6px; margin-top:8px;">
+            ${actionHtml}
           </div>
         </div>`;
       list.appendChild(el);
     });
   }
 
+  // --- Ações do Prestador ---
+
+  window.abrirModalInicio = function(orderId) {
+    currentOrderIdForAction = orderId;
+    document.getElementById('startCodeInput').value = '';
+    document.getElementById('startModal').classList.add('active');
+    setTimeout(() => document.getElementById('startCodeInput').focus(), 100);
+  };
+
+  window.enviarCodigoInicio = async function() {
+    const codigo = document.getElementById('startCodeInput').value.trim();
+    if (codigo.length !== 4) {
+      alert('O código deve ter exatamente 4 dígitos.');
+      return;
+    }
+
+    const btn = event.target;
+    btn.disabled = true;
+    btn.textContent = 'Verificando...';
+
+    try {
+      await confirmarInicioServico(currentOrderIdForAction, codigo);
+      alert('Serviço iniciado com sucesso!');
+      fecharModal('startModal');
+      carregarOrdens(); // Recarrega a lista
+    } catch (err) {
+      alert('Código inválido ou erro: ' + err.message);
+      btn.disabled = false;
+      btn.textContent = 'Confirmar';
+    }
+  };
+
+  window.solicitarFim = async function(orderId) {
+    if (!confirm('Tem certeza que o serviço foi concluído? O cliente receberá um código para liberar seu pagamento.')) return;
+    
+    currentOrderIdForAction = orderId;
+    try {
+      const res = await solicitarFinalizacao(orderId);
+      document.getElementById('generatedFinishCode').textContent = res.codigo_fim || '----';
+      document.getElementById('finishModal').classList.add('active');
+      carregarOrdens();
+    } catch (err) {
+      alert('Erro ao solicitar finalização: ' + err.message);
+    }
+  };
+
+  window.fecharModal = function(modalId) {
+    document.getElementById(modalId).classList.remove('active');
+    currentOrderIdForAction = null;
+  };
+
+  // --- Filtros e Busca ---
   document.getElementById("filters").addEventListener("click", (e) => {
     const chip = e.target.closest(".chip");
     if(!chip) return;
@@ -123,8 +230,12 @@
     render();
   });
 
-  render();
+  function escapeHTML(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
+  }
+
+  carregarOrdens();
 </script>
-<script src="../js/mobile-nav.js"></script>
 </body>
 </html>

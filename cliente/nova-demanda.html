@@ -2,210 +2,619 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Nova Demanda · Bizuxo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
 <style>
-  .wrap{ padding:24px 22px 60px; }
-  .intro{ margin-bottom:20px; }
-  .intro h1{ font-size:1.35rem; margin:0 0 6px; }
-  .intro p{ font-size:0.85rem; color:var(--ink-soft); margin:0; }
-  .terms{ font-size:0.75rem; color:var(--ink-faint); text-align:center; margin-top:14px; }
+  .wrap { padding: 24px 22px 80px; }
+  .intro { margin-bottom: 20px; }
+  .intro h1 { font-size: 1.35rem; margin: 0 0 6px; }
+  .intro p { font-size: 0.85rem; color: var(--ink-soft); margin: 0; }
+  .terms { font-size: 0.75rem; color: var(--ink-faint); text-align: center; margin-top: 14px; }
   
-  .chip-select .chip.selected {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; font-size: 0.85rem; font-weight: 600;
+    color: var(--ink-soft); background: var(--surface-soft);
+    border: 1.5px solid var(--border); border-radius: 100px;
+    cursor: pointer; transition: all 0.2s ease; margin: 4px;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--ink); }
+  .chip.selected {
+    background: var(--accent) !important;
+    color: #fff !important;
+    border-color: var(--accent) !important;
+  }
+
+  /* Botão "Outros" */
+  .outros-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 8px 14px; font-size: 0.85rem; font-weight: 600;
+    color: var(--accent); background: transparent;
+    border: 1.5px dashed var(--accent); border-radius: 100px;
+    cursor: pointer; transition: all 0.2s ease; margin: 4px;
+  }
+  .outros-btn:hover { background: var(--accent-soft); }
+
+  /* Painel flutuante de categorias */
+  .categoria-popover {
+    position: absolute;
+    z-index: 1000;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    max-height: 280px;
+    overflow-y: auto;
+    padding: 8px;
+    display: none;
+    min-width: 220px;
+    margin-top: 4px;
+  }
+  .categoria-popover.active {
+    display: block;
+  }
+  .categoria-popover .popover-item {
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--ink);
+    transition: background 0.15s;
+  }
+  .categoria-popover .popover-item:hover {
+    background: var(--surface-soft);
+  }
+
+  /* Cards de Tipo de Serviço */
+  .service-type-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .service-type-card {
+    background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-md);
+    padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s ease;
+  }
+  .service-type-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .service-type-card.selected { border-color: var(--accent); background: var(--accent-soft); }
+  .service-type-card .icon { font-size: 1.8rem; margin-bottom: 8px; }
+  .service-type-card .name { font-family: var(--font-display); font-weight: 700; font-size: 0.9rem; color: var(--ink); }
+  .service-type-card .desc { font-size: 0.75rem; color: var(--ink-soft); margin-top: 4px; }
+
+  /* Upload Area */
+  .upload-area {
+    border: 2px dashed var(--border); border-radius: var(--radius-md); padding: 24px;
+    text-align: center; cursor: pointer; transition: all 0.2s ease; background: var(--surface-soft);
+    position: relative;
+  }
+  .upload-area:hover, .upload-area.dragover { border-color: var(--accent); background: var(--accent-soft); }
+  .upload-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .upload-icon { font-size: 2rem; margin-bottom: 8px; color: var(--ink-soft); }
+  .upload-text { font-size: 0.88rem; color: var(--ink); font-weight: 600; }
+  .upload-subtext { font-size: 0.75rem; color: var(--ink-faint); margin-top: 4px; }
+
+  .media-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 12px; margin-top: 16px; }
+  .media-item { position: relative; aspect-ratio: 1; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); background: var(--surface); }
+  .media-item img, .media-item video { width: 100%; height: 100%; object-fit: cover; }
+  .media-item .remove-btn {
+    position: absolute; top: 4px; right: 4px; width: 24px; height: 24px;
+    background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.8rem;
+  }
+
+  /* Loading Overlay */
+  .loading-overlay {
+    position: fixed; inset: 0; background: rgba(255,255,255,0.95); z-index: 9999;
+    display: none; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+  }
+  .loading-overlay.active { display: flex; }
+  .spinner {
+    width: 40px; height: 40px; border: 4px solid var(--border); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Container de categorias com posição relativa para o popover */
+  .categoria-wrapper {
+    position: relative;
   }
 </style>
 </head>
 <body>
 
 <div class="container-mobile">
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div style="font-weight: 600; color: var(--ink);">Publicando sua demanda...</div>
+    <div style="font-size: 0.8rem; color: var(--ink-soft);" id="loadingText">Preparando dados...</div>
+  </div>
+
   <header class="header-dark">
     <div class="header-top">
       <div class="brand">Bizu<span>xo</span></div>
       <a class="pill-link" href="dashboard-cliente.html">Cancelar</a>
     </div>
     <h2 style="font-size:1.1rem; margin:0;">Publicar nova demanda</h2>
-    <div class="step-track">
-      <div class="step-dot done"></div>
-      <div class="step-dot"></div>
-    </div>
   </header>
 
   <div class="wrap">
     <div class="intro">
-      <p>Passo 1 de 2 · conte o que você precisa e receba propostas de prestadores da sua região.</p>
+      <p>Descreva o que você precisa e receba propostas de profissionais qualificados.</p>
     </div>
 
     <form id="novaDemandaForm">
+      <!-- 1. TIPO DE SERVIÇO -->
       <div class="card">
-        <div class="card-label"><span class="dot"></span>O que você precisa</div>
+        <div class="card-label"><span class="dot"></span>Tipo de Serviço</div>
+        <div class="service-type-toggle">
+          <div class="service-type-card selected" onclick="selectServiceType('LOCAL', this)">
+            <div class="icon">🔧</div>
+            <div class="name">Presencial</div>
+            <div class="desc">Alguém vai até você</div>
+          </div>
+          <div class="service-type-card" onclick="selectServiceType('FREELANCE', this)">
+            <div class="icon">💻</div>
+            <div class="name">Online / Freelance</div>
+            <div class="desc">Entrega digital</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. DETALHES DA DEMANDA -->
+      <div class="card">
+        <div class="card-label"><span class="dot"></span>Detalhes</div>
+        
         <div class="field">
           <label for="titulo">Título da demanda</label>
-          <input type="text" id="titulo" placeholder="Ex: Instalação de chuveiro elétrico" required>
+          <input type="text" id="titulo" placeholder="Ex: Instalação de chuveiro ou Criação de Logo" required>
         </div>
 
         <div class="field">
-          <label>Tipo de serviço</label>
-          <div class="chip-select" id="categoriaChips">
-            <span class="chip" data-value="eletrica">⚡ Elétrica</span>
-            <span class="chip" data-value="hidraulica">🚿 Hidráulica</span>
-            <span class="chip" data-value="pintura">🎨 Pintura</span>
-            <span class="chip" data-value="marcenaria">🪵 Marcenaria</span>
-            <span class="chip" data-value="arcondicionado">❄️ Ar-condicionado</span>
+          <label>Categoria</label>
+          <div class="categoria-wrapper">
+            <div class="chip-select" id="categoriaChips">
+              <span class="chip" style="color: var(--ink-faint);">Carregando...</span>
+            </div>
+            <!-- Painel flutuante para "Outros" -->
+            <div class="categoria-popover" id="categoriaPopover"></div>
           </div>
+          <input type="hidden" id="categoria_id" required>
         </div>
 
         <div class="field">
           <label for="descricao">Descreva o que precisa ser feito</label>
-          <textarea id="descricao" rows="4" placeholder="Quanto mais detalhes, melhores serão as propostas dos prestadores..." required></textarea>
+          <textarea id="descricao" rows="4" placeholder="Quanto mais detalhes, melhores serão as propostas..." required></textarea>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="budget_min">Orçamento Mínimo (R$)</label>
+            <input type="number" id="budget_min" placeholder="0,00" step="0.01" min="0">
+          </div>
+          <div class="field">
+            <label for="budget_max">Orçamento Máximo (R$)</label>
+            <input type="number" id="budget_max" placeholder="0,00" step="0.01" min="0">
+          </div>
         </div>
 
         <div class="field">
-          <label for="data_limite">Data limite (opcional)</label>
+          <label for="data_limite">Data limite desejada (opcional)</label>
           <input type="date" id="data_limite">
         </div>
       </div>
 
-      <div class="card">
+      <!-- 3. LOCALIZAÇÃO (Só aparece se for LOCAL) -->
+      <div class="card" id="card-localizacao">
         <div class="card-label"><span class="dot"></span>Onde é o serviço</div>
         <div class="field-row">
-          <div class="field">
-            <label for="cidade">Cidade</label>
-            <input type="text" id="cidade" value="Brasília" required>
+          <div class="field" style="flex: 1;">
+            <label for="zip_code">CEP</label>
+            <input type="text" id="zip_code" placeholder="00000-000" maxlength="9">
           </div>
-          <div class="field">
-            <label for="bairro">Bairro</label>
-            <input type="text" id="bairro" value="Águas Claras" required>
+          <div class="field" style="flex: 2;">
+            <label for="city">Cidade</label>
+            <input type="text" id="city" placeholder="Buscando..." readonly style="background: var(--surface-soft);">
           </div>
+        </div>
+        <div class="field-row" style="margin-top: 12px;">
+          <div class="field" style="flex: 2;">
+            <label for="neighborhood">Bairro</label>
+            <input type="text" id="neighborhood" placeholder="Ex: Asa Norte">
+          </div>
+          <div class="field" style="flex: 1;">
+            <label for="uf">UF</label>
+            <input type="text" id="uf" placeholder="UF" maxlength="2" readonly style="background: var(--surface-soft);">
+          </div>
+        </div>
+        <div class="field">
+          <label for="address">Endereço (Rua, Avenida, etc.)</label>
+          <input type="text" id="address" placeholder="Ex: Rua das Flores, 123">
         </div>
       </div>
 
-      <button type="submit" class="btn btn-accent" id="publishBtn" style="width: 100%; margin-top: 16px;">Publicar demanda e receber propostas</button>
-      <div class="terms">os prestadores da sua região serão notificados assim que você publicar</div>
+      <!-- 4. MÍDIAS (OPCIONAL) -->
+      <div class="card">
+        <div class="card-label"><span class="dot"></span>Fotos ou Vídeos (Opcional)</div>
+        <div class="upload-area" id="uploadArea">
+          <input type="file" id="fileInput" multiple accept="image/*,video/*">
+          <div class="upload-icon">📷 🎥</div>
+          <div class="upload-text">Toque para adicionar</div>
+          <div class="upload-subtext">Máx. 5 arquivos</div>
+        </div>
+        <div class="media-preview-grid" id="mediaPreview"></div>
+      </div>
+
+      <button type="submit" class="btn btn-accent" id="publishBtn" style="width: 100%; margin-top: 16px;">Publicar demanda</button>
+      <div class="terms">Ao publicar, você concorda com os Termos de Uso do Bizuxo.</div>
     </form>
   </div>
 </div>
 
-<!-- Scripts de Conexão -->
+<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase-cliente.js"></script>
+<script src="../js/utils.js"></script>
 <script src="../js/auth.js"></script>
 
 <script>
-  // 1. Verificar autenticação
-  async function verificarAuth() {
-    const session = await supabase.auth.getSession();
-    if (!session.data.session) {
-      window.location.href = '../index.html';
-    }
-  }
-  verificarAuth();
+  // ==========================================
+  // 1. ESTADO GLOBAL
+  // ==========================================
+  let currentServiceType = 'LOCAL';
+  let selectedCategoryId = null;
+  let arquivosSelecionados = [];
+  let clientProfileId = null;
+  let todasCategorias = [];       // Todas as categorias carregadas do banco
+  let categoriasRapidas = [];     // As 3 primeiras (Eletricista, Encanador, Diarista)
+  let categoriasOutras = [];      // As demais
 
-  // 2. Mapeamento de Categorias (será preenchido pelo banco)
-  let mapaCategorias = {};
+  // ==========================================
+  // 2. INICIALIZAÇÃO E AUTH
+  // ==========================================
+  async function init() {
+    if (!window.supabaseClient) {
+      alert('Erro de configuração. Recarregue a página.');
+      return;
+    }
+
+    const { data: { session } } = await window.supabaseClient.auth.getSession();
+    if (!session) {
+      window.location.href = '../index.html';
+      return;
+    }
+
+    const { data: profile, error } = await window.supabaseClient
+      .from('profiles')
+      .select('id')
+      .eq('user_id', session.user.id)
+      .single();
+
+    if (error || !profile) {
+      console.error('Erro ao buscar perfil:', error);
+      alert('Erro ao carregar seu perfil. Faça login novamente.');
+      window.location.href = '../index.html';
+      return;
+    }
+
+    clientProfileId = profile.id;
+    await carregarCategorias();
+    setupMascaras();
+  }
+
+  // ==========================================
+  // 3. LÓGICA DE UI E CATEGORIAS
+  // ==========================================
+  function selectServiceType(type, element) {
+    currentServiceType = type;
+    document.querySelectorAll('.service-type-card').forEach(c => c.classList.remove('selected'));
+    element.classList.add('selected');
+
+    const cardLoc = document.getElementById('card-localizacao');
+    if (type === 'LOCAL') {
+      cardLoc.style.display = 'block';
+      document.getElementById('zip_code').setAttribute('required', 'required');
+    } else {
+      cardLoc.style.display = 'none';
+      document.getElementById('zip_code').removeAttribute('required');
+      document.getElementById('zip_code').value = '';
+      document.getElementById('city').value = '';
+      document.getElementById('neighborhood').value = '';
+      document.getElementById('uf').value = '';
+      document.getElementById('address').value = '';
+    }
+    
+    selectedCategoryId = null;
+    document.getElementById('categoria_id').value = '';
+    carregarCategorias();
+  }
 
   async function carregarCategorias() {
-    console.log("📡 Carregando tipos de serviço...");
-    const { data, error } = await supabase
-      .from('service_types')
-      .select('id, nome');
+    const container = document.getElementById('categoriaChips');
+    container.innerHTML = '<span class="chip" style="color: var(--ink-faint);">Carregando...</span>';
     
-    if (!error && data) {
-      data.forEach(item => {
-        // Normaliza o nome para minúsculo, sem acentos e sem hífens para bater com o data-value do HTML
-        // Ex: "Ar-condicionado" vira "arcondicionado"
-        const chave = item.nome.toLowerCase()
-          .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-          .replace('-', '');
-        mapaCategorias[chave] = item.id;
-      });
-      console.log("✅ Categorias carregadas:", mapaCategorias);
-    } else {
-      console.warn("⚠️ Erro ao carregar categorias do banco, usando fallback:", error);
-      // Fallback de segurança caso o banco falhe
-      mapaCategorias = {
-        'eletrica': 1, 'hidraulica': 2, 'pintura': 3, 'marcenaria': 4,
-        'arcondicionado': 5, 'limpeza': 6, 'mudancas': 7, 'montagem': 8
+    console.log(`🔍 Buscando categorias para: ${currentServiceType}`);
+    
+    const { data, error } = await window.supabaseClient
+      .from('categories')
+      .select('id, name, icon')
+      .eq('service_type', currentServiceType)
+      .order('name');
+
+    if (error) {
+      console.error('Erro ao carregar categorias:', error);
+      container.innerHTML = '<span class="chip" style="color: var(--alert);">Erro ao carregar categorias</span>';
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      console.warn('⚠️ Nenhuma categoria encontrada para este tipo de serviço.');
+      container.innerHTML = '<span class="chip" style="color: var(--ink-faint);">Nenhuma categoria disponível</span>';
+      return;
+    }
+
+    todasCategorias = data;
+
+    // Priorizar as três categorias desejadas (se existirem)
+    const prioridades = ['Eletricista', 'Encanador', 'Diarista'];
+    categoriasRapidas = [];
+    categoriasOutras = [];
+
+    // Procura as categorias prioritárias na ordem desejada
+    prioridades.forEach(nome => {
+      const encontrada = todasCategorias.find(cat => cat.name === nome);
+      if (encontrada) {
+        categoriasRapidas.push(encontrada);
+        // Remove da lista de todas para não duplicar
+        todasCategorias = todasCategorias.filter(cat => cat.id !== encontrada.id);
+      }
+    });
+
+    // Se não encontrou alguma das prioritárias, completa com as primeiras da lista restante
+    while (categoriasRapidas.length < 3 && todasCategorias.length > 0) {
+      categoriasRapidas.push(todasCategorias.shift());
+    }
+
+    // O restante vai para "Outras"
+    categoriasOutras = [...todasCategorias];
+
+    // Ordena as outras por nome
+    categoriasOutras.sort((a, b) => a.name.localeCompare(b.name));
+
+    renderizarCategorias();
+  }
+
+  function renderizarCategorias() {
+    const container = document.getElementById('categoriaChips');
+    container.innerHTML = '';
+
+    // Renderiza as 3 categorias rápidas
+    categoriasRapidas.forEach(cat => {
+      const chip = document.createElement('span');
+      chip.className = 'chip';
+      chip.dataset.id = cat.id;
+      chip.textContent = `${cat.icon || '📌'} ${cat.name}`;
+      chip.onclick = () => selecionarCategoria(chip, cat.id);
+      container.appendChild(chip);
+    });
+
+    // Se houver categorias adicionais, adiciona o botão "Outros"
+    if (categoriasOutras.length > 0) {
+      const btnOutros = document.createElement('span');
+      btnOutros.className = 'outros-btn';
+      btnOutros.textContent = 'Outros ▾';
+      btnOutros.onclick = (e) => {
+        e.stopPropagation();
+        abrirPopover();
       };
+      container.appendChild(btnOutros);
     }
   }
 
-  // Carrega as categorias assim que a página abre
-  carregarCategorias();
-
-  // 3. Lógica dos Chips de Categoria
-  const chips = document.querySelectorAll('#categoriaChips .chip');
-  let categoriaSelecionada = null;
-
-  chips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      chips.forEach(c => c.classList.remove('selected', 'accent'));
-      chip.classList.add('selected', 'accent');
-      categoriaSelecionada = chip.dataset.value;
+  function abrirPopover() {
+    const popover = document.getElementById('categoriaPopover');
+    popover.innerHTML = '';
+    
+    categoriasOutras.forEach(cat => {
+      const item = document.createElement('div');
+      item.className = 'popover-item';
+      item.textContent = `${cat.icon || '📌'} ${cat.name}`;
+      item.onclick = () => {
+        selecionarCategoriaDoPopover(cat);
+      };
+      popover.appendChild(item);
     });
+
+    popover.classList.add('active');
+    
+    // Fecha ao clicar fora
+    document.addEventListener('click', fecharPopoverFora);
+  }
+
+  function fecharPopoverFora(e) {
+    const popover = document.getElementById('categoriaPopover');
+    const outrosBtn = document.querySelector('.outros-btn');
+    
+    if (!popover.contains(e.target) && e.target !== outrosBtn && !outrosBtn.contains(e.target)) {
+      popover.classList.remove('active');
+      document.removeEventListener('click', fecharPopoverFora);
+    }
+  }
+
+  function selecionarCategoriaDoPopover(cat) {
+    // Marca como selecionado
+    selecionarCategoria(null, cat.id);
+    // Atualiza visual do chip correspondente (caso o ID esteja entre as rápidas)
+    document.querySelectorAll('#categoriaChips .chip').forEach(chip => {
+      if (chip.dataset.id === cat.id) {
+        chip.classList.add('selected');
+      } else {
+        chip.classList.remove('selected');
+      }
+    });
+    // Fecha o popover
+    document.getElementById('categoriaPopover').classList.remove('active');
+    document.removeEventListener('click', fecharPopoverFora);
+  }
+
+  function selecionarCategoria(chip, categoriaId) {
+    // Remove seleção anterior
+    document.querySelectorAll('#categoriaChips .chip').forEach(c => c.classList.remove('selected'));
+    if (chip) chip.classList.add('selected');
+    
+    selectedCategoryId = categoriaId;
+    document.getElementById('categoria_id').value = categoriaId;
+  }
+
+  function setupMascaras() {
+    const cepInput = document.getElementById('zip_code');
+    cepInput.addEventListener('input', (e) => {
+      let v = e.target.value.replace(/\D/g, '').slice(0, 8);
+      if (v.length > 5) v = v.replace(/(\d{5})(\d{1,3})/, '$1-$2');
+      e.target.value = v;
+    });
+
+    cepInput.addEventListener('blur', async (e) => {
+      const cep = e.target.value.replace(/\D/g, '');
+      if (cep.length === 8) {
+        document.getElementById('city').value = 'Buscando...';
+        try {
+          const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+          const data = await res.json();
+          if (!data.erro) {
+            document.getElementById('city').value = data.localidade || '';
+            document.getElementById('neighborhood').value = data.bairro || '';
+            document.getElementById('uf').value = data.uf || '';
+            document.getElementById('address').value = data.logradouro || '';
+          } else {
+            document.getElementById('city').value = '';
+            alert('CEP não encontrado.');
+          }
+        } catch (err) {
+          console.error('Erro CEP:', err);
+          document.getElementById('city').value = '';
+        }
+      }
+    });
+  }
+
+  // ==========================================
+  // 4. UPLOAD DE MÍDIA
+  // ==========================================
+  const fileInput = document.getElementById('fileInput');
+  const mediaPreview = document.getElementById('mediaPreview');
+  const uploadArea = document.getElementById('uploadArea');
+
+  fileInput.addEventListener('change', (e) => {
+    const novos = Array.from(e.target.files);
+    if (arquivosSelecionados.length + novos.length > 5) {
+      alert('Máximo de 5 arquivos.');
+      return;
+    }
+    arquivosSelecionados = [...arquivosSelecionados, ...novos];
+    renderizarPreview();
+    fileInput.value = '';
   });
 
-  // 4. Envio do Formulário para o Supabase
-  document.getElementById('novaDemandaForm').addEventListener('submit', async (e) => {
+  function renderizarPreview() {
+    mediaPreview.innerHTML = '';
+    arquivosSelecionados.forEach((file, index) => {
+      const url = URL.createObjectURL(file);
+      const isVideo = file.type.startsWith('video/');
+      const div = document.createElement('div');
+      div.className = 'media-item';
+      div.innerHTML = isVideo ? `<video src="${url}" muted></video><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);color:#fff;font-size:1.5rem;">🎥</div>` : `<img src="${url}" alt="Preview">`;
+      
+      const btn = document.createElement('button');
+      btn.className = 'remove-btn';
+      btn.innerHTML = '×';
+      btn.onclick = (e) => { e.preventDefault(); arquivosSelecionados.splice(index, 1); renderizarPreview(); };
+      div.appendChild(btn);
+      mediaPreview.appendChild(div);
+    });
+  }
+
+// ==========================================
+// 5. SUBMIT DO FORMULÁRIO
+// ==========================================
+document.getElementById('novaDemandaForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    if (!categoriaSelecionada) {
-      alert('⚠️ Por favor, selecione o tipo de serviço.');
+    if (!selectedCategoryId) {
+      alert('⚠️ Por favor, selecione uma categoria.');
       return;
     }
 
-    // Pega o ID correto a partir do mapa que carregamos
-    const idCategoria = mapaCategorias[categoriaSelecionada];
-
-    if (!idCategoria) {
-      alert('⚠️ Categoria não identificada. Tente recarregar a página.');
-      return;
-    }
-
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const loadingText = document.getElementById('loadingText');
     const btn = document.getElementById('publishBtn');
-    const originalText = btn.textContent;
-    btn.textContent = 'Publicando...';
+    
+    loadingOverlay.classList.add('active');
     btn.disabled = true;
+    let midiasUrls = [];
 
     try {
-      const session = await supabase.auth.getSession();
-      const userId = session.data.session.user.id;
+      // A. Upload de Mídias (Graceful)
+      if (arquivosSelecionados.length > 0) {
+        loadingText.textContent = 'Enviando arquivos...';
+        try {
+          const uploadPromises = arquivosSelecionados.map(async (file, index) => {
+            const fileName = `${Date.now()}-${index}-${file.name.replace(/\s+/g, '_')}`;
+            const { data, error } = await window.supabaseClient.storage
+              .from('midias-demandas')
+              .upload(fileName, file, { cacheControl: '3600', upsert: false });
+            
+            if (error) throw new Error(error.message);
+            const { data: urlData } = window.supabaseClient.storage.from('midias-demandas').getPublicUrl(data.path);
+            return urlData.publicUrl;
+          });
+          midiasUrls = await Promise.all(uploadPromises);
+        } catch (uploadErr) {
+          console.warn('⚠️ Upload de mídia falhou (bucket pode não existir), continuando sem midias:', uploadErr.message);
+        }
+      }
 
-      // Insere a demanda no banco de dados
-      const { data, error } = await supabase
+      // B. Salvar Demanda no Banco
+      loadingText.textContent = 'Salvando sua demanda...';
+      
+      const now = new Date().toISOString();
+      
+      const demandData = {
+        client_id: clientProfileId,
+        category_id: selectedCategoryId,
+        title: document.getElementById('titulo').value.trim(),
+        description: document.getElementById('descricao').value.trim(),
+        budget_min: document.getElementById('budget_min').value ? parseFloat(document.getElementById('budget_min').value) : null,
+        budget_max: document.getElementById('budget_max').value ? parseFloat(document.getElementById('budget_max').value) : null,
+        status: 'OPEN',
+        zip_code: currentServiceType === 'LOCAL' ? document.getElementById('zip_code').value.replace(/\D/g, '') : null,
+        city: currentServiceType === 'LOCAL' ? document.getElementById('city').value.trim() : null,
+        neighborhood: currentServiceType === 'LOCAL' ? document.getElementById('neighborhood').value.trim() : null,
+        address: currentServiceType === 'LOCAL' ? document.getElementById('address').value.trim() : null,
+        media_urls: midiasUrls,  // ✅ NOVO: salva as URLs das mídias
+        created_at: now,
+        updated_at: now
+      };
+
+      const { data, error: dbError } = await window.supabaseClient
         .from('demands')
-        .insert({
-          client_id: userId,
-          service_type_id: idCategoria, // Usamos o ID já mapeado!
-          titulo: document.getElementById('titulo').value.trim(),
-          descricao: document.getElementById('descricao').value.trim(),
-          cidade: document.getElementById('cidade').value.trim(),
-          bairro: document.getElementById('bairro').value.trim(),
-          data_limite: document.getElementById('data_limite').value || null,
-          status: 'aberta'
-        })
+        .insert(demandData)
         .select()
         .single();
 
-      if (error) throw error;
+      if (dbError) throw dbError;
 
-      console.log('✅ Demanda criada com sucesso:', data);
-      window.location.href = 'minhas-demandas.html';
+      alert('✅ Demanda publicada com sucesso!');
+      window.location.href = 'dashboard-cliente.html';
 
     } catch (err) {
       console.error('❌ Erro ao publicar demanda:', err);
       alert('Erro ao publicar: ' + err.message);
-      
-      btn.textContent = originalText;
+      loadingOverlay.classList.remove('active');
       btn.disabled = false;
     }
-  });
+});
+  // Iniciar
+  init();
 </script>
-<script src="../js/mobile-nav.js"></script>
 </body>
 </html>

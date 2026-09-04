@@ -2,167 +2,205 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Demandas Disponíveis · Bizuxo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
 <style>
-  .list-row-desc{ font-size:0.82rem; color:var(--ink-soft); margin-top:4px; max-width:44ch; line-height:1.4; }
+  .wrap { padding: 24px 22px 80px; }
+  .intro { margin-bottom: 20px; }
+  .intro h1 { font-size: 1.35rem; margin: 0 0 6px; }
+  .intro p { font-size: 0.85rem; color: var(--ink-soft); margin: 0; }
+
+  .filter-bar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .filter-chip {
+    padding: 8px 14px; font-size: 0.82rem; font-weight: 600;
+    color: var(--ink-soft); background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: 100px; cursor: pointer; transition: all 0.2s;
+  }
+  .filter-chip:hover { border-color: var(--alert); color: var(--ink); }
+  .filter-chip.active { background: var(--alert); color: #fff; border-color: var(--alert); }
+
+  .demand-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
+    padding: 18px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s;
+  }
+  .demand-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); transform: translateY(-1px); }
+  .demand-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .demand-card-title { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; color: var(--ink); margin: 0; flex: 1; }
+  .demand-card-badge {
+    font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 100px;
+    background: var(--accent-soft); color: var(--accent-ink); white-space: nowrap; margin-left: 8px;
+  }
+  .demand-card-badge.freelance { background: #EDE9FE; color: #5B21B6; }
+  .demand-card-desc { font-size: 0.82rem; color: var(--ink-soft); line-height: 1.5; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .demand-card-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+  .demand-card-meta { display: flex; gap: 12px; font-size: 0.78rem; color: var(--ink-faint); }
+  .demand-card-budget { font-family: var(--font-display); font-weight: 700; font-size: 0.9rem; color: var(--accent-ink); }
+
+  .demand-card-images { display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; }
+  .demand-card-images img { width: 60px; height: 60px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--ink-soft); }
+  .empty-state h3 { font-size: 1.1rem; color: var(--ink); margin-bottom: 8px; }
 </style>
 </head>
 <body>
 
-<div class="app-shell">
-  <aside class="sidebar prestador">
-    <div class="brand alert">Bizu<span>xo</span></div>
-    <nav class="sidebar-nav">
-      <a class="nav-item" href="dashboard-prestador.html"><span class="nav-icon">▤</span> Visão Geral</a>
-      <a class="nav-item active alert" href="demandas-disponiveis.html"><span class="nav-icon">🔍</span> Demandas Disponíveis</a>
-      <a class="nav-item" href="minhas-propostas.html"><span class="nav-icon">📨</span> Minhas Propostas</a>
-      <a class="nav-item" href="ordens-servico.html"><span class="nav-icon">🛠️</span> Ordens de Serviço</a>
-      <a class="nav-item" href="historico-financeiro.html"><span class="nav-icon">💳</span> Histórico Financeiro</a>
-      <a class="nav-item" href="meu-perfil-prestador.html"><span class="nav-icon">⚙️</span> Meus Dados</a>
-      <a class="nav-item" href="meus-trabalhos.html"><span class="nav-icon">💼</span> Meus Trabalhos</a>
-      <a class="nav-item" href="../index.html" style="color:var(--alert);"><span class="nav-icon">🚪</span> Sair</a>
-    </nav>
-    <div class="sidebar-foot">
-      <span id="userName">Carregando...</span><br>
-      <span id="userLoc" style="color: #8B8E96; font-size: 0.75rem;">...</span>
-      <div class="role-tag" style="color: #FF3B30 !important; border-color: rgba(255, 59, 48, 0.45) !important;">conta prestador</div>
+<div class="container-mobile">
+  <header class="header-dark">
+    <div class="header-top">
+      <a class="pill-link" href="dashboard-prestador.html">← Voltar</a>
+      <div class="brand alert">Bizu<span>xo</span></div>
+      <div style="width:60px;"></div>
     </div>
-  </aside>
+    <h2 style="font-size:1.1rem; margin:0;">Demandas Disponíveis</h2>
+  </header>
 
-  <main class="main-content">
-    <div class="page-topbar">
-      <div>
-        <h1>Demandas Disponíveis</h1>
-        <div class="sub" id="results-count">carregando...</div>
-      </div>
+  <div class="wrap">
+    <div class="intro">
+      <p>Encontre oportunidades na sua região e envie propostas.</p>
     </div>
 
-    <div class="toolbar">
-      <input class="search-input" id="search" type="text" placeholder="Buscar por título ou local...">
-    </div>
-    <div class="chip-select" id="filters">
-      <span class="chip selected" data-filter="all">Todas</span>
-      <span class="chip" data-filter="eletrica">Elétrica</span>
-      <span class="chip" data-filter="hidraulica">Hidráulica</span>
-      <span class="chip" data-filter="pintura">Pintura</span>
-      <span class="chip" data-filter="marcenaria">Marcenaria</span>
+    <div class="filter-bar" id="filterBar">
+      <span class="filter-chip active" onclick="filtrarPorCategoria('TODAS', this)">Todas</span>
+      <!-- Categorias carregadas via JS -->
     </div>
 
-    <div id="list" style="margin-top:22px;"></div>
-    <div class="empty-state" id="empty" style="display:none;">
-      <h3>Nenhuma demanda encontrada</h3>
-      <p>Tente outro filtro ou volte mais tarde.</p>
+    <div id="demandasList">
+      <div class="empty-state"><h3>Carregando demandas...</h3></div>
     </div>
-  </main>
+  </div>
 </div>
 
-<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase-cliente.js"></script>
+<script src="../js/utils.js"></script>
 <script src="../js/auth.js"></script>
 
 <script>
-  let allDemandas = [];
-  let activeFilter = "all";
-  let searchTerm = "";
+  let providerProfileId = null;
+  let providerCategories = [];
+  let allDemands = [];
+  let currentFilter = 'TODAS';
 
   async function init() {
-    const session = await supabase.auth.getSession();
-    if (!session.data.session) { window.location.href = '../index.html'; return; }
+    if (!window.supabaseClient) { alert('Erro de configuração.'); return; }
 
-    // Carregar dados do prestador para a sidebar
-    const { data: profile } = await supabase.from('profiles').select('nome, cidade').eq('id', session.data.session.user.id).single();
-    if (profile) {
-      document.getElementById('userName').textContent = `Olá, ${profile.nome.split(' ')[0]}`;
-      document.getElementById('userLoc').textContent = profile.cidade || 'Local não definido';
+    const { data: { session } } = await window.supabaseClient.auth.getSession();
+    if (!session) { window.location.href = '../index.html'; return; }
+
+    // 1. Buscar perfil do prestador
+    const { data: profile } = await window.supabaseClient
+      .from('profiles').select('id').eq('user_id', session.user.id).single();
+    
+    if (!profile) { alert('Perfil não encontrado.'); return; }
+    providerProfileId = profile.id;
+
+    // 2. Buscar categorias do prestador
+    const { data: cats } = await window.supabaseClient
+      .from('provider_categories').select('category_id, categories(name, icon)')
+      .eq('provider_id', providerProfileId);
+    
+    if (cats && cats.length > 0) {
+      providerCategories = cats.map(c => c.category_id);
+      renderizarFiltros(cats);
     }
 
-    await carregarDemandas();
+    // 3. Carregar demandas
+    carregarDemandas();
+  }
+
+  function renderizarFiltros(cats) {
+    const bar = document.getElementById('filterBar');
+    cats.forEach(c => {
+      if (c.categories) {
+        const chip = document.createElement('span');
+        chip.className = 'filter-chip';
+        chip.textContent = `${c.categories.icon || '📌'} ${c.categories.name}`;
+        chip.onclick = () => filtrarPorCategoria(c.category_id, chip);
+        bar.appendChild(chip);
+      }
+    });
+  }
+
+  function filtrarPorCategoria(catId, element) {
+    currentFilter = catId;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    element.classList.add('active');
+    renderizarDemandas();
   }
 
   async function carregarDemandas() {
-    // Busca demandas abertas ou em propostas, trazendo o nome do serviço e contagem de propostas
-    const { data, error } = await supabase
+    const { data, error } = await window.supabaseClient
       .from('demands')
       .select(`
-        id, titulo, descricao, cidade, bairro, created_at, status,
-        service_types(nome),
-        proposals(count)
+        id, title, description, budget_min, budget_max, status, created_at,
+        city, neighborhood, zip_code, media_urls,
+        category_id, categories(name, icon, service_type)
       `)
-      .in('status', ['aberta', 'em_propostas'])
+      .eq('status', 'OPEN')
       .order('created_at', { ascending: false });
 
-    if (error) { console.error(error); return; }
-    allDemandas = data || [];
-    render();
+    if (error) {
+      console.error('Erro ao buscar demandas:', error);
+      document.getElementById('demandasList').innerHTML = '<div class="empty-state"><h3>Erro ao carregar demandas</h3></div>';
+      return;
+    }
+
+    allDemands = data || [];
+    renderizarDemandas();
   }
 
-  function formatarData(dataStr) {
-    const data = new Date(dataStr);
-    return data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-  }
-
-  function render() {
-    const list = document.getElementById("list");
-    const empty = document.getElementById("empty");
+  function renderizarDemandas() {
+    const container = document.getElementById('demandasList');
     
-    const filtered = allDemandas.filter(d => {
-      const cat = d.service_types?.nome?.toLowerCase() || '';
-      const matchesFilter = activeFilter === "all" || cat.includes(activeFilter);
-      const matchesSearch = !searchTerm || 
-        d.titulo.toLowerCase().includes(searchTerm) || 
-        (d.bairro + ' ' + d.cidade).toLowerCase().includes(searchTerm);
-      return matchesFilter && matchesSearch;
-    });
+    let filtered = allDemands;
+    if (currentFilter !== 'TODAS') {
+      filtered = allDemands.filter(d => d.category_id === currentFilter);
+    }
 
-    document.getElementById("results-count").textContent = `${filtered.length} demanda${filtered.length !== 1 ? "s" : ""} na sua região`;
-    list.innerHTML = "";
-    empty.style.display = filtered.length ? "none" : "block";
+    if (filtered.length === 0) {
+      container.innerHTML = '<div class="empty-state"><h3>Nenhuma demanda encontrada</h3><p>Novas demandas aparecerão aqui quando clientes publicarem.</p></div>';
+      return;
+    }
 
-    filtered.forEach(d => {
-      const propostasCount = d.proposals[0]?.count || 0;
-      const el = document.createElement("a");
-      el.href = `detalhe-demanda-prestador.html?id=${d.id}`;
-      el.className = "list-row";
-      el.innerHTML = `
-        <div class="avatar avatar-md">✉️</div>
-        <div class="list-row-main">
-          <div class="list-row-title">${d.titulo}</div>
-          <div class="list-row-sub">
-            <span>📍 ${d.bairro}, ${d.cidade}</span><span class="sep">·</span>
-            <span>${d.service_types?.nome || 'Serviço'}</span><span class="sep">·</span>
-            <span>${formatarData(d.created_at)}</span>
+    container.innerHTML = filtered.map(d => {
+      const isFreelance = d.categories?.service_type === 'FREELANCE';
+      const badgeClass = isFreelance ? 'demand-card-badge freelance' : 'demand-card-badge';
+      const badgeText = isFreelance ? '💻 Online' : '🔧 Presencial';
+      const budget = d.budget_max ? `R$ ${parseFloat(d.budget_max).toFixed(2)}` : (d.budget_min ? `A partir de R$ ${parseFloat(d.budget_min).toFixed(2)}` : 'A combinar');
+      const date = new Date(d.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+      const location = d.city ? `📍 ${d.city}${d.neighborhood ? ' - ' + d.neighborhood : ''}` : '📍 Online';
+      
+      let imagesHtml = '';
+      if (d.media_urls && d.media_urls.length > 0) {
+        imagesHtml = `<div class="demand-card-images">${d.media_urls.slice(0, 4).map(url => `<img src="${url}" alt="Foto">`).join('')}</div>`;
+      }
+
+      return `
+        <a href="enviar-proposta.html?demand_id=${d.id}" class="demand-card" style="text-decoration:none; color:inherit; display:block;">
+          <div class="demand-card-header">
+            <h3 class="demand-card-title">${d.title}</h3>
+            <span class="${badgeClass}">${badgeText}</span>
           </div>
-          <div class="list-row-desc">"${d.descricao.substring(0, 90)}${d.descricao.length > 90 ? '...' : ''}"</div>
-        </div>
-        <div class="list-row-side">
-          <span class="list-row-date">${propostasCount} proposta${propostasCount !== 1 ? "s" : ""} até agora</span>
-          <span class="list-row-action">Enviar proposta →</span>
-        </div>`;
-      list.appendChild(el);
-    });
+          ${imagesHtml}
+          <p class="demand-card-desc">${d.description}</p>
+          <div class="demand-card-footer">
+            <div class="demand-card-meta">
+              <span>${d.categories?.icon || '📌'} ${d.categories?.name || 'Serviço'}</span>
+              <span>${location}</span>
+              <span>📅 ${date}</span>
+            </div>
+            <span class="demand-card-budget">${budget}</span>
+          </div>
+        </a>
+      `;
+    }).join('');
   }
-
-  document.getElementById("filters").addEventListener("click", (e) => {
-    const chip = e.target.closest(".chip");
-    if(!chip) return;
-    document.querySelectorAll("#filters .chip").forEach(c => c.classList.remove("selected"));
-    chip.classList.add("selected");
-    activeFilter = chip.dataset.filter;
-    render();
-  });
-
-  document.getElementById("search").addEventListener("input", (e) => {
-    searchTerm = e.target.value.trim().toLowerCase();
-    render();
-  });
 
   init();
 </script>
-<script src="../js/mobile-nav.js"></script>
 </body>
 </html>

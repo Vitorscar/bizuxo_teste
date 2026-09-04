@@ -1,32 +1,5 @@
-os-rapida/
-├── index.html                  (login)
-├── escolha-perfil.html
-├── cadastro-cliente.html
-├── cadastro-prestador.html
-├── style.css                   (design system compartilhado)
-├── js/
-│   ├── supabase-client.js      (stub — troque pelas suas credenciais)
-│   └── auth.js                 (login/cadastro + redirecionamento por tipo)
-├── cliente/
-│   ├── dashboard-cliente.html
-│   ├── minhas-demandas.html
-│   ├── nova-demanda.html
-│   ├── detalhe-demanda.html         (propostas recebidas)
-│   ├── detalhe-demanda-cliente.html (acompanhamento/timeline)
-│   ├── confirmar-demanda.html
-│   ├── servicos-contratados.html
-│   └── meu-perfil-cliente.html
-└── prestador/
-    ├── dashboard-prestador.html
-    ├── demandas-disponiveis.html
-    ├── detalhe-demanda-prestador.html
-    ├── minhas-propostas.html
-    ├── ordens-servico.html
-    └── meu-perfil-prestador.html
 
-
----------------------------------------------------------------------------------
-os-rapida/  #CONCLUIDO
+bizuxo/  #CONCLUIDO
 │
 ├── index.html                              # Login (ponto de entrada)
 ├── escolha-perfil.html                     # "Sou cliente" / "Sou prestador"
@@ -52,7 +25,10 @@ os-rapida/  #CONCLUIDO
 │   ├── notifications.js                    # ✨ NOVO — in-app toast + push (stub)
 │   ├── chat.js                             # ✨ NOVO — realtime do Supabase (canal por OS)
 │   ├── upload.js                           # ✨ NOVO — upload de fotos (perfil / trabalhos)
-│   └── utils.js                            # formatação (moeda, data,RelativeTime)
+│   └── utils.js
+   
+
+                             # formatação (moeda, data,RelativeTime)
 │
 ├── cliente/ #CONCLUIDO
 │   ├── dashboard-cliente.html

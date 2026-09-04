@@ -10,6 +10,42 @@
 <style>
   .new-btn-wrap{ display:flex; }
   .new-btn{ width:auto; padding:12px 20px; }
+  .loading-spinner {
+    text-align: center;
+    padding: 40px;
+    color: var(--ink-soft);
+  }
+  .loading-spinner::after {
+    content: '';
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-left: 10px;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  .error-message {
+    text-align: center;
+    padding: 40px;
+    color: var(--alert);
+    background: var(--alert-soft);
+    border-radius: var(--radius-lg);
+    margin: 20px 0;
+  }
+  .error-message button {
+    margin-top: 12px;
+    padding: 10px 20px;
+    background: var(--alert);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+  }
 </style>
 </head>
 <body>
@@ -22,11 +58,10 @@
       <a class="nav-item" href="minhas-demandas.html"><span class="nav-icon">✉</span> Minhas Demandas</a>
       <a class="nav-item active" href="servicos-contratados.html"><span class="nav-icon">🛠️</span> Serviços Contratados</a>
       <a class="nav-item" href="meu-perfil-cliente.html"><span class="nav-icon">⚙️</span> Meus Dados</a>
-      <a class="nav-item" href="../index.html" style="color:var(--alert);"><span class="nav-icon">🚪</span> Sair</a>
+      <a class="nav-item" href="#" id="logoutBtn" style="color:var(--alert);"><span class="nav-icon">🚪</span> Sair</a>
     </nav>
-    <div class="sidebar-foot">
-      Olá, Maria<br>Águas Claras, DF
-      <div class="role-tag">conta cliente</div>
+    <div class="sidebar-foot" id="sidebarUserInfo">
+      Carregando...
     </div>
   </aside>
 
@@ -49,7 +84,9 @@
       <span class="chip" data-filter="concluido">Concluídos</span>
     </div>
 
-    <div class="ticket-list" id="list" style="margin-top:22px;"></div>
+    <div id="loadingIndicator" class="loading-spinner">Carregando serviços contratados</div>
+    <div id="errorContainer" class="error-message" style="display:none;"></div>
+    <div class="ticket-list" id="list" style="margin-top:22px; display:none;"></div>
 
     <div class="empty-state" id="empty" style="display:none;">
       <h3>Nenhum serviço contratado ainda</h3>
@@ -59,56 +96,293 @@
   </main>
 </div>
 
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-cliente.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/cadastro.js"></script>
+<script src="../js/auth.js"></script>
 <script>
-  const ORDERS = [
-    {
-      id: 1088, title: "Instalação elétrica — cômodo extra", provider: "Carlos Silva", avatar: "👨‍🔧",
-      date: "28/08", value: "R$ 250,00", loc: "Águas Claras",
-      status: "andamento", statusLabel: "Em andamento",
-      actionText: "Acompanhar", actionLink: "detalhe-demanda-cliente.html?id=1088"
-    },
-    {
-      id: 1095, title: "Limpeza profunda de sofá 3 lugares", provider: "LavaJato Express", avatar: "🛋️",
-      date: "02/09", value: "R$ 180,00", loc: "Águas Claras",
-      status: "agendado", statusLabel: "Agendado",
-      actionText: "Ver detalhes", actionLink: "detalhe-demanda-cliente.html?id=1095"
-    },
-    {
-      id: 950, title: "Troca de resistência do chuveiro", provider: "João Marcos", avatar: "🔧",
-      date: "15/08", value: "R$ 80,00", loc: "Águas Claras",
-      status: "concluido", statusLabel: "Concluído",
-      actionText: "Ver avaliação", actionLink: "detalhe-demanda-cliente.html?id=950"
-    },
-    {
-      id: 912, title: "Reparo em porta de armário", provider: "Marcenaria Top", avatar: "🪵",
-      date: "10/08", value: "R$ 120,00", loc: "Sudoeste",
-      status: "cancelado", statusLabel: "Cancelado",
-      actionText: "Ver motivo", actionLink: "#"
-    }
-  ];
-
+  // ============================================
+  // CONFIGURAÇÃO
+  // ============================================
   let activeFilter = "all";
   let searchTerm = "";
+  let allOrders = [];
 
-  function render(){
-    const list = document.getElementById("list");
-    const empty = document.getElementById("empty");
+  // ============================================
+  // INICIALIZAÇÃO
+  // ============================================
+  document.addEventListener('DOMContentLoaded', async function() {
+    console.log('📋 Página de serviços contratados carregada');
+    
+    // Verifica autenticação
+    await verificarAutenticacao();
+    
+    // Carrega dados do usuário
+    await carregarDadosUsuario();
+    
+    // Carrega serviços contratados
+    await carregarServicosContratados();
+    
+    // Configura listeners
+    configurarEventListeners();
+  });
 
-    const filtered = ORDERS.filter(d => {
-      const matchesFilter = activeFilter === "all" || d.status === activeFilter;
+  // ============================================
+  // VERIFICAÇÃO DE AUTENTICAÇÃO
+  // ============================================
+  async function verificarAutenticacao() {
+    const supabase = window.supabaseClient || window.supabase;
+    
+    if (!supabase) {
+      window.location.href = '../index.html';
+      return;
+    }
+
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      
+      if (error || !user) {
+        console.log('❌ Usuário não autenticado');
+        window.location.href = '../index.html';
+        return;
+      }
+      
+      console.log('✅ Usuário autenticado:', user.id);
+      window.currentUser = user;
+      
+    } catch (error) {
+      console.error('Erro ao verificar autenticação:', error);
+      window.location.href = '../index.html';
+    }
+  }
+
+  // ============================================
+  // CARREGAR DADOS DO USUÁRIO
+  // ============================================
+  async function carregarDadosUsuario() {
+    const supabase = window.supabaseClient || window.supabase;
+    
+    if (!supabase || !window.currentUser) return;
+
+    try {
+      const { data: perfil, error } = await supabase
+        .from('profiles')
+        .select('full_name, city, neighborhood, entity_type')
+        .eq('user_id', window.currentUser.id)
+        .single();
+
+      if (error) throw error;
+
+      if (perfil) {
+        const sidebarUserInfo = document.getElementById('sidebarUserInfo');
+        if (sidebarUserInfo) {
+          const nomeExibicao = perfil.full_name || perfil.company_name || 'Usuário';
+          const localizacao = perfil.city ? `${perfil.city}${perfil.uf ? ', ' + perfil.uf : ''}` : '';
+          
+          sidebarUserInfo.innerHTML = `
+            Olá, ${nomeExibicao.split(' ')[0]}<br>${localizacao}
+            <div class="role-tag">conta cliente</div>
+          `;
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao carregar dados do usuário:', error);
+    }
+  }
+
+  // ============================================
+  // CARREGAR SERVIÇOS CONTRATADOS
+  // ============================================
+  async function carregarServicosContratados() {
+    const supabase = window.supabaseClient || window.supabase;
+    
+    if (!supabase || !window.currentUser) {
+      mostrarErro('Sistema não inicializado');
+      return;
+    }
+
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const errorContainer = document.getElementById('errorContainer');
+    const list = document.getElementById('list');
+    const empty = document.getElementById('empty');
+
+    // Mostra loading
+    if (loadingIndicator) loadingIndicator.style.display = 'block';
+    if (errorContainer) errorContainer.style.display = 'none';
+    if (list) list.style.display = 'none';
+    if (empty) empty.style.display = 'none';
+
+    try {
+      // Busca as ordens de serviço do cliente
+      const { data: ordens, error } = await supabase
+        .from('service_orders')
+        .select(`
+          id,
+          title,
+          description,
+          status,
+          scheduled_date,
+          total_value,
+          created_at,
+          provider_id,
+          provider:profiles!provider_id (
+            full_name,
+            company_name,
+            avatar_url
+          ),
+          demand:demands (
+            id,
+            title,
+            city,
+            neighborhood
+          )
+        `)
+        .eq('client_id', window.currentUser.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      console.log('✅ Ordens de serviço carregadas:', ordens);
+
+      // Transforma os dados para o formato da UI
+      allOrders = (ordens || []).map(ordem => {
+        const statusMap = {
+          'agendado': { label: 'Agendado', class: 'agendado' },
+          'em_andamento': { label: 'Em andamento', class: 'andamento' },
+          'andamento': { label: 'Em andamento', class: 'andamento' },
+          'concluido': { label: 'Concluído', class: 'concluido' },
+          'concluida': { label: 'Concluído', class: 'concluido' },
+          'cancelado': { label: 'Cancelado', class: 'cancelado' },
+          'cancelada': { label: 'Cancelado', class: 'cancelado' }
+        };
+        
+        const statusInfo = statusMap[ordem.status] || { 
+          label: ordem.status, 
+          class: 'pendente' 
+        };
+
+        // Determina o nome do prestador
+        const providerName = ordem.provider?.company_name || 
+                            ordem.provider?.full_name || 
+                            'Prestador não definido';
+
+        // Determina o avatar
+        const avatar = ordem.provider?.avatar_url || 
+                      (ordem.provider?.company_name ? '🏢' : '👤');
+
+        // Determina localização
+        const localizacao = ordem.demand?.city || 
+                           ordem.demand?.neighborhood || 
+                           'Local não definido';
+
+        return {
+          id: ordem.id,
+          title: ordem.title || ordem.demand?.title || 'Serviço contratado',
+          provider: providerName,
+          avatar: avatar,
+          date: formatarData(ordem.scheduled_date || ordem.created_at),
+          value: formatarValor(ordem.total_value),
+          loc: localizacao,
+          status: ordem.status,
+          statusLabel: statusInfo.label,
+          statusClass: statusInfo.class,
+          actionText: getActionText(ordem.status),
+          actionLink: `detalhe-ordem.html?id=${ordem.id}`
+        };
+      });
+
+      // Esconde loading
+      if (loadingIndicator) loadingIndicator.style.display = 'none';
+
+      // Renderiza a lista
+      render();
+
+    } catch (error) {
+      console.error('❌ Erro ao carregar serviços:', error);
+      
+      if (loadingIndicator) loadingIndicator.style.display = 'none';
+      mostrarErro('Erro ao carregar serviços contratados. ' + error.message);
+    }
+  }
+
+  // ============================================
+  // FUNÇÕES AUXILIARES
+  // ============================================
+  function formatarData(dataString) {
+    if (!dataString) return 'Data não definida';
+    
+    const data = new Date(dataString);
+    return data.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit'
+    });
+  }
+
+  function formatarValor(valor) {
+    if (!valor && valor !== 0) return 'Valor não definido';
+    
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(valor);
+  }
+
+  function getActionText(status) {
+    switch (status) {
+      case 'agendado':
+        return 'Ver detalhes';
+      case 'em_andamento':
+      case 'andamento':
+        return 'Acompanhar';
+      case 'concluido':
+      case 'concluida':
+        return 'Ver avaliação';
+      case 'cancelado':
+      case 'cancelada':
+        return 'Ver motivo';
+      default:
+        return 'Ver detalhes';
+    }
+  }
+
+  function mostrarErro(mensagem) {
+    const errorContainer = document.getElementById('errorContainer');
+    if (errorContainer) {
+      errorContainer.style.display = 'block';
+      errorContainer.innerHTML = `
+        <div>${mensagem}</div>
+        <button onclick="window.location.reload()">Tentar novamente</button>
+      `;
+    }
+  }
+
+  // ============================================
+  // RENDERIZAÇÃO
+  // ============================================
+  function render() {
+    const list = document.getElementById('list');
+    const empty = document.getElementById('empty');
+
+    if (!list || !empty) return;
+
+    const filtered = allOrders.filter(d => {
+      const matchesFilter = activeFilter === 'all' || d.status === activeFilter;
       const matchesSearch = !searchTerm ||
-        d.title.toLowerCase().includes(searchTerm) || d.provider.toLowerCase().includes(searchTerm);
+        d.title.toLowerCase().includes(searchTerm) || 
+        d.provider.toLowerCase().includes(searchTerm);
       return matchesFilter && matchesSearch;
     });
 
-    list.innerHTML = "";
-    empty.style.display = filtered.length ? "none" : "block";
-    list.style.display = filtered.length ? "block" : "none";
+    list.innerHTML = '';
+    empty.style.display = filtered.length ? 'none' : 'block';
+    list.style.display = filtered.length ? 'block' : 'none';
 
     filtered.forEach(d => {
-      const el = document.createElement("a");
+      const el = document.createElement('a');
       el.href = d.actionLink;
-      el.className = "list-row";
+      el.className = 'list-row';
       el.innerHTML = `
         <div class="avatar avatar-md">${d.avatar}</div>
         <div class="list-row-main">
@@ -118,7 +392,7 @@
           </div>
         </div>
         <div class="list-row-side">
-          <span class="status-badge status-${d.status}">${d.statusLabel}</span>
+          <span class="status-badge status-${d.statusClass}">${d.statusLabel}</span>
           <span class="list-row-value">${d.value}</span>
           <span class="list-row-date">${d.date} · ${d.actionText} →</span>
         </div>
@@ -127,21 +401,48 @@
     });
   }
 
-  document.getElementById("filters").addEventListener("click", (e) => {
-    const chip = e.target.closest(".chip");
-    if(!chip) return;
-    document.querySelectorAll("#filters .chip").forEach(c => c.classList.remove("selected"));
-    chip.classList.add("selected");
-    activeFilter = chip.dataset.filter;
-    render();
-  });
+  // ============================================
+  // EVENT LISTENERS
+  // ============================================
+  function configurarEventListeners() {
+    // Filtros
+    const filtersElement = document.getElementById('filters');
+    if (filtersElement) {
+      filtersElement.addEventListener('click', (e) => {
+        const chip = e.target.closest('.chip');
+        if (!chip) return;
+        
+        document.querySelectorAll('#filters .chip').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+        activeFilter = chip.dataset.filter;
+        render();
+      });
+    }
 
-  document.getElementById("search").addEventListener("input", (e) => {
-    searchTerm = e.target.value.trim().toLowerCase();
-    render();
-  });
+    // Busca
+    const searchInput = document.getElementById('search');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        searchTerm = e.target.value.trim().toLowerCase();
+        render();
+      });
+    }
 
-  render();
+    // Logout
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        const supabase = window.supabaseClient || window.supabase;
+        if (supabase) {
+          await supabase.auth.signOut();
+        }
+        
+        window.location.href = '../index.html';
+      });
+    }
+  }
 </script>
 <script src="../js/mobile-nav.js"></script>
 
