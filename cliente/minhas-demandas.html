@@ -14,25 +14,165 @@
   .list-row-info { font-size: 0.85rem; color: var(--ink-soft); display: block; margin-top: 4px; text-align: right; }
   .list-row-date { font-size: 0.8rem; color: var(--ink-soft); opacity: 0.8; display: block; margin-top: 2px; text-align: right; }
 
-  /* Navegação mobile - copie o CSS que você já tem */
+  /* Navegação mobile - CSS completo */
   .mobile-nav { display: none; }
+  
   @media (max-width: 768px) {
     .sidebar { display: none; } 
     .app-shell { grid-template-columns: 1fr; } 
     .main-content { padding: 20px 16px 100px 16px !important; }
+    
     .mobile-nav { 
-      display: grid; grid-template-columns: 1fr 1fr 72px 1fr 1fr; position: fixed; bottom: 0; left: 0; width: 100%; height: 64px; 
-      background: var(--surface); border-top: 1px solid var(--border); align-items: stretch; z-index: 9999; 
-      padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05); isolation: isolate; 
+      display: grid; 
+      grid-template-columns: 1fr 1fr 72px 1fr 1fr; 
+      position: fixed; 
+      bottom: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 64px; 
+      background: var(--surface); 
+      border-top: 1px solid var(--border); 
+      align-items: stretch; 
+      z-index: 9999; 
+      padding-bottom: env(safe-area-inset-bottom); 
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05); 
+      isolation: isolate; 
     }
-    /* ... e todo o restante do CSS mobile ... */
+    
+    .mobile-nav-item { 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; 
+      text-decoration: none; 
+      color: var(--ink-faint); 
+      font-size: 0.68rem; 
+      font-weight: 600; 
+      gap: 3px; 
+      height: 100%; 
+      position: relative; 
+      transition: color 0.2s ease, transform 0.15s ease; 
+      -webkit-tap-highlight-color: transparent; 
+      touch-action: manipulation; 
+      user-select: none; 
+    }
+    
+    .mobile-nav-item .nav-icon { 
+      font-size: 1.35rem; 
+      line-height: 1; 
+      transition: transform 0.2s ease; 
+    }
+    
+    .mobile-nav-item:active { 
+      transform: scale(0.88); 
+    }
+    
+    .mobile-nav-item:active .nav-icon { 
+      transform: scale(0.9); 
+    }
+    
+    .mobile-nav-item.active { 
+      color: var(--accent); 
+    }
+    
+    .mobile-nav-item.active::before { 
+      content: ''; 
+      position: absolute; 
+      top: 6px; 
+      left: 50%; 
+      transform: translateX(-50%); 
+      width: 5px; 
+      height: 5px; 
+      background: var(--accent); 
+      border-radius: 50%; 
+      box-shadow: 0 0 8px rgba(5, 193, 103, 0.5); 
+    }
+    
+    .nav-badge { 
+      position: absolute; 
+      top: 8px; 
+      right: 50%; 
+      margin-right: -22px; 
+      background: #ff4757; 
+      color: #fff; 
+      font-size: 0.6rem; 
+      font-weight: 700; 
+      min-width: 16px; 
+      height: 16px; 
+      border-radius: 8px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      padding: 0 4px; 
+      line-height: 1; 
+    }
+    
+    .mobile-nav-fab-wrapper { 
+      display: flex; 
+      align-items: flex-start; 
+      justify-content: center; 
+      position: relative; 
+    }
+    
+    .mobile-nav-fab { 
+      width: 54px; 
+      height: 54px; 
+      background: var(--accent); 
+      color: #fff; 
+      border-radius: 50%; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-size: 1.9rem; 
+      font-weight: 300; 
+      text-decoration: none; 
+      box-shadow: 0 4px 15px rgba(5, 193, 103, 0.4); 
+      transition: transform 0.2s ease, box-shadow 0.2s ease; 
+      margin-top: -22px; 
+      border: 3px solid var(--surface); 
+      touch-action: manipulation; 
+      -webkit-tap-highlight-color: transparent; 
+      user-select: none; 
+      position: relative; 
+      z-index: 10; 
+    }
+    
+    .mobile-nav-fab:active { 
+      transform: scale(0.9); 
+      box-shadow: 0 2px 8px rgba(5, 193, 103, 0.3); 
+    }
+    
+    .mobile-nav-fab::after { 
+      content: ''; 
+      position: absolute; 
+      top: -6px; 
+      left: -6px; 
+      right: -6px; 
+      bottom: -6px; 
+      border-radius: 50%; 
+      background: rgba(5, 193, 103, 0.15); 
+      z-index: -1; 
+      animation: pulse-ring 2s ease-in-out infinite; 
+    }
+    
+    @keyframes pulse-ring { 
+      0% { transform: scale(0.9); opacity: 0.7; } 
+      70% { transform: scale(1.2); opacity: 0; } 
+      100% { transform: scale(1.2); opacity: 0; } 
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .mobile-nav-item { font-size: 0.62rem; }
+    .mobile-nav-item .nav-icon { font-size: 1.2rem; }
+    .mobile-nav-fab { width: 48px; height: 48px; font-size: 1.7rem; margin-top: -18px; }
   }
 </style>
 </head>
 <body>
 
 <div class="app-shell">
-  <!-- Sidebar (adicione id="logoutBtn" no link Sair) -->
+  <!-- Sidebar -->
   <aside class="sidebar">
     <div class="brand" style="margin-bottom: 8px;">Bizu<span>xo</span></div>
     <nav class="sidebar-nav">
@@ -97,207 +237,214 @@
 
 <script>
   // ==========================================
-// CONFIGURAÇÃO E ESTADO (SEM DECLARAÇÃO GLOBAL DE supabase)
-// ==========================================
-let allDemands = [];
-let activeFilter = 'all';
-let searchTerm = '';
-let currentProfileId = null;
+  // CONFIGURAÇÃO E ESTADO
+  // ==========================================
+  let allDemands = [];
+  let activeFilter = 'all';
+  let searchTerm = '';
+  let currentProfileId = null;
 
-// Mapeamento de status (mantido)
-const STATUS_MAP = {
-  pendente: 'Pendente',
-  aceito: 'Aceito',
-  em_andamento: 'Em andamento',
-  concluido: 'Concluído',
-  cancelado: 'Cancelado'
-};
+  // Mapeamento de status
+  const STATUS_MAP = {
+    'OPEN': { class: 'receiving', label: 'Aberta' },
+    'ABERTA': { class: 'receiving', label: 'Aberta' },
+    'EM_PROPOSTAS': { class: 'receiving', label: 'Com propostas' },
+    'EM_ANDAMENTO': { class: 'selected', label: 'Em andamento' },
+    'CONCLUIDO': { class: 'done', label: 'Concluída' },
+    'CONCLUIDA': { class: 'done', label: 'Concluída' },
+    'CANCELADO': { class: 'done', label: 'Cancelada' }
+  };
 
-const FILTER_TO_DB_STATUS = {
-  todos: null,
-  pendente: 'pendente',
-  aceito: 'aceito',
-  em_andamento: 'em_andamento',
-  concluido: 'concluido',
-  cancelado: 'cancelado'
-};
+  const FILTER_TO_DB_STATUS = {
+    all: null,
+    open: ['OPEN', 'ABERTA'],
+    receiving: ['EM_PROPOSTAS'],
+    selected: ['EM_ANDAMENTO'],
+    pending_conf: ['PENDING_CONF', 'AGUARDANDO_CONFIRMACAO'],
+    done: ['CONCLUIDO', 'CONCLUIDA', 'CANCELADO']
+  };
 
-// ==========================================
-// INICIALIZAÇÃO
-// ==========================================
-async function init() {
-  const supabaseClient = window.supabaseClient;
-  if (!supabaseClient) {
-    window.location.href = '../index.html';
-    return;
-  }
-
-  const { data: { session } } = await supabaseClient.auth.getSession();
-  if (!session) {
-    window.location.href = '../index.html';
-    return;
-  }
-
-  // Busca perfil
-  const { data: profile, error: profileError } = await supabaseClient
-    .from('profiles')
-    .select('id, full_name, city, uf')
-    .eq('user_id', session.user.id)
-    .single();
-
-  if (profileError || !profile) {
-    console.error('Erro ao carregar perfil:', profileError);
-    document.getElementById('userName').textContent = 'Olá, Usuário';
-    document.getElementById('userLoc').textContent = 'Local não definido';
-    return;
-  }
-
-  currentProfileId = profile.id;
-  document.getElementById('userName').textContent = `Olá, ${(profile.full_name || 'Usuário').split(' ')[0]}`;
-  const local = profile.city ? `${profile.city}${profile.uf ? ', ' + profile.uf : ''}` : 'Local não definido';
-  document.getElementById('userLoc').textContent = local;
-
-  await carregarDemandas();
-  configurarRealtime();
-}
-
-// ==========================================
-// CARREGAR DEMANDAS
-// ==========================================
-async function carregarDemandas() {
-  const supabaseClient = window.supabaseClient;
-  if (!currentProfileId || !supabaseClient) return;
-
-  const { data: demandas, error } = await supabaseClient
-    .from('demands')
-    .select('id, title, description, city, neighborhood, status, created_at, category_id')
-    .eq('client_id', currentProfileId)
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error('Erro ao buscar demandas:', error);
-    document.getElementById('results-count').textContent = 'Erro ao carregar';
-    return;
-  }
-
-  allDemands = (demandas || []).map(d => {
-    const statusInfo = STATUS_MAP[d.status] || { class: 'open', label: d.status || 'Aberta' };
-    return {
-      id: d.id,
-      title: d.title,
-      desc: d.description || '',
-      loc: d.city || d.neighborhood || 'Local não definido',
-      date: d.created_at ? new Date(d.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : '',
-      statusKey: d.status,
-      status: statusInfo.class,
-      statusLabel: statusInfo.label,
-      category: d.category_id || 'Geral'
-    };
-  });
-
-  render();
-}
-
-// ==========================================
-// RENDERIZAÇÃO
-// ==========================================
-function render() {
-  const list = document.getElementById('list');
-  const empty = document.getElementById('empty');
-  
-  const filtered = allDemands.filter(d => {
-    if (activeFilter !== 'all') {
-      const allowed = FILTER_TO_DB_STATUS[activeFilter] || [];
-      if (!allowed.includes(d.statusKey)) return false;
+  // ==========================================
+  // INICIALIZAÇÃO
+  // ==========================================
+  async function init() {
+    const supabaseClient = window.supabaseClient;
+    if (!supabaseClient) {
+      window.location.href = '../index.html';
+      return;
     }
-    if (searchTerm) {
-      return d.title.toLowerCase().includes(searchTerm) || d.loc.toLowerCase().includes(searchTerm);
+
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) {
+      window.location.href = '../index.html';
+      return;
     }
-    return true;
-  });
 
-  const count = filtered.length;
-  document.getElementById('results-count').textContent = `${count} demanda${count !== 1 ? 's' : ''}`;
+    // Busca perfil
+    const { data: profile, error: profileError } = await supabaseClient
+      .from('profiles')
+      .select('id, full_name, city, uf')
+      .eq('user_id', session.user.id)
+      .single();
 
-  list.innerHTML = '';
-  empty.style.display = count ? 'none' : 'block';
+    if (profileError || !profile) {
+      console.error('Erro ao carregar perfil:', profileError);
+      document.getElementById('userName').textContent = 'Olá, Usuário';
+      document.getElementById('userLoc').textContent = 'Local não definido';
+      return;
+    }
 
-  filtered.forEach(d => {
-    const el = document.createElement('a');
-    el.href = `detalhe-demanda-cliente.html?id=${d.id}`;
-    el.className = 'list-row';
-    el.innerHTML = `
-      <div class="avatar avatar-md">📋</div>
-      <div class="list-row-main">
-        <div class="list-row-title">${escapeHTML(d.title)}</div>
-        <div class="list-row-sub">
-          <span>📍 ${escapeHTML(d.loc)}</span><span class="sep">·</span><span>${escapeHTML(d.category)}</span>
-        </div>
-        <div class="list-row-desc">${escapeHTML(d.desc)}</div>
-      </div>
-      <div class="list-row-side">
-        <span class="status-badge status-${d.status}">${d.statusLabel}</span>
-        <span class="list-row-date">${d.date}</span>
-      </div>`;
-    list.appendChild(el);
-  });
-}
+    currentProfileId = profile.id;
+    document.getElementById('userName').textContent = `Olá, ${(profile.full_name || 'Usuário').split(' ')[0]}`;
+    const local = profile.city ? `${profile.city}${profile.uf ? ', ' + profile.uf : ''}` : 'Local não definido';
+    document.getElementById('userLoc').textContent = local;
 
-// ==========================================
-// ESCAPE HTML
-// ==========================================
-function escapeHTML(str) {
-  if (!str) return '';
-  return String(str).replace(/[&<>'"]/g, tag => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-  }[tag]));
-}
+    await carregarDemandas();
+    configurarRealtime();
+  }
 
-// ==========================================
-// REALTIME
-// ==========================================
-function configurarRealtime() {
-  const supabaseClient = window.supabaseClient;
-  supabaseClient
-    .channel('minhas-demandas-realtime')
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'demands', filter: `client_id=eq.${currentProfileId}` },
-      () => {
-        console.log('🔄 Mudança em demands, recarregando...');
-        carregarDemandas();
+  // ==========================================
+  // CARREGAR DEMANDAS
+  // ==========================================
+  async function carregarDemandas() {
+    const supabaseClient = window.supabaseClient;
+    if (!currentProfileId || !supabaseClient) return;
+
+    const { data: demandas, error } = await supabaseClient
+      .from('demands')
+      .select('id, title, description, city, neighborhood, status, created_at, category_id')
+      .eq('client_id', currentProfileId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Erro ao buscar demandas:', error);
+      document.getElementById('results-count').textContent = 'Erro ao carregar';
+      return;
+    }
+
+    allDemands = (demandas || []).map(d => {
+      const statusInfo = STATUS_MAP[d.status] || { class: 'receiving', label: d.status || 'Aberta' };
+      return {
+        id: d.id,
+        title: d.title,
+        desc: d.description || '',
+        loc: d.city || d.neighborhood || 'Local não definido',
+        date: d.created_at ? new Date(d.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : '',
+        statusKey: d.status,
+        statusClass: statusInfo.class,
+        statusLabel: statusInfo.label,
+        category: d.category_id || 'Geral'
+      };
+    });
+
+    render();
+  }
+
+  // ==========================================
+  // RENDERIZAÇÃO
+  // ==========================================
+  function render() {
+    const list = document.getElementById('list');
+    const empty = document.getElementById('empty');
+    
+    const filtered = allDemands.filter(d => {
+      if (activeFilter !== 'all') {
+        const allowed = FILTER_TO_DB_STATUS[activeFilter] || [];
+        if (!allowed.includes(d.statusKey)) return false;
       }
-    )
-    .subscribe();
-}
+      if (searchTerm) {
+        return d.title.toLowerCase().includes(searchTerm) || 
+               d.loc.toLowerCase().includes(searchTerm);
+      }
+      return true;
+    });
 
-// ==========================================
-// EVENT LISTENERS
-// ==========================================
-document.getElementById('filters').addEventListener('click', (e) => {
-  const chip = e.target.closest('.chip');
-  if (!chip) return;
-  
-  document.querySelectorAll('#filters .chip').forEach(c => c.classList.remove('selected'));
-  chip.classList.add('selected');
-  activeFilter = chip.dataset.filter;
-  render();
-});
+    const count = filtered.length;
+    document.getElementById('results-count').textContent = `${count} demanda${count !== 1 ? 's' : ''}`;
 
-document.getElementById('search').addEventListener('input', (e) => {
-  searchTerm = e.target.value.trim().toLowerCase();
-  render();
-});
+    list.innerHTML = '';
+    empty.style.display = count ? 'none' : 'block';
 
-document.getElementById('logoutBtn').addEventListener('click', async (e) => {
-  e.preventDefault();
-  const supabaseClient = window.supabaseClient;
-  await supabaseClient.auth.signOut();
-  window.location.href = '../index.html';
-});
+    filtered.forEach(d => {
+      const el = document.createElement('a');
+      el.href = `detalhe-demanda-cliente.html?id=${d.id}`;
+      el.className = 'list-row';
+      el.innerHTML = `
+        <div class="avatar avatar-md">📋</div>
+        <div class="list-row-main">
+          <div class="list-row-title">${escapeHTML(d.title)}</div>
+          <div class="list-row-sub">
+            <span>📍 ${escapeHTML(d.loc)}</span><span class="sep">·</span><span>${escapeHTML(d.category)}</span>
+          </div>
+          <div class="list-row-desc">${escapeHTML(d.desc)}</div>
+        </div>
+        <div class="list-row-side">
+          <span class="status-badge status-${d.statusClass}">${d.statusLabel}</span>
+          <span class="list-row-date">${d.date}</span>
+        </div>`;
+      list.appendChild(el);
+    });
+  }
 
-// Iniciar
-init();
+  // ==========================================
+  // ESCAPE HTML
+  // ==========================================
+  function escapeHTML(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>'"]/g, tag => ({
+      '&': '&amp;', 
+      '<': '&lt;', 
+      '>': '&gt;', 
+      "'": '&#39;', 
+      '"': '&quot;'
+    }[tag]));
+  }
+
+  // ==========================================
+  // REALTIME
+  // ==========================================
+  function configurarRealtime() {
+    const supabaseClient = window.supabaseClient;
+    supabaseClient
+      .channel('minhas-demandas-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'demands', filter: `client_id=eq.${currentProfileId}` },
+        () => {
+          console.log('🔄 Mudança em demands, recarregando...');
+          carregarDemandas();
+        }
+      )
+      .subscribe();
+  }
+
+  // ==========================================
+  // EVENT LISTENERS
+  // ==========================================
+  document.getElementById('filters').addEventListener('click', (e) => {
+    const chip = e.target.closest('.chip');
+    if (!chip) return;
+    
+    document.querySelectorAll('#filters .chip').forEach(c => c.classList.remove('selected'));
+    chip.classList.add('selected');
+    activeFilter = chip.dataset.filter;
+    render();
+  });
+
+  document.getElementById('search').addEventListener('input', (e) => {
+    searchTerm = e.target.value.trim().toLowerCase();
+    render();
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+    e.preventDefault();
+    const supabaseClient = window.supabaseClient;
+    await supabaseClient.auth.signOut();
+    window.location.href = '../index.html';
+  });
+
+  // Iniciar
+  init();
 </script>
 <script src="../js/mobile-nav.js"></script>
 </body>
