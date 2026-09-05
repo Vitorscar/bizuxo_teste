@@ -27,6 +27,13 @@
     font-size: 2.5rem;
     border: 3px solid var(--surface);
     box-shadow: 0 4px 12px rgba(16, 17, 19, 0.08);
+    overflow: hidden;
+  }
+  .avatar-edit-wrap .avatar-lg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
   }
   .avatar-edit-btn {
     position: absolute;
@@ -128,7 +135,7 @@
     backdrop-filter: blur(10px);
     border-top: 1px solid var(--border);
     padding: 16px 0 max(16px, env(safe-area-inset-bottom));
-    margin: 30px -40px -30px; /* Compensa o padding do main-content */
+    margin: 30px -40px -30px;
     display: flex;
     justify-content: flex-end;
     gap: 12px;
@@ -137,8 +144,87 @@
   }
   .sticky-save-bar .btn { width: auto; }
 
+  /* Navegação mobile */
+  .mobile-nav { display: none; }
+  
   @media (max-width: 768px) {
+    .sidebar { display: none; } 
+    .app-shell { grid-template-columns: 1fr; } 
+    .main-content { padding: 20px 16px 100px 16px !important; }
+    
+    .mobile-nav { 
+      display: grid; 
+      grid-template-columns: repeat(5, 1fr); 
+      position: fixed; 
+      bottom: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 64px; 
+      background: var(--surface); 
+      border-top: 1px solid var(--border); 
+      align-items: stretch; 
+      z-index: 9999; 
+      padding-bottom: env(safe-area-inset-bottom); 
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05); 
+      isolation: isolate; 
+    }
+    
+    .mobile-nav-item { 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; 
+      text-decoration: none; 
+      color: var(--ink-faint); 
+      font-size: 0.68rem; 
+      font-weight: 600; 
+      gap: 3px; 
+      height: 100%; 
+      position: relative; 
+      transition: color 0.2s ease, transform 0.15s ease; 
+      -webkit-tap-highlight-color: transparent; 
+      touch-action: manipulation; 
+      user-select: none; 
+    }
+    
+    .mobile-nav-item .nav-icon { 
+      font-size: 1.35rem; 
+      line-height: 1; 
+      transition: transform 0.2s ease; 
+    }
+    
+    .mobile-nav-item:active { 
+      transform: scale(0.88); 
+    }
+    
+    .mobile-nav-item:active .nav-icon { 
+      transform: scale(0.9); 
+    }
+    
+    .mobile-nav-item.active { 
+      color: var(--alert); 
+    }
+    
+    .mobile-nav-item.active::before { 
+      content: ''; 
+      position: absolute; 
+      top: 6px; 
+      left: 50%; 
+      transform: translateX(-50%); 
+      width: 5px; 
+      height: 5px; 
+      background: var(--alert); 
+      border-radius: 50%; 
+      box-shadow: 0 0 8px rgba(255, 59, 48, 0.5); 
+    }
+
     .sticky-save-bar { margin: 30px -18px -22px; padding: 16px 18px max(16px, env(safe-area-inset-bottom)); }
+    .performance-grid { grid-template-columns: 1fr 1fr 1fr; }
+  }
+  
+  @media (max-width: 480px) {
+    .mobile-nav-item { font-size: 0.62rem; }
+    .mobile-nav-item .nav-icon { font-size: 1.2rem; }
   }
 </style>
 </head>
@@ -156,20 +242,13 @@
       <a class="nav-item" href="historico-financeiro.html"><span class="nav-icon">💳</span> Histórico Financeiro</a>
       <a class="nav-item active" href="meu-perfil-prestador.html"><span class="nav-icon">⚙️</span> Meus Dados</a>
       <div style="flex:1"></div>
-      <a class="nav-item" href="meus-trabalhos.html">
-    <span class="nav-icon">💼</span> Meus Trabalhos
-</a>
-      <a class="nav-item" href="../index.html" style="color: var(--alert); margin-top: auto;"><span class="nav-icon">🚪</span> Sair</a>
+      <a class="nav-item" href="meus-trabalhos.html"><span class="nav-icon">💼</span> Meus Trabalhos</a>
+      <a class="nav-item" href="#" id="logoutBtn" style="color: var(--alert); margin-top: auto;"><span class="nav-icon">🚪</span> Sair</a>
     </nav>
     <div class="sidebar-foot">
-      <div style="font-weight: 600; color: #fff; margin-bottom: 4px;">Olá, Carlos</div>
-      <div style="color: #8B8E96; font-size: 0.75rem; margin-bottom: 10px;">Águas Claras, DF</div>
- <div
-  class="role-tag"
-  style="color: #FF3B30 !important; border-color: rgba(255, 59, 48, 0.45) !important;"
->
-  conta prestador
-</div>
+      <div id="userName" style="font-weight: 600; color: #fff; margin-bottom: 4px;">Carregando...</div>
+      <div id="userLoc" style="color: #8B8E96; font-size: 0.75rem; margin-bottom: 10px;">...</div>
+      <div class="role-tag" style="color: #FF3B30 !important; border-color: rgba(255, 59, 48, 0.45) !important;">conta prestador</div>
     </div>
   </aside>
 
@@ -207,16 +286,16 @@
 
         <div class="field">
           <label for="nome">Nome completo ou Nome profissional</label>
-          <input type="text" id="nome" value="Carlos Elétrica" required>
+          <input type="text" id="nome" required>
         </div>
         <div class="field-row">
           <div class="field">
             <label for="whatsapp">WhatsApp para contato</label>
-            <input type="tel" id="whatsapp" value="(61) 98888-7777" required>
+            <input type="tel" id="whatsapp" required>
           </div>
           <div class="field">
             <label for="email">E-mail (não pode ser alterado)</label>
-            <input type="email" id="email" value="carlos@email.com" disabled style="opacity: 0.7; cursor: not-allowed;">
+            <input type="email" id="email" disabled style="opacity: 0.7; cursor: not-allowed;">
           </div>
         </div>
       </div>
@@ -229,15 +308,15 @@
         </p>
         <div class="performance-grid">
           <div class="perf-item">
-            <b style="color: var(--amber);">★ 4,9</b>
+            <b style="color: var(--amber);" id="perfNota">—</b>
             <span>Nota média</span>
           </div>
           <div class="perf-item">
-            <b>127</b>
+            <b id="perfServicos">0</b>
             <span>Serviços concluídos</span>
           </div>
           <div class="perf-item">
-            <b>~1h</b>
+            <b id="perfTempo">—</b>
             <span>Tempo de resposta</span>
           </div>
         </div>
@@ -250,28 +329,29 @@
         <div class="field">
           <label>Tipos de serviço que você presta</label>
           <div class="chip-select" id="chipContainer">
-            <span class="chip selected alert" data-value="eletrica">⚡ Elétrica</span>
-            <span class="chip selected alert" data-value="instalacao">🔌 Instalações</span>
-            <span class="chip selected alert" data-value="manutencao">🛠️ Manutenção</span>
-            <span class="chip" data-value="hidraulica">🚿 Hidráulica</span>
-            <span class="chip" data-value="arcondicionado">❄️ Ar-condicionado</span>
+            <!-- Chips carregados dinamicamente via JS -->
           </div>
         </div>
 
         <div class="field-row" style="margin-top: 16px;">
           <div class="field">
             <label for="cidade">Cidade base</label>
-            <input type="text" id="cidade" value="Brasília">
+            <input type="text" id="cidade">
           </div>
           <div class="field">
-            <label for="regiao">Regiões que atende</label>
-            <input type="text" id="regiao" value="Águas Claras, Taguatinga, Centro">
+            <label for="uf">UF</label>
+            <input type="text" id="uf" maxlength="2">
           </div>
         </div>
 
         <div class="field" style="margin-top: 16px;">
+          <label for="regiao">Regiões que atende</label>
+          <input type="text" id="regiao" placeholder="Ex: Centro, Bairro A, Bairro B...">
+        </div>
+
+        <div class="field" style="margin-top: 16px;">
           <label for="bio">Sobre você e seu trabalho</label>
-          <textarea id="bio" rows="4" placeholder="Conte sua experiência, especialidades e diferenciais para o cliente...">Eletricista profissional com 8 anos de experiência. Ofereço atendimento rápido, transparente e com garantia de 90 dias em todos os serviços realizados. Especialista em instalações residenciais e pequenos reparos emergenciais.</textarea>
+          <textarea id="bio" rows="4" placeholder="Conte sua experiência, especialidades e diferenciais para o cliente..."></textarea>
           <div class="helper">Dica: Mencione sua experiência e garantias para passar mais confiança.</div>
         </div>
       </div>
@@ -282,21 +362,8 @@
         <p style="font-size: 0.82rem; color: var(--ink-soft); margin: -8px 0 16px;">
           As avaliações são públicas e não podem ser editadas, mas você pode responder a elas nas Ordens de Serviço.
         </p>
-        
-        <div class="review-mini">
-          <div class="review-mini-head">
-            <span class="review-mini-name">Maria Oliveira</span>
-            <span class="review-mini-stars">★★★★★</span>
-          </div>
-          <p class="review-mini-text">Pontual e resolveu tudo rapidinho. Deixou o local super limpo após o serviço!</p>
-        </div>
-        
-        <div class="review-mini">
-          <div class="review-mini-head">
-            <span class="review-mini-name">João Pedro</span>
-            <span class="review-mini-stars">★★★★★</span>
-          </div>
-          <p class="review-mini-text">Preço justo e explicou tudo que estava fazendo antes de começar. Show.</p>
+        <div id="reviewsContainer">
+          <!-- Avaliações carregadas dinamicamente -->
         </div>
       </div>
 
@@ -312,63 +379,375 @@
   </main>
 </div>
 
+<!-- Navegação Mobile -->
+<nav class="mobile-nav" aria-label="Navegação principal">
+  <a href="dashboard-prestador.html" class="mobile-nav-item"><span class="nav-icon">▤</span><span>Início</span></a>
+  <a href="demandas-disponiveis.html" class="mobile-nav-item"><span class="nav-icon">🔍</span><span>Demandas</span></a>
+  <a href="minhas-propostas.html" class="mobile-nav-item"><span class="nav-icon">📨</span><span>Propostas</span></a>
+  <a href="ordens-servico.html" class="mobile-nav-item"><span class="nav-icon">🛠️</span><span>Ordens</span></a>
+  <a href="meu-perfil-prestador.html" class="mobile-nav-item active"><span class="nav-icon">⚙️</span><span>Perfil</span></a>
+</nav>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-cliente.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/auth.js"></script>
+
 <script>
-  // 1. Lógica de Seleção de Chips (Especialidades)
-  document.querySelectorAll('#chipContainer .chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      chip.classList.toggle('selected');
-      chip.classList.toggle('alert');
-    });
-  });
+  // ============================================
+  // ESTADO GLOBAL
+  // ============================================
+  let currentUserId = null;
+  let providerProfileId = null;
+  let selectedCategories = [];
+  let allCategories = [];
 
-  // 2. Preview de Imagem do Avatar
-  const avatarInput = document.getElementById('avatarInput');
-  const avatarPreview = document.getElementById('avatarPreview');
-
-  avatarInput.addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        // Substitui o emoji pela imagem real
-        avatarPreview.innerHTML = `<img src="${event.target.result}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-
-  // 3. Simulação de Salvamento
-  document.getElementById('profileForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const btn = document.getElementById('saveBtn');
-    const originalText = btn.innerHTML;
+  // ============================================
+  // INICIALIZAÇÃO
+  // ============================================
+  async function init() {
+    const supabase = window.supabaseClient;
     
-    btn.innerHTML = '<span style="display:inline-block; animation: spin 1s linear infinite;">⟳</span> Salvando...';
-    btn.disabled = true;
+    if (!supabase) {
+      window.location.href = '../index.html';
+      return;
+    }
 
-    // Coleta de dados para o Supabase
-    const formData = {
-      nome: document.getElementById('nome').value,
-      whatsapp: document.getElementById('whatsapp').value,
-      cidade: document.getElementById('cidade').value,
-      regiao: document.getElementById('regiao').value,
-      bio: document.getElementById('bio').value,
-      especialidades: Array.from(document.querySelectorAll('#chipContainer .chip.selected')).map(c => c.dataset.value)
-    };
-    console.log("Dados para atualizar:", formData);
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      window.location.href = '../index.html';
+      return;
+    }
 
-    // Simulação de delay de rede
-    setTimeout(() => {
-      btn.innerHTML = 'Salvo com sucesso ✓';
-      btn.style.background = 'var(--accent)'; // Muda para verde temporariamente
+    currentUserId = session.user.id;
+
+    // Carrega dados do perfil
+    await carregarPerfil(supabase, currentUserId);
+    
+    // Carrega categorias disponíveis
+    await carregarCategorias(supabase);
+    
+    // Carrega categorias do prestador
+    await carregarCategoriasPrestador(supabase);
+    
+    // Carrega estatísticas de desempenho
+    await carregarDesempenho(supabase);
+    
+    // Carrega avaliações
+    await carregarAvaliacoes(supabase);
+
+    // Configura listeners
+    configurarEventListeners(supabase);
+  }
+
+  // ============================================
+  // CARREGAR PERFIL
+  // ============================================
+  async function carregarPerfil(supabase, userId) {
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+      if (error) throw error;
+
+      if (profile) {
+        providerProfileId = profile.id;
+        
+        // Preenche campos do formulário
+        document.getElementById('nome').value = profile.full_name || '';
+        document.getElementById('whatsapp').value = profile.whatsapp || profile.phone || '';
+        document.getElementById('email').value = sessionStorage.getItem('userEmail') || '';
+        document.getElementById('cidade').value = profile.city || '';
+        document.getElementById('uf').value = profile.uf || '';
+        document.getElementById('regiao').value = profile.service_area || '';
+        document.getElementById('bio').value = profile.bio || '';
+
+        // Atualiza sidebar
+        document.getElementById('userName').textContent = `Olá, ${profile.full_name ? profile.full_name.split(' ')[0] : 'Profissional'}`;
+        document.getElementById('userLoc').textContent = profile.city ? `${profile.city}${profile.uf ? ', ' + profile.uf : ''}` : 'Local não definido';
+
+        // Avatar
+        if (profile.avatar_url) {
+          document.getElementById('avatarPreview').innerHTML = `<img src="${profile.avatar_url}" alt="Avatar">`;
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao carregar perfil:', error);
+    }
+  }
+
+  // ============================================
+  // CARREGAR CATEGORIAS DISPONÍVEIS
+  // ============================================
+  async function carregarCategorias(supabase) {
+    try {
+      const { data: categorias, error } = await supabase
+        .from('categories')
+        .select('id, name, icon')
+        .order('name');
+
+      if (error) throw error;
+
+      allCategories = categorias || [];
+      renderizarChips();
+    } catch (error) {
+      console.error('Erro ao carregar categorias:', error);
+    }
+  }
+
+  // ============================================
+  // CARREGAR CATEGORIAS DO PRESTADOR
+  // ============================================
+  async function carregarCategoriasPrestador(supabase) {
+    if (!providerProfileId) return;
+
+    try {
+      const { data: cats, error } = await supabase
+        .from('provider_categories')
+        .select('category_id')
+        .eq('provider_id', providerProfileId);
+
+      if (error) throw error;
+
+      selectedCategories = (cats || []).map(c => c.category_id);
+      renderizarChips();
+    } catch (error) {
+      console.error('Erro ao carregar categorias do prestador:', error);
+    }
+  }
+
+  // ============================================
+  // RENDERIZAR CHIPS
+  // ============================================
+  function renderizarChips() {
+    const container = document.getElementById('chipContainer');
+    container.innerHTML = '';
+
+    allCategories.forEach(cat => {
+      const isSelected = selectedCategories.includes(cat.id);
+      const chip = document.createElement('span');
+      chip.className = `chip ${isSelected ? 'selected alert' : ''}`;
+      chip.dataset.value = cat.id;
+      chip.textContent = `${cat.icon || '📌'} ${cat.name}`;
+      chip.addEventListener('click', () => {
+        chip.classList.toggle('selected');
+        chip.classList.toggle('alert');
+      });
+      container.appendChild(chip);
+    });
+  }
+
+  // ============================================
+  // CARREGAR DESEMPENHO
+  // ============================================
+  async function carregarDesempenho(supabase) {
+    if (!providerProfileId) return;
+
+    try {
+      // Conta serviços concluídos
+      const { count: servicosConcluidos } = await supabase
+        .from('service_orders')
+        .select('id', { count: 'exact', head: true })
+        .eq('provider_id', providerProfileId)
+        .in('status', ['finalizado', 'concluido']);
+
+      document.getElementById('perfServicos').textContent = servicosConcluidos || 0;
+
+      // Busca avaliações para calcular nota média
+      const { data: avaliacoes } = await supabase
+        .from('reviews')
+        .select('rating')
+        .eq('provider_id', providerProfileId);
+
+      if (avaliacoes && avaliacoes.length > 0) {
+        const media = avaliacoes.reduce((sum, a) => sum + a.rating, 0) / avaliacoes.length;
+        document.getElementById('perfNota').textContent = `★ ${media.toFixed(1)}`;
+      } else {
+        document.getElementById('perfNota').textContent = '—';
+      }
+
+    } catch (error) {
+      console.error('Erro ao carregar desempenho:', error);
+    }
+  }
+
+  // ============================================
+  // CARREGAR AVALIAÇÕES
+  // ============================================
+  async function carregarAvaliacoes(supabase) {
+    if (!providerProfileId) return;
+
+    const container = document.getElementById('reviewsContainer');
+
+    try {
+      const { data: avaliacoes, error } = await supabase
+        .from('reviews')
+        .select(`
+          id,
+          rating,
+          comment,
+          created_at,
+          client:profiles!reviews_client_id_fkey (
+            full_name
+          )
+        `)
+        .eq('provider_id', providerProfileId)
+        .order('created_at', { ascending: false })
+        .limit(3);
+
+      if (error) throw error;
+
+      if (!avaliacoes || avaliacoes.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 20px; color: var(--ink-faint);">
+            Nenhuma avaliação ainda. Complete serviços para receber avaliações dos clientes.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = avaliacoes.map(av => {
+        const stars = '★'.repeat(Math.round(av.rating || 0)) + '☆'.repeat(5 - Math.round(av.rating || 0));
+        const clientName = av.client?.full_name || 'Cliente';
+        const date = new Date(av.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        
+        return `
+          <div class="review-mini">
+            <div class="review-mini-head">
+              <span class="review-mini-name">${escapeHTML(clientName)}</span>
+              <span class="review-mini-stars">${stars}</span>
+            </div>
+            <p class="review-mini-text">${escapeHTML(av.comment || '')}</p>
+            <div style="font-size: 0.7rem; color: var(--ink-faint); margin-top: 4px;">${date}</div>
+          </div>
+        `;
+      }).join('');
+
+    } catch (error) {
+      console.error('Erro ao carregar avaliações:', error);
+      container.innerHTML = '<div style="text-align:center; padding:20px; color: var(--ink-faint);">Erro ao carregar avaliações.</div>';
+    }
+  }
+
+  // ============================================
+  // CONFIGURAR EVENT LISTENERS
+  // ============================================
+  function configurarEventListeners(supabase) {
+    // Preview de Imagem do Avatar
+    const avatarInput = document.getElementById('avatarInput');
+    const avatarPreview = document.getElementById('avatarPreview');
+
+    avatarInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          avatarPreview.innerHTML = `<img src="${event.target.result}" alt="Avatar">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Submit do formulário
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
       
-      setTimeout(() => { 
-        btn.innerHTML = originalText; 
-        btn.style.background = ''; // Volta ao vermelho (alert) original
-        btn.disabled = false; 
-      }, 2000);
-    }, 800);
-  });
+      const btn = document.getElementById('saveBtn');
+      const originalText = btn.innerHTML;
+      
+      btn.innerHTML = '<span style="display:inline-block; animation: spin 1s linear infinite;">⟳</span> Salvando...';
+      btn.disabled = true;
+
+      try {
+        // Coleta dados do formulário
+        const selectedChips = document.querySelectorAll('#chipContainer .chip.selected');
+        const categoriasSelecionadas = Array.from(selectedChips).map(c => c.dataset.value);
+
+        // Atualiza perfil
+        const dadosPerfil = {
+          full_name: document.getElementById('nome').value,
+          whatsapp: document.getElementById('whatsapp').value,
+          city: document.getElementById('cidade').value,
+          uf: document.getElementById('uf').value,
+          service_area: document.getElementById('regiao').value,
+          bio: document.getElementById('bio').value
+        };
+
+        const { error: perfilError } = await supabase
+          .from('profiles')
+          .update(dadosPerfil)
+          .eq('id', providerProfileId);
+
+        if (perfilError) throw perfilError;
+
+        // Atualiza categorias do prestador
+        // Remove categorias antigas
+        await supabase
+          .from('provider_categories')
+          .delete()
+          .eq('provider_id', providerProfileId);
+
+        // Insere novas categorias
+        if (categoriasSelecionadas.length > 0) {
+          const inserts = categoriasSelecionadas.map(catId => ({
+            provider_id: providerProfileId,
+            category_id: catId
+          }));
+
+          const { error: catError } = await supabase
+            .from('provider_categories')
+            .insert(inserts);
+
+          if (catError) throw catError;
+        }
+
+        btn.innerHTML = 'Salvo com sucesso ✓';
+        btn.style.background = 'var(--accent)';
+        
+        setTimeout(() => { 
+          btn.innerHTML = originalText; 
+          btn.style.background = ''; 
+          btn.disabled = false; 
+        }, 2000);
+
+      } catch (error) {
+        console.error('Erro ao salvar:', error);
+        alert('Erro ao salvar dados: ' + error.message);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    });
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+      e.preventDefault();
+      if (supabase) {
+        await supabase.auth.signOut();
+      }
+      window.location.href = '../index.html';
+    });
+  }
+
+  // ============================================
+  // ESCAPE HTML
+  // ============================================
+  function escapeHTML(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>'"]/g, tag => ({ 
+      '&': '&amp;', 
+      '<': '&lt;', 
+      '>': '&gt;', 
+      "'": '&#39;', 
+      '"': '&quot;' 
+    }[tag]));
+  }
+
+  // Iniciar
+  init();
 </script>
 
 <style>
@@ -376,5 +755,4 @@
 </style>
 <script src="../js/mobile-nav.js"></script>
 </body>
-
 </html>
