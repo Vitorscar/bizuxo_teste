@@ -2,13 +2,104 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Minhas Propostas · Bizuxo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#4F46E5">
 <link rel="stylesheet" href="../style.css">
+<style>
+  /* Navegação mobile */
+  .mobile-nav { display: none; }
+  
+  @media (max-width: 768px) {
+    .sidebar { 
+      display: none !important; 
+    }
+    .app-shell { 
+      grid-template-columns: 1fr !important; 
+    }
+    .main-content { 
+      padding: 20px 16px 100px 16px !important; 
+    }
+    
+    .mobile-nav { 
+      display: grid !important; 
+      grid-template-columns: repeat(5, 1fr); 
+      position: fixed; 
+      bottom: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 64px; 
+      background: var(--surface); 
+      border-top: 1px solid var(--border); 
+      align-items: stretch; 
+      z-index: 9999; 
+      padding-bottom: env(safe-area-inset-bottom); 
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05); 
+      isolation: isolate; 
+    }
+    
+    .mobile-nav-item { 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; 
+      text-decoration: none; 
+      color: var(--ink-faint); 
+      font-size: 0.68rem; 
+      font-weight: 600; 
+      gap: 3px; 
+      height: 100%; 
+      position: relative; 
+      transition: color 0.2s ease, transform 0.15s ease; 
+      -webkit-tap-highlight-color: transparent; 
+      touch-action: manipulation; 
+      user-select: none; 
+    }
+    
+    .mobile-nav-item .nav-icon { 
+      font-size: 1.35rem; 
+      line-height: 1; 
+      transition: transform 0.2s ease; 
+    }
+    
+    .mobile-nav-item:active { 
+      transform: scale(0.88); 
+    }
+    
+    .mobile-nav-item:active .nav-icon { 
+      transform: scale(0.9); 
+    }
+    
+    .mobile-nav-item.active { 
+      color: var(--alert); 
+    }
+    
+    .mobile-nav-item.active::before { 
+      content: ''; 
+      position: absolute; 
+      top: 6px; 
+      left: 50%; 
+      transform: translateX(-50%); 
+      width: 5px; 
+      height: 5px; 
+      background: var(--alert); 
+      border-radius: 50%; 
+      box-shadow: 0 0 8px rgba(255, 59, 48, 0.5); 
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .mobile-nav-item { 
+      font-size: 0.62rem !important; 
+    }
+    .mobile-nav-item .nav-icon { 
+      font-size: 1.2rem !important; 
+    }
+  }
+</style>
 </head>
 <body>
 
@@ -20,15 +111,15 @@
       <a class="nav-item" href="demandas-disponiveis.html"><span class="nav-icon">🔍</span> Demandas Disponíveis</a>
       <a class="nav-item active alert" href="minhas-propostas.html"><span class="nav-icon">📨</span> Minhas Propostas</a>
       <a class="nav-item" href="ordens-servico.html"><span class="nav-icon">🛠️</span> Ordens de Serviço</a>
-<a class="nav-item" href="historico-financeiro.html"><span class="nav-icon">💳</span> Histórico Financeiro</a>
+      <a class="nav-item" href="historico-financeiro.html"><span class="nav-icon">💳</span> Histórico Financeiro</a>
       <a class="nav-item" href="meu-perfil-prestador.html"><span class="nav-icon">⚙️</span> Meus Dados</a>
-      <a class="nav-item" href="meus-trabalhos.html">
-    <span class="nav-icon">💼</span> Meus Trabalhos
-</a>
-      <a class="nav-item" href="../index.html" style="color:var(--alert);"><span class="nav-icon">🚪</span> Sair</a>
+      <a class="nav-item" href="meus-trabalhos.html"><span class="nav-icon">💼</span> Meus Trabalhos</a>
+      <div style="flex:1"></div>
+      <a class="nav-item" href="#" id="logoutBtn" style="color:var(--alert); margin-top:auto;"><span class="nav-icon">🚪</span> Sair</a>
     </nav>
     <div class="sidebar-foot">
-      Olá, Carlos<br>Águas Claras, DF
+      <div id="userName" style="font-weight: 600; color: #fff; margin-bottom: 4px;">Carregando...</div>
+      <div id="userLoc" style="color: #8B8E96; font-size: 0.75rem; margin-bottom: 10px;">...</div>
       <div class="role-tag alert">conta prestador</div>
     </div>
   </aside>
@@ -59,69 +150,240 @@
   </main>
 </div>
 
+<!-- Navegação Mobile -->
+<nav class="mobile-nav" aria-label="Navegação principal">
+  <a href="dashboard-prestador.html" class="mobile-nav-item"><span class="nav-icon">▤</span><span>Início</span></a>
+  <a href="demandas-disponiveis.html" class="mobile-nav-item"><span class="nav-icon">🔍</span><span>Demandas</span></a>
+  <a href="minhas-propostas.html" class="mobile-nav-item active"><span class="nav-icon">📨</span><span>Propostas</span></a>
+  <a href="ordens-servico.html" class="mobile-nav-item"><span class="nav-icon">🛠️</span><span>Ordens</span></a>
+  <a href="meu-perfil-prestador.html" class="mobile-nav-item"><span class="nav-icon">⚙️</span><span>Perfil</span></a>
+</nav>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-cliente.js"></script>
+<script src="../js/auth.js"></script>
+
 <script>
-  const PROPOSALS = [
-    { id: 1, demandTitle: "Instalação de chuveiro elétrico", client: "Maria Oliveira", loc: "Águas Claras",
-      value: "R$ 120,00", date: "27/08", status: "pendente" },
-    { id: 2, demandTitle: "Revisão de disjuntor", client: "João Pedro", loc: "Águas Claras",
-      value: "R$ 90,00", date: "25/08", status: "aceita" },
-    { id: 3, demandTitle: "Troca de fiação da cozinha", client: "Ana Souza", loc: "Sudoeste",
-      value: "R$ 300,00", date: "20/08", status: "recusada" },
-  ];
+  // ==========================================
+  // ESTADO GLOBAL
+  // ==========================================
+  let allProposals = [];
+  let activeFilter = 'all';
+  let searchTerm = '';
+  let currentProfileId = null;
 
-  const STATUS_LABEL = { pendente: "Aguardando resposta", aceita: "Aceita", recusada: "Recusada" };
-  const STATUS_CLASS = { pendente: "agendado", aceita: "andamento", recusada: "cancelado" };
+  // Mapeamento de status
+  const STATUS_MAP = {
+    'PENDENTE': { class: 'agendado', label: 'Aguardando resposta' },
+    'pendente': { class: 'agendado', label: 'Aguardando resposta' },
+    'ACEITA': { class: 'andamento', label: 'Aceita' },
+    'aceita': { class: 'andamento', label: 'Aceita' },
+    'RECUSADA': { class: 'cancelado', label: 'Recusada' },
+    'recusada': { class: 'cancelado', label: 'Recusada' },
+    'CANCELADA': { class: 'cancelado', label: 'Cancelada' }
+  };
 
-  let activeFilter = "all";
-  let searchTerm = "";
+  const FILTER_TO_STATUS = {
+    'all': null,
+    'pendente': ['PENDENTE', 'pendente'],
+    'aceita': ['ACEITA', 'aceita'],
+    'recusada': ['RECUSADA', 'recusada']
+  };
 
-  function render(){
-    const list = document.getElementById("list");
-    const empty = document.getElementById("empty");
-    const filtered = PROPOSALS.filter(p => {
-      const matchesFilter = activeFilter === "all" || p.status === activeFilter;
-      const matchesSearch = !searchTerm ||
-        p.demandTitle.toLowerCase().includes(searchTerm) || p.client.toLowerCase().includes(searchTerm);
-      return matchesFilter && matchesSearch;
+  // ==========================================
+  // INICIALIZAÇÃO
+  // ==========================================
+  async function init() {
+    const supabaseClient = window.supabaseClient;
+    if (!supabaseClient) {
+      window.location.href = '../index.html';
+      return;
+    }
+
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) {
+      window.location.href = '../index.html';
+      return;
+    }
+
+    const { data: profile, error: profileError } = await supabaseClient
+      .from('profiles')
+      .select('id, full_name, city, uf')
+      .eq('user_id', session.user.id)
+      .single();
+
+    if (profileError || !profile) {
+      console.error('Erro ao carregar perfil:', profileError);
+      document.getElementById('userName').textContent = 'Olá, Prestador';
+      document.getElementById('userLoc').textContent = 'Local não definido';
+      return;
+    }
+
+    currentProfileId = profile.id;
+    document.getElementById('userName').textContent = `Olá, ${(profile.full_name || 'Prestador').split(' ')[0]}`;
+    const local = profile.city ? `${profile.city}${profile.uf ? ', ' + profile.uf : ''}` : 'Local não definido';
+    document.getElementById('userLoc').textContent = local;
+
+    await carregarPropostas();
+    configurarRealtime();
+  }
+
+  // ==========================================
+  // CARREGAR PROPOSTAS
+  // ==========================================
+  async function carregarPropostas() {
+    const supabaseClient = window.supabaseClient;
+    if (!currentProfileId || !supabaseClient) return;
+
+    const { data: propostas, error } = await supabaseClient
+      .from('proposals')
+      .select(`
+        id,
+        value,
+        status,
+        created_at,
+        demand:demands (
+          id,
+          title,
+          city,
+          neighborhood
+        ),
+        client:profiles!proposals_client_id_fkey (
+          full_name,
+          company_name
+        )
+      `)
+      .eq('provider_id', currentProfileId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Erro ao buscar propostas:', error);
+      document.getElementById('results-count').textContent = 'Erro ao carregar';
+      return;
+    }
+
+    allProposals = (propostas || []).map(p => {
+      const statusInfo = STATUS_MAP[p.status] || { class: 'agendado', label: p.status };
+      const clientName = p.client?.full_name || p.client?.company_name || 'Cliente';
+      const local = p.demand?.city || p.demand?.neighborhood || 'Local não definido';
+
+      return {
+        id: p.id,
+        demandTitle: p.demand?.title || 'Demanda',
+        client: clientName,
+        loc: local,
+        value: p.value ? `R$ ${parseFloat(p.value).toFixed(2)}` : 'A combinar',
+        date: p.created_at ? new Date(p.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : '',
+        statusKey: p.status,
+        statusClass: statusInfo.class,
+        statusLabel: statusInfo.label,
+        demandId: p.demand?.id
+      };
     });
 
-    document.getElementById("results-count").textContent = `${filtered.length} proposta${filtered.length !== 1 ? "s" : ""}`;
+    render();
+  }
 
-    list.innerHTML = "";
-    empty.style.display = filtered.length ? "none" : "block";
+  // ==========================================
+  // RENDERIZAÇÃO
+  // ==========================================
+  function render() {
+    const list = document.getElementById('list');
+    const empty = document.getElementById('empty');
+    
+    const filtered = allProposals.filter(p => {
+      if (activeFilter !== 'all') {
+        const allowed = FILTER_TO_STATUS[activeFilter] || [];
+        if (!allowed.includes(p.statusKey)) return false;
+      }
+      if (searchTerm) {
+        return p.demandTitle.toLowerCase().includes(searchTerm) || p.client.toLowerCase().includes(searchTerm);
+      }
+      return true;
+    });
+
+    const count = filtered.length;
+    document.getElementById('results-count').textContent = `${count} proposta${count !== 1 ? 's' : ''}`;
+
+    list.innerHTML = '';
+    empty.style.display = count ? 'none' : 'block';
 
     filtered.forEach(p => {
-      const el = document.createElement("div");
-      el.className = "list-row";
+      const el = document.createElement('a');
+      el.href = `detalhe-proposta.html?id=${p.id}`;
+      el.className = 'list-row';
       el.innerHTML = `
         <div class="avatar avatar-md">📨</div>
         <div class="list-row-main">
-          <div class="list-row-title">${p.demandTitle}</div>
-          <div class="list-row-sub"><span>${p.client}</span><span class="sep">·</span><span>📍 ${p.loc}</span><span class="sep">·</span><span>${p.date}</span></div>
+          <div class="list-row-title">${escapeHTML(p.demandTitle)}</div>
+          <div class="list-row-sub">
+            <span>${escapeHTML(p.client)}</span><span class="sep">·</span><span>📍 ${escapeHTML(p.loc)}</span><span class="sep">·</span><span>${p.date}</span>
+          </div>
         </div>
         <div class="list-row-side">
-          <span class="status-badge status-${STATUS_CLASS[p.status]}">${STATUS_LABEL[p.status]}</span>
+          <span class="status-badge status-${p.statusClass}">${p.statusLabel}</span>
           <span class="list-row-value">${p.value}</span>
         </div>`;
       list.appendChild(el);
     });
   }
 
-  document.getElementById("filters").addEventListener("click", (e) => {
-    const chip = e.target.closest(".chip");
-    if(!chip) return;
-    document.querySelectorAll("#filters .chip").forEach(c => c.classList.remove("selected"));
-    chip.classList.add("selected");
+  // ==========================================
+  // ESCAPE HTML
+  // ==========================================
+  function escapeHTML(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>'"]/g, tag => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+    }[tag]));
+  }
+
+  // ==========================================
+  // REALTIME
+  // ==========================================
+  function configurarRealtime() {
+    const supabaseClient = window.supabaseClient;
+    supabaseClient
+      .channel('minhas-propostas-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'proposals', filter: `provider_id=eq.${currentProfileId}` },
+        () => {
+          console.log('🔄 Mudança em proposals, recarregando...');
+          carregarPropostas();
+        }
+      )
+      .subscribe();
+  }
+
+  // ==========================================
+  // EVENT LISTENERS
+  // ==========================================
+  document.getElementById('filters').addEventListener('click', (e) => {
+    const chip = e.target.closest('.chip');
+    if (!chip) return;
+    
+    document.querySelectorAll('#filters .chip').forEach(c => c.classList.remove('selected'));
+    chip.classList.add('selected');
     activeFilter = chip.dataset.filter;
     render();
   });
 
-  document.getElementById("search").addEventListener("input", (e) => {
+  document.getElementById('search').addEventListener('input', (e) => {
     searchTerm = e.target.value.trim().toLowerCase();
     render();
   });
 
-  render();
+  document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+    e.preventDefault();
+    const supabaseClient = window.supabaseClient;
+    await supabaseClient.auth.signOut();
+    window.location.href = '../index.html';
+  });
+
+  // Iniciar
+  init();
 </script>
 </body>
 </html>
