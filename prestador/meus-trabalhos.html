@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Meus Trabalhos · Bizuxo </title>
+<title>Meus Trabalhos · Bizuxo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
@@ -100,6 +100,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.15s;
+    font-family: var(--font-body);
   }
   .filter-chip:hover {
     border-color: var(--ink);
@@ -351,6 +352,12 @@
     color: var(--ink-faint);
     cursor: pointer;
     transition: transform 0.15s;
+    overflow: hidden;
+  }
+  .gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   .gallery-item:hover {
     transform: scale(1.05);
@@ -470,6 +477,12 @@
     justify-content: center;
     font-size: 1.5rem;
     position: relative;
+    overflow: hidden;
+  }
+  .preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   .preview-item .remove-btn {
     position: absolute;
@@ -488,9 +501,87 @@
     justify-content: center;
   }
 
+  /* Navegação mobile */
+  .mobile-nav { display: none; }
+  
   @media (max-width: 768px) {
+    .sidebar { display: none; } 
+    .app-shell { grid-template-columns: 1fr; } 
+    .main-content { padding: 20px 16px 100px 16px !important; }
+    
+    .mobile-nav { 
+      display: grid; 
+      grid-template-columns: repeat(5, 1fr); 
+      position: fixed; 
+      bottom: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 64px; 
+      background: var(--surface); 
+      border-top: 1px solid var(--border); 
+      align-items: stretch; 
+      z-index: 9999; 
+      padding-bottom: env(safe-area-inset-bottom); 
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05); 
+      isolation: isolate; 
+    }
+    
+    .mobile-nav-item { 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; 
+      text-decoration: none; 
+      color: var(--ink-faint); 
+      font-size: 0.68rem; 
+      font-weight: 600; 
+      gap: 3px; 
+      height: 100%; 
+      position: relative; 
+      transition: color 0.2s ease, transform 0.15s ease; 
+      -webkit-tap-highlight-color: transparent; 
+      touch-action: manipulation; 
+      user-select: none; 
+    }
+    
+    .mobile-nav-item .nav-icon { 
+      font-size: 1.35rem; 
+      line-height: 1; 
+      transition: transform 0.2s ease; 
+    }
+    
+    .mobile-nav-item:active { 
+      transform: scale(0.88); 
+    }
+    
+    .mobile-nav-item:active .nav-icon { 
+      transform: scale(0.9); 
+    }
+    
+    .mobile-nav-item.active { 
+      color: var(--alert); 
+    }
+    
+    .mobile-nav-item.active::before { 
+      content: ''; 
+      position: absolute; 
+      top: 6px; 
+      left: 50%; 
+      transform: translateX(-50%); 
+      width: 5px; 
+      height: 5px; 
+      background: var(--alert); 
+      border-radius: 50%; 
+      box-shadow: 0 0 8px rgba(255, 59, 48, 0.5); 
+    }
+
     .works-grid { grid-template-columns: 1fr; }
     .modal-info-grid { grid-template-columns: 1fr; }
+  }
+  
+  @media (max-width: 480px) {
+    .mobile-nav-item { font-size: 0.62rem; }
+    .mobile-nav-item .nav-icon { font-size: 1.2rem; }
   }
 </style>
 </head>
@@ -501,36 +592,20 @@
   <aside class="sidebar">
     <div class="brand alert" style="margin-bottom: 8px;">Bizu<span>xo</span></div>
     <nav class="sidebar-nav">
-      <a class="nav-item" href="dashboard-prestador.html">
-        <span class="nav-icon">▤</span> Visão Geral
-      </a>
-      <a class="nav-item" href="demandas-disponiveis.html">
-        <span class="nav-icon">🔍</span> Demandas Disponíveis
-      </a>
-      <a class="nav-item" href="minhas-propostas.html">
-        <span class="nav-icon">📨</span> Minhas Propostas
-      </a>
-      <a class="nav-item" href="ordens-servico.html">
-        <span class="nav-icon">🛠️</span> Ordens de Serviço
-      </a>
-      <a class="nav-item" href="historico-financeiro.html">
-        <span class="nav-icon">💳</span> Histórico Financeiro
-      </a>
-      <a class="nav-item active" href="meu-perfil-prestador.html">
-        <span class="nav-icon">⚙️</span> Meus Dados
-      </a>
-      <a class="nav-item" href="meus-trabalhos.html">
-    <span class="nav-icon">💼</span> Meus Trabalhos
-</a>
+      <a class="nav-item" href="dashboard-prestador.html"><span class="nav-icon">▤</span> Visão Geral</a>
+      <a class="nav-item" href="demandas-disponiveis.html"><span class="nav-icon">🔍</span> Demandas Disponíveis</a>
+      <a class="nav-item" href="minhas-propostas.html"><span class="nav-icon">📨</span> Minhas Propostas</a>
+      <a class="nav-item" href="ordens-servico.html"><span class="nav-icon">🛠️</span> Ordens de Serviço</a>
+      <a class="nav-item" href="historico-financeiro.html"><span class="nav-icon">💳</span> Histórico Financeiro</a>
+      <a class="nav-item" href="meu-perfil-prestador.html"><span class="nav-icon">⚙️</span> Meus Dados</a>
+      <a class="nav-item active" href="meus-trabalhos.html"><span class="nav-icon">💼</span> Meus Trabalhos</a>
       <div style="flex:1"></div>
-      <a class="nav-item" href="../index.html" style="color: var(--alert); margin-top: auto;">
-        <span class="nav-icon">🚪</span> Sair
-      </a>
+      <a class="nav-item" href="#" id="logoutBtn" style="color: var(--alert); margin-top: auto;"><span class="nav-icon">🚪</span> Sair</a>
     </nav>
     <div class="sidebar-foot">
-      <div style="font-weight: 600; color: #fff; margin-bottom: 4px;">Olá, Carlos</div>
-      <div style="color: #8B8E96; font-size: 0.75rem; margin-bottom: 10px;">Águas Claras, DF</div>
-      <div class="role-tag">conta prestador</div>
+      <div id="userName" style="font-weight: 600; color: #fff; margin-bottom: 4px;">Carregando...</div>
+      <div id="userLoc" style="color: #8B8E96; font-size: 0.75rem; margin-bottom: 10px;">...</div>
+      <div class="role-tag" style="color: #FF3B30 !important; border-color: rgba(255, 59, 48, 0.45) !important;">conta prestador</div>
     </div>
   </aside>
 
@@ -551,21 +626,21 @@
       <div class="portfolio-stat">
         <div>
           <div class="label">Total de trabalhos</div>
-          <div class="count">47</div>
+          <div class="count" id="statTotal">0</div>
         </div>
         <div class="stat-icon red">📸</div>
       </div>
       <div class="portfolio-stat">
         <div>
           <div class="label">Visíveis no perfil</div>
-          <div class="count" style="color: var(--accent);">42</div>
+          <div class="count" id="statVisiveis" style="color: var(--accent);">0</div>
         </div>
         <div class="stat-icon green">✓</div>
       </div>
       <div class="portfolio-stat">
         <div>
           <div class="label">Ocultos</div>
-          <div class="count" style="color: var(--ink-faint);">5</div>
+          <div class="count" id="statOcultos" style="color: var(--ink-faint);">0</div>
         </div>
         <div class="stat-icon amber">🔒</div>
       </div>
@@ -573,12 +648,9 @@
 
     <!-- Filtros -->
     <div class="filters-bar">
-      <input type="text" class="search-filter" placeholder="🔍 Buscar por título, cliente ou tipo de serviço...">
-      <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-        <span class="filter-chip active">Todos (47)</span>
-        <span class="filter-chip">⚡ Elétrica (28)</span>
-        <span class="filter-chip">🔌 Instalações (12)</span>
-        <span class="filter-chip">🛠️ Manutenção (7)</span>
+      <input type="text" class="search-filter" id="searchInput" placeholder="🔍 Buscar por título, cliente ou tipo de serviço...">
+      <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="filterChips">
+        <span class="filter-chip active" data-filter="all">Todos</span>
       </div>
     </div>
 
@@ -589,55 +661,26 @@
   </main>
 </div>
 
+<!-- Navegação Mobile -->
+<nav class="mobile-nav" aria-label="Navegação principal">
+  <a href="dashboard-prestador.html" class="mobile-nav-item"><span class="nav-icon">▤</span><span>Início</span></a>
+  <a href="demandas-disponiveis.html" class="mobile-nav-item"><span class="nav-icon">🔍</span><span>Demandas</span></a>
+  <a href="minhas-propostas.html" class="mobile-nav-item"><span class="nav-icon">📨</span><span>Propostas</span></a>
+  <a href="ordens-servico.html" class="mobile-nav-item"><span class="nav-icon">🛠️</span><span>Ordens</span></a>
+  <a href="meu-perfil-prestador.html" class="mobile-nav-item"><span class="nav-icon">⚙️</span><span>Perfil</span></a>
+</nav>
+
 <!-- Modal de Detalhes do Trabalho -->
 <div class="modal-overlay" id="workModal">
   <div class="modal-content">
     <div class="modal-header">
-      <h2 style="font-size: 1.1rem; margin: 0;" id="modalTitle">Instalação de chuveiro elétrico</h2>
+      <h2 style="font-size: 1.1rem; margin: 0;" id="modalTitle">Detalhes do Trabalho</h2>
       <button class="modal-close" onclick="closeWorkModal()">✕</button>
     </div>
-    <div class="modal-body">
-      <div class="modal-image-gallery">
-        <div class="gallery-item">📷</div>
-        <div class="gallery-item">📷</div>
-        <div class="gallery-item">📷</div>
-      </div>
-
-      <div class="modal-info-grid">
-        <div class="modal-info-item">
-          <div class="label">Cliente</div>
-          <div class="value">Maria Oliveira</div>
-        </div>
-        <div class="modal-info-item">
-          <div class="label">Data do serviço</div>
-          <div class="value">26/08/2026</div>
-        </div>
-        <div class="modal-info-item">
-          <div class="label">Tipo de serviço</div>
-          <div class="value">⚡ Elétrica</div>
-        </div>
-        <div class="modal-info-item">
-          <div class="label">Valor</div>
-          <div class="value">R$ 250,00</div>
-        </div>
-      </div>
-
-      <div style="margin-bottom: 16px;">
-        <div style="font-size: 0.82rem; font-weight: 700; color: var(--ink); margin-bottom: 8px;">Descrição</div>
-        <div style="font-size: 0.88rem; color: var(--ink-soft); line-height: 1.5;">
-          Instalação completa de chuveiro elétrico com troca de fiação e disjuntor. Serviço realizado em 2 horas com garantia de 90 dias.
-        </div>
-      </div>
-
-      <div class="modal-review">
-        <div class="modal-review-head">
-          <span class="modal-review-name">Avaliação do cliente</span>
-          <span class="modal-review-stars">★★★★★</span>
-        </div>
-        <p class="modal-review-text">Pontual e resolveu tudo rapidinho. Deixou o local super limpo após o serviço, super recomendo!</p>
-      </div>
+    <div class="modal-body" id="modalBody">
+      <!-- Preenchido dinamicamente -->
     </div>
-    <div class="modal-actions">
+    <div class="modal-actions" id="modalActions">
       <button class="btn btn-outline" onclick="closeWorkModal()">Fechar</button>
       <button class="btn btn-dark" onclick="toggleVisibility()">🔒 Ocultar do perfil</button>
       <button class="btn btn-alert" onclick="deleteWork()">🗑️ Excluir</button>
@@ -660,9 +703,7 @@
         <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
       </div>
 
-      <div class="upload-preview" id="uploadPreview">
-        <!-- Preview das fotos selecionadas -->
-      </div>
+      <div class="upload-preview" id="uploadPreview"></div>
 
       <div class="field">
         <label for="workTitle">Título do trabalho</label>
@@ -672,11 +713,7 @@
       <div class="field">
         <label for="workType">Tipo de serviço</label>
         <select id="workType">
-          <option>⚡ Elétrica</option>
-          <option>🔌 Instalações</option>
-          <option>🛠️ Manutenção</option>
-          <option>🚿 Hidráulica</option>
-          <option>❄️ Ar-condicionado</option>
+          <option value="">Selecione...</option>
         </select>
       </div>
 
@@ -687,7 +724,7 @@
 
       <div class="field">
         <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-          <input type="checkbox" checked style="width: auto;">
+          <input type="checkbox" id="workVisible" checked style="width: auto;">
           <span>Tornar este trabalho visível no meu perfil público</span>
         </label>
       </div>
@@ -699,207 +736,532 @@
   </div>
 </div>
 
-<script>
-  // ---- Dados Simulados ----
-  const WORKS = [
-    {
-      id: 1,
-      title: "Instalação de chuveiro elétrico",
-      client: "Maria Oliveira",
-      date: "26/08/2026",
-      type: "⚡ Elétrica",
-      rating: 5,
-      photos: 3,
-      visible: true,
-      description: "Instalação completa de chuveiro elétrico com troca de fiação e disjuntor.",
-      review: "Pontual e resolveu tudo rapidinho. Deixou o local super limpo!"
-    },
-    {
-      id: 2,
-      title: "Troca de disjuntor e quadro elétrico",
-      client: "João Pedro",
-      date: "20/08/2026",
-      type: "⚡ Elétrica",
-      rating: 5,
-      photos: 5,
-      visible: true,
-      description: "Substituição completa do quadro de distribuição com 12 disjuntores.",
-      review: "Preço justo e explicou tudo que estava fazendo. Show!"
-    },
-    {
-      id: 3,
-      title: "Instalação de luminárias LED",
-      client: "Ana Souza",
-      date: "15/08/2026",
-      type: "🔌 Instalações",
-      rating: 4,
-      photos: 4,
-      visible: true,
-      description: "Instalação de 8 luminárias LED embutidas no teto.",
-      review: "Bom serviço, atrasou uns 20 minutos mas avisou antes."
-    },
-    {
-      id: 4,
-      title: "Reparo em tomada queimada",
-      client: "Carlos Mendes",
-      date: "10/08/2026",
-      type: "🛠️ Manutenção",
-      rating: 5,
-      photos: 2,
-      visible: true,
-      description: "Troca de tomada queimada e verificação de fiação.",
-      review: "Excelente profissional!"
-    },
-    {
-      id: 5,
-      title: "Instalação de ventilador de teto",
-      client: "Patrícia Lima",
-      date: "05/08/2026",
-      type: "🔌 Instalações",
-      rating: 5,
-      photos: 3,
-      visible: false,
-      description: "Instalação de ventilador de teto com controle remoto.",
-      review: "Muito bom!"
-    },
-    {
-      id: 6,
-      title: "Troca de resistência do chuveiro",
-      client: "Roberto Silva",
-      date: "01/08/2026",
-      type: "🛠️ Manutenção",
-      rating: 5,
-      photos: 2,
-      visible: true,
-      description: "Troca de resistência queimada em chuveiro elétrico.",
-      review: "Rápido e eficiente!"
-    },
-  ];
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-cliente.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/auth.js"></script>
 
-  // ---- Renderização do Grid ----
-  const grid = document.getElementById('worksGrid');
-  
-  if (WORKS.length === 0) {
-    grid.innerHTML = `
-      <div class="empty-portfolio" style="grid-column: 1 / -1;">
-        <div class="icon">📸</div>
-        <h3>Nenhum trabalho cadastrado</h3>
-        <p>Adicione fotos dos serviços que você já realizou para mostrar sua qualidade aos futuros clientes.</p>
-        <button class="btn btn-alert" onclick="openUploadModal()" style="width: auto; padding: 12px 24px;">
-          📷 Adicionar primeiro trabalho
-        </button>
-      </div>
-    `;
-  } else {
-    WORKS.forEach(w => {
-      const card = document.createElement('div');
-      card.className = `work-card ${w.visible ? '' : 'hidden'}`;
-      card.innerHTML = `
-        <div class="work-image">📷</div>
-        <div class="work-content">
-          <div class="work-title">${w.title}</div>
-          <div class="work-meta">
-            <div class="work-client">👤 ${w.client}</div>
-            <div class="work-rating">★ ${w.rating}</div>
+<script>
+  // ============================================
+  // ESTADO GLOBAL
+  // ============================================
+  let allWorks = [];
+  let currentUserId = null;
+  let providerProfileId = null;
+  let currentFilter = 'all';
+  let searchTerm = '';
+  let currentWorkIdForAction = null;
+  let selectedFiles = [];
+
+  // ============================================
+  // INICIALIZAÇÃO
+  // ============================================
+  async function init() {
+    const supabase = window.supabaseClient;
+    
+    if (!supabase) {
+      window.location.href = '../index.html';
+      return;
+    }
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      window.location.href = '../index.html';
+      return;
+    }
+
+    currentUserId = session.user.id;
+
+    // Carrega perfil
+    await carregarPerfil(supabase, currentUserId);
+    
+    // Carrega categorias para o select
+    await carregarCategorias(supabase);
+    
+    // Carrega trabalhos
+    await carregarTrabalhos(supabase, providerProfileId);
+    
+    // Configura listeners
+    configurarEventListeners(supabase);
+  }
+
+  // ============================================
+  // CARREGAR PERFIL
+  // ============================================
+  async function carregarPerfil(supabase, userId) {
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id, full_name, city, uf')
+        .eq('user_id', userId)
+        .single();
+
+      if (profile) {
+        providerProfileId = profile.id;
+        document.getElementById('userName').textContent = `Olá, ${profile.full_name ? profile.full_name.split(' ')[0] : 'Profissional'}`;
+        document.getElementById('userLoc').textContent = profile.city ? `${profile.city}${profile.uf ? ', ' + profile.uf : ''}` : 'Local não definido';
+      }
+    } catch (error) {
+      console.error('Erro ao carregar perfil:', error);
+    }
+  }
+
+  // ============================================
+  // CARREGAR CATEGORIAS
+  // ============================================
+  async function carregarCategorias(supabase) {
+    try {
+      const { data: categorias } = await supabase
+        .from('categories')
+        .select('id, name, icon')
+        .order('name');
+
+      const select = document.getElementById('workType');
+      const filterChips = document.getElementById('filterChips');
+
+      if (categorias) {
+        // Preenche o select do modal de upload
+        categorias.forEach(cat => {
+          const option = document.createElement('option');
+          option.value = cat.id;
+          option.textContent = `${cat.icon || '📌'} ${cat.name}`;
+          select.appendChild(option);
+        });
+
+        // Preenche os chips de filtro
+        categorias.forEach(cat => {
+          const chip = document.createElement('span');
+          chip.className = 'filter-chip';
+          chip.dataset.filter = cat.id;
+          chip.textContent = `${cat.icon || '📌'} ${cat.name}`;
+          chip.addEventListener('click', () => {
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            currentFilter = cat.id;
+            renderWorks();
+          });
+          filterChips.appendChild(chip);
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao carregar categorias:', error);
+    }
+  }
+
+  // ============================================
+  // CARREGAR TRABALHOS
+  // ============================================
+  async function carregarTrabalhos(supabase, providerId) {
+    if (!providerId) return;
+
+    try {
+      const { data: works, error } = await supabase
+        .from('portfolio_works')
+        .select(`
+          id,
+          title,
+          description,
+          client_name,
+          service_date,
+          rating,
+          photos,
+          visible,
+          review_text,
+          category_id,
+          categories(name, icon)
+        `)
+        .eq('provider_id', providerId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      allWorks = works || [];
+      atualizarEstatisticas();
+      renderWorks();
+
+    } catch (error) {
+      console.error('Erro ao carregar trabalhos:', error);
+      document.getElementById('worksGrid').innerHTML = `
+        <div class="empty-portfolio" style="grid-column: 1 / -1;">
+          <div class="icon">⚠️</div>
+          <h3>Erro ao carregar trabalhos</h3>
+          <p>${error.message}</p>
+        </div>
+      `;
+    }
+  }
+
+  // ============================================
+  // ATUALIZAR ESTATÍSTICAS
+  // ============================================
+  function atualizarEstatisticas() {
+    const total = allWorks.length;
+    const visiveis = allWorks.filter(w => w.visible).length;
+    const ocultos = total - visiveis;
+
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statVisiveis').textContent = visiveis;
+    document.getElementById('statOcultos').textContent = ocultos;
+  }
+
+  // ============================================
+  // RENDERIZAR TRABALHOS
+  // ============================================
+  function renderWorks() {
+    const grid = document.getElementById('worksGrid');
+    
+    let filtered = allWorks;
+    
+    // Aplica filtro de categoria
+    if (currentFilter !== 'all') {
+      filtered = filtered.filter(w => w.category_id === currentFilter);
+    }
+    
+    // Aplica busca
+    if (searchTerm) {
+      filtered = filtered.filter(w => 
+        w.title.toLowerCase().includes(searchTerm) ||
+        w.client_name?.toLowerCase().includes(searchTerm) ||
+        w.categories?.name?.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    if (filtered.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-portfolio" style="grid-column: 1 / -1;">
+          <div class="icon">📸</div>
+          <h3>Nenhum trabalho encontrado</h3>
+          <p>Adicione fotos dos serviços que você já realizou para mostrar sua qualidade aos futuros clientes.</p>
+          <button class="btn btn-alert" onclick="openUploadModal()" style="width: auto; padding: 12px 24px;">
+            📷 Adicionar primeiro trabalho
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = filtered.map(w => {
+      const photosCount = w.photos ? w.photos.length : 0;
+      const icon = w.categories?.icon || '📌';
+      const catName = w.categories?.name || 'Serviço';
+      const date = w.service_date ? new Date(w.service_date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '';
+      
+      return `
+        <div class="work-card ${w.visible ? '' : 'hidden'}">
+          <div class="work-image">
+            ${photosCount > 0 ? `<img src="${w.photos[0]}" alt="${escapeHTML(w.title)}">` : '📷'}
           </div>
-          <div class="work-tags">
-            <span class="work-tag">${w.type}</span>
-            <span class="work-tag">📷 ${w.photos} fotos</span>
-            <span class="work-tag">${w.date}</span>
-          </div>
-          <div class="work-actions">
-            <button class="work-action-btn" onclick="openWorkModal(${w.id})">Ver detalhes</button>
-            <button class="work-action-btn" onclick="toggleVisibility(${w.id})">${w.visible ? '🔒 Ocultar' : '👁️ Mostrar'}</button>
-            <button class="work-action-btn danger" onclick="deleteWork(${w.id})">🗑️</button>
+          <div class="work-content">
+            <div class="work-title">${escapeHTML(w.title)}</div>
+            <div class="work-meta">
+              <div class="work-client">👤 ${escapeHTML(w.client_name || 'Cliente')}</div>
+              <div class="work-rating">★ ${w.rating || 0}</div>
+            </div>
+            <div class="work-tags">
+              <span class="work-tag">${icon} ${escapeHTML(catName)}</span>
+              <span class="work-tag">📷 ${photosCount} fotos</span>
+              <span class="work-tag">${date}</span>
+            </div>
+            <div class="work-actions">
+              <button class="work-action-btn" onclick="openWorkModal('${w.id}')">Ver detalhes</button>
+              <button class="work-action-btn" onclick="toggleVisibility('${w.id}')">${w.visible ? '🔒 Ocultar' : '👁️ Mostrar'}</button>
+              <button class="work-action-btn danger" onclick="deleteWork('${w.id}')">🗑️</button>
+            </div>
           </div>
         </div>
       `;
-      grid.appendChild(card);
-    });
+    }).join('');
   }
 
-  // ---- Ações dos Modais ----
-  function openWorkModal(id) {
-    const work = WORKS.find(w => w.id === id);
-    if (work) {
-      document.getElementById('modalTitle').textContent = work.title;
-    }
+  // ============================================
+  // ABRIR MODAL DE DETALHES
+  // ============================================
+  window.openWorkModal = function(workId) {
+    const work = allWorks.find(w => w.id === workId);
+    if (!work) return;
+
+    currentWorkIdForAction = workId;
+    document.getElementById('modalTitle').textContent = work.title;
+    
+    const photosCount = work.photos ? work.photos.length : 0;
+    const galleryHtml = photosCount > 0 
+      ? work.photos.map(p => `<div class="gallery-item"><img src="${p}" alt=""></div>`).join('')
+      : '<div class="gallery-item">📷</div>';
+
+    const date = work.service_date ? new Date(work.service_date).toLocaleDateString('pt-BR') : '—';
+    const stars = '★'.repeat(Math.round(work.rating || 0)) + '☆'.repeat(5 - Math.round(work.rating || 0));
+
+    document.getElementById('modalBody').innerHTML = `
+      <div class="modal-image-gallery">${galleryHtml}</div>
+      <div class="modal-info-grid">
+        <div class="modal-info-item">
+          <div class="label">Cliente</div>
+          <div class="value">${escapeHTML(work.client_name || '—')}</div>
+        </div>
+        <div class="modal-info-item">
+          <div class="label">Data do serviço</div>
+          <div class="value">${date}</div>
+        </div>
+        <div class="modal-info-item">
+          <div class="label">Tipo de serviço</div>
+          <div class="value">${work.categories?.icon || '📌'} ${escapeHTML(work.categories?.name || '—')}</div>
+        </div>
+        <div class="modal-info-item">
+          <div class="label">Status</div>
+          <div class="value">${work.visible ? '👁️ Visível' : '🔒 Oculto'}</div>
+        </div>
+      </div>
+      <div style="margin-bottom: 16px;">
+        <div style="font-size: 0.82rem; font-weight: 700; color: var(--ink); margin-bottom: 8px;">Descrição</div>
+        <div style="font-size: 0.88rem; color: var(--ink-soft); line-height: 1.5;">${escapeHTML(work.description || 'Sem descrição.')}</div>
+      </div>
+      ${work.review_text ? `
+        <div class="modal-review">
+          <div class="modal-review-head">
+            <span class="modal-review-name">Avaliação do cliente</span>
+            <span class="modal-review-stars">${stars}</span>
+          </div>
+          <p class="modal-review-text">${escapeHTML(work.review_text)}</p>
+        </div>
+      ` : ''}
+    `;
+
     document.getElementById('workModal').classList.add('active');
-  }
-  function closeWorkModal() {
+  };
+
+  // ============================================
+  // FECHAR MODAL DE DETALHES
+  // ============================================
+  window.closeWorkModal = function() {
     document.getElementById('workModal').classList.remove('active');
-  }
+    currentWorkIdForAction = null;
+  };
 
-  function openUploadModal() {
+  // ============================================
+  // ABRIR MODAL DE UPLOAD
+  // ============================================
+  window.openUploadModal = function() {
     document.getElementById('uploadModal').classList.add('active');
-  }
-  function closeUploadModal() {
+  };
+
+  // ============================================
+  // FECHAR MODAL DE UPLOAD
+  // ============================================
+  window.closeUploadModal = function() {
     document.getElementById('uploadModal').classList.remove('active');
-  }
+    document.getElementById('fileInput').value = '';
+    document.getElementById('uploadPreview').innerHTML = '';
+    document.getElementById('workTitle').value = '';
+    document.getElementById('workDesc').value = '';
+    selectedFiles = [];
+  };
 
-  function toggleVisibility(id) {
-    const work = WORKS.find(w => w.id === id);
-    if (work) {
-      work.visible = !work.visible;
-      const action = work.visible ? 'tornado visível' : 'ocultado';
-      alert(`✓ Trabalho ${action} no seu perfil público.`);
-      // Aqui você faria update no Supabase
-    }
-  }
+  // ============================================
+  // TOGGLE VISIBILIDADE
+  // ============================================
+  window.toggleVisibility = async function(workId) {
+    const supabase = window.supabaseClient;
+    const work = allWorks.find(w => w.id === workId);
+    if (!work || !supabase) return;
 
-  function deleteWork(id) {
-    if (confirm('⚠️ Tem certeza que deseja excluir este trabalho?\n\nEsta ação não pode ser desfeita.')) {
-      alert(`✓ Trabalho excluído com sucesso.`);
+    const newVisibility = !work.visible;
+
+    try {
+      const { error } = await supabase
+        .from('portfolio_works')
+        .update({ visible: newVisibility })
+        .eq('id', workId);
+
+      if (error) throw error;
+
+      work.visible = newVisibility;
+      atualizarEstatisticas();
+      renderWorks();
       closeWorkModal();
-      // Aqui você faria delete no Supabase
+    } catch (error) {
+      console.error('Erro ao alterar visibilidade:', error);
+      alert('Erro ao alterar visibilidade: ' + error.message);
     }
-  }
+  };
 
-  function saveWork() {
+  // ============================================
+  // EXCLUIR TRABALHO
+  // ============================================
+  window.deleteWork = async function(workId) {
+    if (!confirm('⚠️ Tem certeza que deseja excluir este trabalho?\n\nEsta ação não pode ser desfeita.')) return;
+
+    const supabase = window.supabaseClient;
+    if (!supabase) return;
+
+    try {
+      const { error } = await supabase
+        .from('portfolio_works')
+        .delete()
+        .eq('id', workId);
+
+      if (error) throw error;
+
+      allWorks = allWorks.filter(w => w.id !== workId);
+      atualizarEstatisticas();
+      renderWorks();
+      closeWorkModal();
+    } catch (error) {
+      console.error('Erro ao excluir trabalho:', error);
+      alert('Erro ao excluir trabalho: ' + error.message);
+    }
+  };
+
+  // ============================================
+  // SALVAR TRABALHO
+  // ============================================
+  window.saveWork = async function() {
+    const supabase = window.supabaseClient;
     const title = document.getElementById('workTitle').value.trim();
+    const desc = document.getElementById('workDesc').value.trim();
+    const categoryId = document.getElementById('workType').value;
+    const visible = document.getElementById('workVisible').checked;
+
     if (!title) {
       alert('⚠️ Preencha o título do trabalho.');
       return;
     }
-    
-    alert(`✓ Trabalho "${title}" adicionado com sucesso!`);
-    closeUploadModal();
-    // Aqui você faria insert no Supabase
+
+    if (!providerProfileId || !supabase) {
+      alert('⚠️ Perfil não encontrado.');
+      return;
+    }
+
+    try {
+      // Upload de fotos (simplificado - na prática usaria Supabase Storage)
+      const photos = selectedFiles.map(f => URL.createObjectURL(f));
+
+      const { data, error } = await supabase
+        .from('portfolio_works')
+        .insert({
+          provider_id: providerProfileId,
+          title: title,
+          description: desc,
+          category_id: categoryId || null,
+          photos: photos,
+          visible: visible,
+          service_date: new Date().toISOString()
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      alert('✓ Trabalho adicionado com sucesso!');
+      closeUploadModal();
+      carregarTrabalhos(supabase, providerProfileId);
+    } catch (error) {
+      console.error('Erro ao salvar trabalho:', error);
+      alert('Erro ao salvar trabalho: ' + error.message);
+    }
+  };
+
+  // ============================================
+  // ESCAPE HTML
+  // ============================================
+  function escapeHTML(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>'"]/g, tag => ({ 
+      '&': '&amp;', 
+      '<': '&lt;', 
+      '>': '&gt;', 
+      "'": '&#39;', 
+      '"': '&quot;' 
+    }[tag]));
   }
 
-  // Preview de fotos no upload
-  document.getElementById('fileInput').addEventListener('change', function(e) {
-    const files = e.target.files;
+  // ============================================
+  // CONFIGURAR EVENT LISTENERS
+  // ============================================
+  function configurarEventListeners(supabase) {
+    // Preview de fotos
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+      selectedFiles = Array.from(e.target.files).slice(0, 10);
+      const preview = document.getElementById('uploadPreview');
+      preview.innerHTML = '';
+      
+      selectedFiles.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const item = document.createElement('div');
+          item.className = 'preview-item';
+          item.innerHTML = `
+            <img src="${event.target.result}" alt="Preview">
+            <button class="remove-btn" onclick="removeFile(${index})">✕</button>
+          `;
+          preview.appendChild(item);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    // Busca
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+      searchTerm = e.target.value.trim().toLowerCase();
+      renderWorks();
+    });
+
+    // Chip "Todos"
+    document.querySelectorAll('#filterChips .filter-chip').forEach(chip => {
+      if (chip.dataset.filter === 'all') {
+        chip.addEventListener('click', () => {
+          document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          currentFilter = 'all';
+          renderWorks();
+        });
+      }
+    });
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+      e.preventDefault();
+      if (supabase) {
+        await supabase.auth.signOut();
+      }
+      window.location.href = '../index.html';
+    });
+
+    // Fechar modais ao clicar fora
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          overlay.classList.remove('active');
+        }
+      });
+    });
+  }
+
+  // ============================================
+  // REMOVER ARQUIVO DO PREVIEW
+  // ============================================
+  window.removeFile = function(index) {
+    selectedFiles.splice(index, 1);
     const preview = document.getElementById('uploadPreview');
     preview.innerHTML = '';
     
-    Array.from(files).slice(0, 10).forEach((file, index) => {
-      const item = document.createElement('div');
-      item.className = 'preview-item';
-      item.innerHTML = `
-        📷
-        <button class="remove-btn" onclick="this.parentElement.remove()">✕</button>
-      `;
-      preview.appendChild(item);
+    selectedFiles.forEach((file, i) => {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const item = document.createElement('div');
+        item.className = 'preview-item';
+        item.innerHTML = `
+          <img src="${event.target.result}" alt="Preview">
+          <button class="remove-btn" onclick="removeFile(${i})">✕</button>
+        `;
+        preview.appendChild(item);
+      };
+      reader.readAsDataURL(file);
     });
-  });
+  };
 
-  // Filtros
-  document.querySelectorAll('.filter-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-    });
-  });
-
-  // Fechar modais ao clicar fora
-  document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) {
-        overlay.classList.remove('active');
-      }
-    });
-  });
+  // Iniciar
+  init();
 </script>
 <script src="../js/mobile-nav.js"></script>
 </body>
