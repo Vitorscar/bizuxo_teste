@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Ordens de Serviço · Bizuxo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -14,6 +14,86 @@
   .code-modal-content { background: var(--surface); padding: 24px; border-radius: var(--radius-lg); width: 100%; max-width: 360px; text-align: center; }
   .code-modal input { width: 100%; padding: 12px; font-size: 1.5rem; text-align: center; letter-spacing: 0.2em; font-weight: 700; margin: 16px 0; border: 2px solid var(--border); border-radius: var(--radius-sm); }
   .code-modal input:focus { border-color: var(--accent); outline: none; }
+
+  /* Navegação mobile */
+  .mobile-nav { display: none; }
+  
+  @media (max-width: 768px) {
+    .sidebar { display: none; } 
+    .app-shell { grid-template-columns: 1fr; } 
+    .main-content { padding: 20px 16px 100px 16px !important; }
+    
+    .mobile-nav { 
+      display: grid; 
+      grid-template-columns: repeat(5, 1fr); 
+      position: fixed; 
+      bottom: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 64px; 
+      background: var(--surface); 
+      border-top: 1px solid var(--border); 
+      align-items: stretch; 
+      z-index: 9999; 
+      padding-bottom: env(safe-area-inset-bottom); 
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05); 
+      isolation: isolate; 
+    }
+    
+    .mobile-nav-item { 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; 
+      text-decoration: none; 
+      color: var(--ink-faint); 
+      font-size: 0.68rem; 
+      font-weight: 600; 
+      gap: 3px; 
+      height: 100%; 
+      position: relative; 
+      transition: color 0.2s ease, transform 0.15s ease; 
+      -webkit-tap-highlight-color: transparent; 
+      touch-action: manipulation; 
+      user-select: none; 
+    }
+    
+    .mobile-nav-item .nav-icon { 
+      font-size: 1.35rem; 
+      line-height: 1; 
+      transition: transform 0.2s ease; 
+    }
+    
+    .mobile-nav-item:active { 
+      transform: scale(0.88); 
+    }
+    
+    .mobile-nav-item:active .nav-icon { 
+      transform: scale(0.9); 
+    }
+    
+    .mobile-nav-item.active { 
+      color: var(--alert); 
+    }
+    
+    .mobile-nav-item.active::before { 
+      content: ''; 
+      position: absolute; 
+      top: 6px; 
+      left: 50%; 
+      transform: translateX(-50%); 
+      width: 5px; 
+      height: 5px; 
+      background: var(--alert); 
+      border-radius: 50%; 
+      box-shadow: 0 0 8px rgba(255, 59, 48, 0.5); 
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .mobile-nav-item { font-size: 0.62rem; }
+    .mobile-nav-item .nav-icon { font-size: 1.2rem; }
+  }
 </style>
 </head>
 <body>
@@ -29,8 +109,14 @@
       <a class="nav-item" href="historico-financeiro.html"><span class="nav-icon">💳</span> Histórico Financeiro</a>
       <a class="nav-item" href="meu-perfil-prestador.html"><span class="nav-icon">⚙️</span> Meus Dados</a>
       <a class="nav-item" href="meus-trabalhos.html"><span class="nav-icon">💼</span> Meus Trabalhos</a>
-      <a class="nav-item" href="../index.html" style="color:var(--alert); margin-top:auto;"><span class="nav-icon">🚪</span> Sair</a>
+      <div style="flex:1"></div>
+      <a class="nav-item" href="#" id="logoutBtn" style="color:var(--alert); margin-top:auto;"><span class="nav-icon">🚪</span> Sair</a>
     </nav>
+    <div class="sidebar-foot">
+      <div id="userName" style="font-weight: 600; color: #fff; margin-bottom: 4px;">Carregando...</div>
+      <div id="userLoc" style="color: #8B8E96; font-size: 0.75rem; margin-bottom: 10px;">...</div>
+      <div class="role-tag" style="color: #FF3B30 !important; border-color: rgba(255, 59, 48, 0.45) !important;">conta prestador</div>
+    </div>
   </aside>
 
   <main class="main-content">
@@ -59,6 +145,15 @@
   </main>
 </div>
 
+<!-- Navegação Mobile -->
+<nav class="mobile-nav" aria-label="Navegação principal">
+  <a href="dashboard-prestador.html" class="mobile-nav-item"><span class="nav-icon">▤</span><span>Início</span></a>
+  <a href="demandas-disponiveis.html" class="mobile-nav-item"><span class="nav-icon">🔍</span><span>Demandas</span></a>
+  <a href="minhas-propostas.html" class="mobile-nav-item"><span class="nav-icon">📨</span><span>Propostas</span></a>
+  <a href="ordens-servico.html" class="mobile-nav-item active"><span class="nav-icon">🛠️</span><span>Ordens</span></a>
+  <a href="meu-perfil-prestador.html" class="mobile-nav-item"><span class="nav-icon">⚙️</span><span>Perfil</span></a>
+</nav>
+
 <!-- Modal para inserir código de início -->
 <div class="code-modal" id="startModal">
   <div class="code-modal-content">
@@ -84,42 +179,122 @@
   </div>
 </div>
 
-<script type="module">
-  import { confirmarInicioServico, solicitarFinalizacao, regenerarCodigo } from '../js/pagamentos.js';
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-cliente.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/auth.js"></script>
 
+<script>
   let allOrders = [];
   let activeFilter = "all";
   let searchTerm = "";
   let currentOrderIdForAction = null;
 
-  async function carregarOrdens() {
-    const session = await supabase.auth.getSession();
-    if (!session.data.session) { window.location.href = '../index.html'; return; }
-    const providerId = session.data.session.user.id;
-
-    const { data: orders, error } = await supabase
-      .from('ordens_servico')
-      .select('id, status, valor_total, codigo_inicio, codigo_fim, demands(titulo, cidade, profiles!demands_client_id_fkey(nome))')
-      .eq('provider_id', providerId)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error(error);
+  // ============================================
+  // INICIALIZAÇÃO
+  // ============================================
+  async function init() {
+    const supabase = window.supabaseClient;
+    
+    if (!supabase) {
+      window.location.href = '../index.html';
       return;
     }
 
-    allOrders = orders || [];
-    render();
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      window.location.href = '../index.html';
+      return;
+    }
+
+    // Carrega dados do usuário
+    await carregarDadosUsuario(supabase, session.user.id);
+    
+    // Carrega ordens
+    await carregarOrdens(supabase, session.user.id);
+    
+    // Configura listeners
+    configurarEventListeners();
+    
+    // Configura realtime
+    configurarRealtime(supabase);
   }
 
+  // ============================================
+  // CARREGAR DADOS DO USUÁRIO
+  // ============================================
+  async function carregarDadosUsuario(supabase, userId) {
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name, city, uf')
+        .eq('user_id', userId)
+        .single();
+
+      if (profile) {
+        document.getElementById('userName').textContent = `Olá, ${profile.full_name ? profile.full_name.split(' ')[0] : 'Profissional'}`;
+        document.getElementById('userLoc').textContent = profile.city ? `${profile.city}${profile.uf ? ', ' + profile.uf : ''}` : 'Local não definido';
+      }
+    } catch (error) {
+      console.error('Erro ao carregar dados do usuário:', error);
+    }
+  }
+
+  // ============================================
+  // CARREGAR ORDENS
+  // ============================================
+  async function carregarOrdens(supabase, userId) {
+    try {
+      const { data: orders, error } = await supabase
+        .from('service_orders')
+        .select(`
+          id, 
+          status, 
+          total_value,
+          scheduled_date,
+          created_at,
+          demand:demands (
+            title,
+            city,
+            neighborhood
+          ),
+          client:profiles!service_orders_client_id_fkey (
+            full_name
+          )
+        `)
+        .eq('provider_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      allOrders = orders || [];
+      render();
+    } catch (error) {
+      console.error('Erro ao carregar ordens:', error);
+      document.getElementById('list').innerHTML = `
+        <div class="empty-state">
+          <h3>Erro ao carregar ordens</h3>
+          <p>${error.message}</p>
+        </div>
+      `;
+    }
+  }
+
+  // ============================================
+  // RENDERIZAÇÃO
+  // ============================================
   function render() {
     const list = document.getElementById("list");
     const empty = document.getElementById("empty");
     
     const filtered = allOrders.filter(o => {
       const matchesFilter = activeFilter === "all" || o.status === activeFilter;
-      const clienteNome = o.demands?.profiles?.nome || '';
-      const matchesSearch = !searchTerm || o.demands.titulo.toLowerCase().includes(searchTerm) || clienteNome.toLowerCase().includes(searchTerm);
+      const clienteNome = o.client?.full_name || '';
+      const servicoTitulo = o.demand?.title || '';
+      const matchesSearch = !searchTerm || 
+        servicoTitulo.toLowerCase().includes(searchTerm) || 
+        clienteNome.toLowerCase().includes(searchTerm);
       return matchesFilter && matchesSearch;
     });
 
@@ -129,32 +304,50 @@
     filtered.forEach(o => {
       const el = document.createElement("div");
       el.className = "list-row";
-      const valorFmt = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(o.valor_total);
-      const statusLabel = o.status.replace('_', ' ').toUpperCase();
+      
+      const valorFmt = o.total_value ? 
+        new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(o.total_value) : 
+        'A combinar';
+      
+      const statusLabels = {
+        'pago_aguardando_inicio': 'Aguardando Início',
+        'em_andamento': 'Em Andamento',
+        'andamento': 'Em Andamento',
+        'aguardando_confirmacao_fim': 'Aguardando Cliente',
+        'finalizado': 'Concluída',
+        'concluido': 'Concluída'
+      };
+      
+      const statusLabel = statusLabels[o.status] || o.status.replace('_', ' ').toUpperCase();
+      const statusClass = o.status === 'pago_aguardando_inicio' ? 'receiving' : 
+                          (o.status === 'finalizado' || o.status === 'concluido') ? 'done' : 'selected';
       
       let actionHtml = '';
       if (o.status === 'pago_aguardando_inicio') {
         actionHtml = `<button class="btn btn-accent row-action-btn" onclick="abrirModalInicio('${o.id}')">▶ Iniciar Serviço</button>`;
-      } else if (o.status === 'em_andamento') {
+      } else if (o.status === 'em_andamento' || o.status === 'andamento') {
         actionHtml = `<button class="btn btn-outline row-action-btn" style="border-color:var(--accent); color:var(--accent-ink);" onclick="solicitarFim('${o.id}')">✓ Solicitar Finalização</button>`;
       } else if (o.status === 'aguardando_confirmacao_fim') {
         actionHtml = `<span style="font-size:0.78rem; color:var(--amber); font-weight:600;">⏳ Aguardando cliente</span>`;
-      } else if (o.status === 'finalizado') {
+      } else if (o.status === 'finalizado' || o.status === 'concluido') {
         actionHtml = `<span style="font-size:0.78rem; color:var(--accent-ink); font-weight:600;">✅ Concluído</span>`;
       }
+
+      const localizacao = o.demand?.city || o.demand?.neighborhood || 'Local não definido';
+      const clienteNome = o.client?.full_name || 'Cliente';
 
       el.innerHTML = `
         <div class="avatar avatar-md">🛠️</div>
         <div class="list-row-main">
-          <div class="list-row-title">${escapeHTML(o.demands.titulo)}</div>
+          <div class="list-row-title">${escapeHTML(o.demand?.title || 'Serviço')}</div>
           <div class="list-row-sub">
             <span>👤 ${escapeHTML(clienteNome)}</span><span class="sep">·</span>
-            <span>📍 ${escapeHTML(o.demands.cidade)}</span><span class="sep">·</span>
+            <span>📍 ${escapeHTML(localizacao)}</span><span class="sep">·</span>
             <span>OS #${o.id.slice(0,4)}</span>
           </div>
         </div>
         <div class="list-row-side">
-          <span class="status-badge status-${o.status === 'pago_aguardando_inicio' ? 'receiving' : (o.status === 'finalizado' ? 'done' : 'selected')}">${statusLabel}</span>
+          <span class="status-badge status-${statusClass}">${statusLabel}</span>
           <span class="list-row-value">${valorFmt}</span>
           <div style="display:flex; gap:6px; margin-top:8px;">
             ${actionHtml}
@@ -164,8 +357,9 @@
     });
   }
 
-  // --- Ações do Prestador ---
-
+  // ============================================
+  // AÇÕES DO PRESTADOR
+  // ============================================
   window.abrirModalInicio = function(orderId) {
     currentOrderIdForAction = orderId;
     document.getElementById('startCodeInput').value = '';
@@ -180,32 +374,69 @@
       return;
     }
 
-    const btn = event.target;
-    btn.disabled = true;
-    btn.textContent = 'Verificando...';
-
+    const supabase = window.supabaseClient;
+    
     try {
-      await confirmarInicioServico(currentOrderIdForAction, codigo);
+      // Busca a ordem para verificar o código
+      const { data: ordem, error } = await supabase
+        .from('service_orders')
+        .select('start_code')
+        .eq('id', currentOrderIdForAction)
+        .single();
+
+      if (error) throw error;
+
+      if (ordem.start_code !== codigo) {
+        alert('Código inválido. Verifique com o cliente.');
+        return;
+      }
+
+      // Atualiza o status da ordem
+      const { error: updateError } = await supabase
+        .from('service_orders')
+        .update({ status: 'em_andamento', started_at: new Date().toISOString() })
+        .eq('id', currentOrderIdForAction);
+
+      if (updateError) throw updateError;
+
       alert('Serviço iniciado com sucesso!');
       fecharModal('startModal');
-      carregarOrdens(); // Recarrega a lista
+      carregarOrdens(supabase, (await supabase.auth.getSession()).data.session.user.id);
     } catch (err) {
-      alert('Código inválido ou erro: ' + err.message);
-      btn.disabled = false;
-      btn.textContent = 'Confirmar';
+      console.error('Erro ao iniciar serviço:', err);
+      alert('Erro ao iniciar serviço: ' + err.message);
     }
   };
 
   window.solicitarFim = async function(orderId) {
     if (!confirm('Tem certeza que o serviço foi concluído? O cliente receberá um código para liberar seu pagamento.')) return;
     
+    const supabase = window.supabaseClient;
     currentOrderIdForAction = orderId;
+    
     try {
-      const res = await solicitarFinalizacao(orderId);
-      document.getElementById('generatedFinishCode').textContent = res.codigo_fim || '----';
+      // Gera um código de finalização aleatório de 4 dígitos
+      const finishCode = Math.floor(1000 + Math.random() * 9000).toString();
+      
+      // Atualiza a ordem com o código de finalização
+      const { error } = await supabase
+        .from('service_orders')
+        .update({ 
+          status: 'aguardando_confirmacao_fim',
+          finish_code: finishCode,
+          finished_at: new Date().toISOString()
+        })
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      document.getElementById('generatedFinishCode').textContent = finishCode;
       document.getElementById('finishModal').classList.add('active');
-      carregarOrdens();
+      
+      const session = await supabase.auth.getSession();
+      carregarOrdens(supabase, session.data.session.user.id);
     } catch (err) {
+      console.error('Erro ao solicitar finalização:', err);
       alert('Erro ao solicitar finalização: ' + err.message);
     }
   };
@@ -215,27 +446,72 @@
     currentOrderIdForAction = null;
   };
 
-  // --- Filtros e Busca ---
-  document.getElementById("filters").addEventListener("click", (e) => {
-    const chip = e.target.closest(".chip");
-    if(!chip) return;
-    document.querySelectorAll("#filters .chip").forEach(c => c.classList.remove("selected"));
-    chip.classList.add("selected");
-    activeFilter = chip.dataset.filter;
-    render();
-  });
+  // ============================================
+  // CONFIGURAR EVENT LISTENERS
+  // ============================================
+  function configurarEventListeners() {
+    // Filtros
+    document.getElementById("filters").addEventListener("click", (e) => {
+      const chip = e.target.closest(".chip");
+      if(!chip) return;
+      document.querySelectorAll("#filters .chip").forEach(c => c.classList.remove("selected"));
+      chip.classList.add("selected");
+      activeFilter = chip.dataset.filter;
+      render();
+    });
 
-  document.getElementById("search").addEventListener("input", (e) => {
-    searchTerm = e.target.value.trim().toLowerCase();
-    render();
-  });
+    // Busca
+    document.getElementById("search").addEventListener("input", (e) => {
+      searchTerm = e.target.value.trim().toLowerCase();
+      render();
+    });
 
-  function escapeHTML(str) {
-    if (!str) return '';
-    return String(str).replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+      e.preventDefault();
+      const supabase = window.supabaseClient;
+      if (supabase) {
+        await supabase.auth.signOut();
+      }
+      window.location.href = '../index.html';
+    });
   }
 
-  carregarOrdens();
+  // ============================================
+  // CONFIGURAR REALTIME
+  // ============================================
+  function configurarRealtime(supabase) {
+    supabase
+      .channel('ordens-servico-realtime')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'service_orders' },
+        async () => {
+          const session = await supabase.auth.getSession();
+          if (session.data.session) {
+            carregarOrdens(supabase, session.data.session.user.id);
+          }
+        }
+      )
+      .subscribe();
+  }
+
+  // ============================================
+  // ESCAPE HTML
+  // ============================================
+  function escapeHTML(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>'"]/g, tag => ({ 
+      '&': '&amp;', 
+      '<': '&lt;', 
+      '>': '&gt;', 
+      "'": '&#39;', 
+      '"': '&quot;' 
+    }[tag]));
+  }
+
+  // Iniciar
+  init();
 </script>
+<script src="../js/mobile-nav.js"></script>
 </body>
 </html>
