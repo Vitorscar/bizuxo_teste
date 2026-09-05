@@ -1,13 +1,13 @@
 const CACHE_NAME = 'bizuxo-cache-v1';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/js/supabase-client.js',
-  '/js/auth.js',
-  '/js/utils.js',
-  '/assets/icons/icon-192.png',
-  '/assets/icons/icon-512.png'
+  '/bizuxo_teste/',
+  '/bizuxo_teste/index.html',
+  '/bizuxo_teste/style.css',
+  '/bizuxo_teste/js/supabase-cliente.js',
+  '/bizuxo_teste/js/auth.js',
+  '/bizuxo_teste/js/utils.js',
+  '/bizuxo_teste/assets/icons/icon-192.png',
+  '/bizuxo_teste/assets/icons/icon-512.png'
 ];
 
 // Instalação
