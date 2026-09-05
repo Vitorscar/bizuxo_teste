@@ -2,11 +2,92 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Minhas Propostas · Bizuxo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
+<style>
+  /* Navegação mobile */
+  .mobile-nav { display: none; }
+  
+  @media (max-width: 768px) {
+    .sidebar { display: none; } 
+    .app-shell { grid-template-columns: 1fr; } 
+    .main-content { padding: 20px 16px 100px 16px !important; }
+    
+    .mobile-nav { 
+      display: grid; 
+      grid-template-columns: repeat(5, 1fr); 
+      position: fixed; 
+      bottom: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 64px; 
+      background: var(--surface); 
+      border-top: 1px solid var(--border); 
+      align-items: stretch; 
+      z-index: 9999; 
+      padding-bottom: env(safe-area-inset-bottom); 
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05); 
+      isolation: isolate; 
+    }
+    
+    .mobile-nav-item { 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; 
+      text-decoration: none; 
+      color: var(--ink-faint); 
+      font-size: 0.68rem; 
+      font-weight: 600; 
+      gap: 3px; 
+      height: 100%; 
+      position: relative; 
+      transition: color 0.2s ease, transform 0.15s ease; 
+      -webkit-tap-highlight-color: transparent; 
+      touch-action: manipulation; 
+      user-select: none; 
+    }
+    
+    .mobile-nav-item .nav-icon { 
+      font-size: 1.35rem; 
+      line-height: 1; 
+      transition: transform 0.2s ease; 
+    }
+    
+    .mobile-nav-item:active { 
+      transform: scale(0.88); 
+    }
+    
+    .mobile-nav-item:active .nav-icon { 
+      transform: scale(0.9); 
+    }
+    
+    .mobile-nav-item.active { 
+      color: var(--alert); 
+    }
+    
+    .mobile-nav-item.active::before { 
+      content: ''; 
+      position: absolute; 
+      top: 6px; 
+      left: 50%; 
+      transform: translateX(-50%); 
+      width: 5px; 
+      height: 5px; 
+      background: var(--alert); 
+      border-radius: 50%; 
+      box-shadow: 0 0 8px rgba(255, 59, 48, 0.5); 
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .mobile-nav-item { font-size: 0.62rem; }
+    .mobile-nav-item .nav-icon { font-size: 1.2rem; }
+  }
+</style>
 </head>
 <body>
 
@@ -21,7 +102,8 @@
       <a class="nav-item" href="historico-financeiro.html"><span class="nav-icon">💳</span> Histórico Financeiro</a>
       <a class="nav-item" href="meu-perfil-prestador.html"><span class="nav-icon">⚙️</span> Meus Dados</a>
       <a class="nav-item" href="meus-trabalhos.html"><span class="nav-icon">💼</span> Meus Trabalhos</a>
-      <a class="nav-item" href="#" id="logoutBtn" style="color:var(--alert);"><span class="nav-icon">🚪</span> Sair</a>
+      <div style="flex:1"></div>
+      <a class="nav-item" href="#" id="logoutBtn" style="color:var(--alert); margin-top:auto;"><span class="nav-icon">🚪</span> Sair</a>
     </nav>
     <div class="sidebar-foot">
       <div id="userName" style="font-weight: 600; color: #fff; margin-bottom: 4px;">Carregando...</div>
@@ -56,12 +138,22 @@
   </main>
 </div>
 
+<!-- Navegação Mobile -->
+<nav class="mobile-nav" aria-label="Navegação principal">
+  <a href="dashboard-prestador.html" class="mobile-nav-item"><span class="nav-icon">▤</span><span>Início</span></a>
+  <a href="demandas-disponiveis.html" class="mobile-nav-item"><span class="nav-icon">🔍</span><span>Demandas</span></a>
+  <a href="minhas-propostas.html" class="mobile-nav-item active"><span class="nav-icon">📨</span><span>Propostas</span></a>
+  <a href="ordens-servico.html" class="mobile-nav-item"><span class="nav-icon">🛠️</span><span>Ordens</span></a>
+  <a href="meu-perfil-prestador.html" class="mobile-nav-item"><span class="nav-icon">⚙️</span><span>Perfil</span></a>
+</nav>
+
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase-cliente.js"></script>
 <script src="../js/auth.js"></script>
 
 <script>
+  // (mantenha todo o script JavaScript que já estava funcionando)
   // ==========================================
   // ESTADO GLOBAL
   // ==========================================
@@ -135,7 +227,6 @@
     const supabaseClient = window.supabaseClient;
     if (!currentProfileId || !supabaseClient) return;
 
-    // Busca propostas do prestador com dados da demanda e do cliente
     const { data: propostas, error } = await supabaseClient
       .from('proposals')
       .select(`
