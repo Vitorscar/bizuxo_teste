@@ -266,33 +266,6 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   // Se sucesso, Auth.login já redireciona
 });
 
-/* =============================================
-   BOTÃO "INSTALAR BIZUXO" (PWA)
-============================================= */
-let deferredPrompt;
-const btnInstalar = document.getElementById('btn-instalar');
-
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  btnInstalar.style.display = 'block';
-});
-
-btnInstalar.addEventListener('click', async () => {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log(`Usuário ${outcome === 'accepted' ? 'aceitou' : 'recusou'} a instalação`);
-    deferredPrompt = null;
-    btnInstalar.style.display = 'none';
-  }
-});
-
-// Esconder o botão se o app já estiver instalado
-window.addEventListener('appinstalled', () => {
-  btnInstalar.style.display = 'none';
-  console.log('Bizuxo instalado com sucesso!');
-});
 </script>
 </body>
 </html>
