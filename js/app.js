@@ -10,3 +10,26 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
+// Botão de instalação
+let deferredPrompt;
+const btnInstalar = document.getElementById('btn-instalar');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (btnInstalar) btnInstalar.style.display = 'block';
+});
+
+if (btnInstalar) {
+  btnInstalar.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        console.log('Usuário aceitou a instalação do Bizuxo');
+      }
+      deferredPrompt = null;
+      btnInstalar.style.display = 'none';
+    }
+  });
+}
