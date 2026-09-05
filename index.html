@@ -189,6 +189,10 @@
     </div>
   </div>
 </div>
+ 
+  <button id="btn-instalar" style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: #4F46E5; color: white; border: none; padding: 12px 20px; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+    📲 Instalar Bizuxo
+  </button>
 
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -198,8 +202,10 @@
 <script src="js/app.js"></script>
 
 <script>
+/* =============================================
+   FUNÇÃO DE TROCA DE PERFIL (cliente / prestador)
+============================================= */
 function setRole(role) {
-
   const pill = document.getElementById('rolePill');
   const btnC = document.getElementById('btnCliente');
   const btnP = document.getElementById('btnPrestador');
@@ -211,47 +217,34 @@ function setRole(role) {
   const tipoMarca = document.getElementById('tipoMarca');
 
   if (role === 'cliente') {
-
     pill.classList.remove('prestador');
     btnC.classList.add('active');
     btnP.classList.remove('active');
 
-    subtitle.textContent =
-      'Acesse para publicar demandas e acompanhar seus serviços.';
-
+    subtitle.textContent = 'Acesse para publicar demandas e acompanhar seus serviços.';
     enterBtn.classList.remove('prestador');
 
-    // Texto
     quemPrecisa.style.color = 'var(--accent)';
     quemResolve.style.color = '#fff';
-
-    // Bizuxo
     tipoMarca.classList.remove('prestador');
-
   } else {
-
     pill.classList.add('prestador');
     btnP.classList.add('active');
     btnC.classList.remove('active');
 
-    subtitle.textContent =
-      'Acesse para ver demandas na sua região e gerenciar suas OS.';
-
+    subtitle.textContent = 'Acesse para ver demandas na sua região e gerenciar suas OS.';
     enterBtn.classList.add('prestador');
 
-    // Texto
     quemPrecisa.style.color = '#fff';
     quemResolve.style.color = 'var(--alert)';
-
-    // Bizuxo
     tipoMarca.classList.add('prestador');
   }
 }
 
-
-// Login real, integrado ao Supabase Auth
+/* =============================================
+   LOGIN REAL (Supabase Auth)
+============================================= */
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
-
   e.preventDefault();
 
   const email = document.getElementById('email').value.trim();
@@ -266,15 +259,39 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   const result = await Auth.login(email, senha);
 
   if (!result.success) {
-
     alert(result.error);
-
     btn.textContent = originalText;
     btn.disabled = false;
   }
+  // Se sucesso, Auth.login já redireciona
+});
 
-  // Se deu certo, Auth.login já redireciona
-  // para o painel correspondente.
+/* =============================================
+   BOTÃO "INSTALAR BIZUXO" (PWA)
+============================================= */
+let deferredPrompt;
+const btnInstalar = document.getElementById('btn-instalar');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  btnInstalar.style.display = 'block';
+});
+
+btnInstalar.addEventListener('click', async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`Usuário ${outcome === 'accepted' ? 'aceitou' : 'recusou'} a instalação`);
+    deferredPrompt = null;
+    btnInstalar.style.display = 'none';
+  }
+});
+
+// Esconder o botão se o app já estiver instalado
+window.addEventListener('appinstalled', () => {
+  btnInstalar.style.display = 'none';
+  console.log('Bizuxo instalado com sucesso!');
 });
 </script>
 </body>
