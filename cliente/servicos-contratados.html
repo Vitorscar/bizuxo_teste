@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Serviços Contratados · Bizuxo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -45,6 +45,160 @@
     border: none;
     border-radius: var(--radius-sm);
     cursor: pointer;
+  }
+
+  /* Navegação mobile */
+  .mobile-nav { display: none; }
+  
+  @media (max-width: 768px) {
+    .sidebar { display: none; } 
+    .app-shell { grid-template-columns: 1fr; } 
+    .main-content { padding: 20px 16px 100px 16px !important; }
+    
+    .mobile-nav { 
+      display: grid; 
+      grid-template-columns: 1fr 1fr 72px 1fr 1fr; 
+      position: fixed; 
+      bottom: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 64px; 
+      background: var(--surface); 
+      border-top: 1px solid var(--border); 
+      align-items: stretch; 
+      z-index: 9999; 
+      padding-bottom: env(safe-area-inset-bottom); 
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05); 
+      isolation: isolate; 
+    }
+    
+    .mobile-nav-item { 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; 
+      text-decoration: none; 
+      color: var(--ink-faint); 
+      font-size: 0.68rem; 
+      font-weight: 600; 
+      gap: 3px; 
+      height: 100%; 
+      position: relative; 
+      transition: color 0.2s ease, transform 0.15s ease; 
+      -webkit-tap-highlight-color: transparent; 
+      touch-action: manipulation; 
+      user-select: none; 
+    }
+    
+    .mobile-nav-item .nav-icon { 
+      font-size: 1.35rem; 
+      line-height: 1; 
+      transition: transform 0.2s ease; 
+    }
+    
+    .mobile-nav-item:active { 
+      transform: scale(0.88); 
+    }
+    
+    .mobile-nav-item:active .nav-icon { 
+      transform: scale(0.9); 
+    }
+    
+    .mobile-nav-item.active { 
+      color: var(--accent); 
+    }
+    
+    .mobile-nav-item.active::before { 
+      content: ''; 
+      position: absolute; 
+      top: 6px; 
+      left: 50%; 
+      transform: translateX(-50%); 
+      width: 5px; 
+      height: 5px; 
+      background: var(--accent); 
+      border-radius: 50%; 
+      box-shadow: 0 0 8px rgba(5, 193, 103, 0.5); 
+    }
+    
+    .nav-badge { 
+      position: absolute; 
+      top: 8px; 
+      right: 50%; 
+      margin-right: -22px; 
+      background: #ff4757; 
+      color: #fff; 
+      font-size: 0.6rem; 
+      font-weight: 700; 
+      min-width: 16px; 
+      height: 16px; 
+      border-radius: 8px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      padding: 0 4px; 
+      line-height: 1; 
+    }
+    
+    .mobile-nav-fab-wrapper { 
+      display: flex; 
+      align-items: flex-start; 
+      justify-content: center; 
+      position: relative; 
+    }
+    
+    .mobile-nav-fab { 
+      width: 54px; 
+      height: 54px; 
+      background: var(--accent); 
+      color: #fff; 
+      border-radius: 50%; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-size: 1.9rem; 
+      font-weight: 300; 
+      text-decoration: none; 
+      box-shadow: 0 4px 15px rgba(5, 193, 103, 0.4); 
+      transition: transform 0.2s ease, box-shadow 0.2s ease; 
+      margin-top: -22px; 
+      border: 3px solid var(--surface); 
+      touch-action: manipulation; 
+      -webkit-tap-highlight-color: transparent; 
+      user-select: none; 
+      position: relative; 
+      z-index: 10; 
+    }
+    
+    .mobile-nav-fab:active { 
+      transform: scale(0.9); 
+      box-shadow: 0 2px 8px rgba(5, 193, 103, 0.3); 
+    }
+    
+    .mobile-nav-fab::after { 
+      content: ''; 
+      position: absolute; 
+      top: -6px; 
+      left: -6px; 
+      right: -6px; 
+      bottom: -6px; 
+      border-radius: 50%; 
+      background: rgba(5, 193, 103, 0.15); 
+      z-index: -1; 
+      animation: pulse-ring 2s ease-in-out infinite; 
+    }
+    
+    @keyframes pulse-ring { 
+      0% { transform: scale(0.9); opacity: 0.7; } 
+      70% { transform: scale(1.2); opacity: 0; } 
+      100% { transform: scale(1.2); opacity: 0; } 
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .mobile-nav-item { font-size: 0.62rem; }
+    .mobile-nav-item .nav-icon { font-size: 1.2rem; }
+    .mobile-nav-fab { width: 48px; height: 48px; font-size: 1.7rem; margin-top: -18px; }
   }
 </style>
 </head>
@@ -95,6 +249,15 @@
     </div>
   </main>
 </div>
+
+<!-- Navegação Mobile -->
+<nav class="mobile-nav" aria-label="Navegação principal">
+  <a href="dashboard-cliente.html" class="mobile-nav-item"><span class="nav-icon">▤</span><span>Início</span></a>
+  <a href="minhas-demandas.html" class="mobile-nav-item"><span class="nav-icon">✉</span><span>Demandas</span></a>
+  <div class="mobile-nav-fab-wrapper"><a href="nova-demanda.html" class="mobile-nav-fab"><span>+</span></a></div>
+  <a href="servicos-contratados.html" class="mobile-nav-item active"><span class="nav-icon">🛠️</span><span>Serviços</span></a>
+  <a href="meu-perfil-cliente.html" class="mobile-nav-item"><span class="nav-icon">⚙️</span><span>Perfil</span></a>
+</nav>
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -169,7 +332,7 @@
     try {
       const { data: perfil, error } = await supabase
         .from('profiles')
-        .select('full_name, city, neighborhood, entity_type')
+        .select('full_name, city, uf, entity_type')
         .eq('user_id', window.currentUser.id)
         .single();
 
