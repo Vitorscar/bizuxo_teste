@@ -12,12 +12,18 @@
   .mobile-nav { display: none; }
   
   @media (max-width: 768px) {
-    .sidebar { display: none; } 
-    .app-shell { grid-template-columns: 1fr; } 
-    .main-content { padding: 20px 16px 100px 16px !important; }
+    .sidebar { 
+      display: none !important; 
+    }
+    .app-shell { 
+      grid-template-columns: 1fr !important; 
+    }
+    .main-content { 
+      padding: 20px 16px 100px 16px !important; 
+    }
     
     .mobile-nav { 
-      display: grid; 
+      display: grid !important; 
       grid-template-columns: repeat(5, 1fr); 
       position: fixed; 
       bottom: 0; 
@@ -84,8 +90,12 @@
   }
   
   @media (max-width: 480px) {
-    .mobile-nav-item { font-size: 0.62rem; }
-    .mobile-nav-item .nav-icon { font-size: 1.2rem; }
+    .mobile-nav-item { 
+      font-size: 0.62rem !important; 
+    }
+    .mobile-nav-item .nav-icon { 
+      font-size: 1.2rem !important; 
+    }
   }
 </style>
 </head>
@@ -138,7 +148,7 @@
   </main>
 </div>
 
-<!-- Navegação Mobile -->
+<!-- Navegação Mobile (inserida manualmente) -->
 <nav class="mobile-nav" aria-label="Navegação principal">
   <a href="dashboard-prestador.html" class="mobile-nav-item"><span class="nav-icon">▤</span><span>Início</span></a>
   <a href="demandas-disponiveis.html" class="mobile-nav-item"><span class="nav-icon">🔍</span><span>Demandas</span></a>
@@ -153,7 +163,6 @@
 <script src="../js/auth.js"></script>
 
 <script>
-  // (mantenha todo o script JavaScript que já estava funcionando)
   // ==========================================
   // ESTADO GLOBAL
   // ==========================================
