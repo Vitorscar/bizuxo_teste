@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Histórico Financeiro · Bizuxo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -336,11 +336,83 @@
     flex-shrink: 0;
     margin-top: 2px;
   }
+
+  /* Navegação mobile */
+  .mobile-nav { display: none; }
   
-  /* Responsividade */
   @media (max-width: 768px) {
+    .sidebar { display: none; } 
+    .app-shell { grid-template-columns: 1fr; } 
+    .main-content { padding: 20px 16px 100px 16px !important; }
+    
+    .mobile-nav { 
+      display: grid; 
+      grid-template-columns: repeat(5, 1fr); 
+      position: fixed; 
+      bottom: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 64px; 
+      background: var(--surface); 
+      border-top: 1px solid var(--border); 
+      align-items: stretch; 
+      z-index: 9999; 
+      padding-bottom: env(safe-area-inset-bottom); 
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05); 
+      isolation: isolate; 
+    }
+    
+    .mobile-nav-item { 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; 
+      text-decoration: none; 
+      color: var(--ink-faint); 
+      font-size: 0.68rem; 
+      font-weight: 600; 
+      gap: 3px; 
+      height: 100%; 
+      position: relative; 
+      transition: color 0.2s ease, transform 0.15s ease; 
+      -webkit-tap-highlight-color: transparent; 
+      touch-action: manipulation; 
+      user-select: none; 
+    }
+    
+    .mobile-nav-item .nav-icon { 
+      font-size: 1.35rem; 
+      line-height: 1; 
+      transition: transform 0.2s ease; 
+    }
+    
+    .mobile-nav-item:active { 
+      transform: scale(0.88); 
+    }
+    
+    .mobile-nav-item:active .nav-icon { 
+      transform: scale(0.9); 
+    }
+    
+    .mobile-nav-item.active { 
+      color: var(--alert); 
+    }
+    
+    .mobile-nav-item.active::before { 
+      content: ''; 
+      position: absolute; 
+      top: 6px; 
+      left: 50%; 
+      transform: translateX(-50%); 
+      width: 5px; 
+      height: 5px; 
+      background: var(--alert); 
+      border-radius: 50%; 
+      box-shadow: 0 0 8px rgba(255, 59, 48, 0.5); 
+    }
+
     .balance-grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 12px;
     }
     
@@ -370,6 +442,12 @@
       flex: 1;
     }
   }
+  
+  @media (max-width: 480px) {
+    .balance-grid { grid-template-columns: 1fr; }
+    .mobile-nav-item { font-size: 0.62rem; }
+    .mobile-nav-item .nav-icon { font-size: 1.2rem; }
+  }
 </style>
 </head>
 <body>
@@ -384,13 +462,13 @@
       <a class="nav-item" href="ordens-servico.html"><span class="nav-icon">🛠️</span> Ordens de Serviço</a>
       <a class="nav-item active alert" href="historico-financeiro.html"><span class="nav-icon">💳</span> Histórico Financeiro</a>
       <a class="nav-item" href="meu-perfil-prestador.html"><span class="nav-icon">⚙️</span> Meus Dados</a>
-      <a class="nav-item" href="meus-trabalhos.html">
-    <span class="nav-icon">💼</span> Meus Trabalhos
-</a>
-      <a class="nav-item" href="../index.html" style="color:var(--alert);"><span class="nav-icon">🚪</span> Sair</a>
+      <a class="nav-item" href="meus-trabalhos.html"><span class="nav-icon">💼</span> Meus Trabalhos</a>
+      <div style="flex:1"></div>
+      <a class="nav-item" href="#" id="logoutBtn" style="color:var(--alert); margin-top:auto;"><span class="nav-icon">🚪</span> Sair</a>
     </nav>
     <div class="sidebar-foot">
-      Olá, Carlos<br>Águas Claras, DF
+      <div id="userName" style="font-weight: 600; color: #fff; margin-bottom: 4px;">Carregando...</div>
+      <div id="userLoc" style="color: #8B8E96; font-size: 0.75rem; margin-bottom: 10px;">...</div>
       <div class="role-tag alert">conta prestador</div>
     </div>
   </aside>
@@ -412,15 +490,15 @@
         <div class="balance-label">
           <span>💰</span> Disponível para Saque
         </div>
-        <div class="balance-value available">R$ 340,00</div>
-        <div class="balance-trend up">↑ 12% vs. mês anterior</div>
+        <div class="balance-value available" id="saldoDisponivel">R$ 0,00</div>
+        <div class="balance-trend" id="trendDisponivel">Carregando...</div>
       </div>
       
       <div class="balance-card pending">
         <div class="balance-label">
           <span>⏳</span> Retido em Disputa
         </div>
-        <div class="balance-value pending">R$ 0,00</div>
+        <div class="balance-value pending" id="saldoRetido">R$ 0,00</div>
         <div class="balance-trend" style="color: var(--ink-faint);">Nenhuma disputa ativa</div>
       </div>
       
@@ -428,15 +506,15 @@
         <div class="balance-label">
           <span>📈</span> Recebido Este Mês
         </div>
-        <div class="balance-value">R$ 890,00</div>
-        <div class="balance-trend up">↑ 5% vs. mês anterior</div>
+        <div class="balance-value" id="saldoMes">R$ 0,00</div>
+        <div class="balance-trend up" id="trendMes">Carregando...</div>
       </div>
       
       <div class="balance-card fees">
         <div class="balance-label">
           <span>📊</span> Comissão Paga (15%)
         </div>
-        <div class="balance-value fees">R$ 157,00</div>
+        <div class="balance-value fees" id="totalComissao">R$ 0,00</div>
         <div class="balance-trend down">↓ Taxa padrão da plataforma</div>
       </div>
     </div>
@@ -501,62 +579,233 @@
   </main>
 </div>
 
-<script>
-  // Dados de exemplo
-  const transactions = [
-    { 
-      os: 1088, 
-      client: "Maria Oliveira", 
-      clientInitial: "M",
-      gross: 250, 
-      date: "28/08/2024", 
-      status: "pending", 
-      statusLabel: "Em Andamento",
-      statusClass: "status-andamento"
-    },
-    { 
-      os: 950, 
-      client: "João Marcos", 
-      clientInitial: "J",
-      gross: 80, 
-      date: "15/08/2024", 
-      status: "completed", 
-      statusLabel: "Concluída",
-      statusClass: "status-concluido"
-    },
-    { 
-      os: 912, 
-      client: "Ana Souza", 
-      clientInitial: "A",
-      gross: 120, 
-      date: "10/08/2024", 
-      status: "cancelled", 
-      statusLabel: "Cancelada",
-      statusClass: "status-cancelado"
-    },
-    { 
-      os: 890, 
-      client: "Pedro Lima", 
-      clientInitial: "P",
-      gross: 260, 
-      date: "02/08/2024", 
-      status: "completed", 
-      statusLabel: "Concluída",
-      statusClass: "status-concluido"
-    },
-    { 
-      os: 845, 
-      client: "Carla Mendes", 
-      clientInitial: "C",
-      gross: 150, 
-      date: "28/07/2024", 
-      status: "completed", 
-      statusLabel: "Concluída",
-      statusClass: "status-concluido"
-    },
-  ];
+<!-- Navegação Mobile -->
+<nav class="mobile-nav" aria-label="Navegação principal">
+  <a href="dashboard-prestador.html" class="mobile-nav-item"><span class="nav-icon">▤</span><span>Início</span></a>
+  <a href="demandas-disponiveis.html" class="mobile-nav-item"><span class="nav-icon">🔍</span><span>Demandas</span></a>
+  <a href="minhas-propostas.html" class="mobile-nav-item"><span class="nav-icon">📨</span><span>Propostas</span></a>
+  <a href="ordens-servico.html" class="mobile-nav-item"><span class="nav-icon">🛠️</span><span>Ordens</span></a>
+  <a href="meu-perfil-prestador.html" class="mobile-nav-item"><span class="nav-icon">⚙️</span><span>Perfil</span></a>
+</nav>
 
-  // Formatação de moeda
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-cliente.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/auth.js"></script>
+
+<script>
+  // ============================================
+  // ESTADO GLOBAL
+  // ============================================
+  let allTransactions = [];
+  let activeFilter = 'all';
+  let searchTerm = '';
+  let currentUserId = null;
+
+  // Taxa de comissão (15%)
+  const COMMISSION_RATE = 0.15;
+
+  // ============================================
+  // INICIALIZAÇÃO
+  // ============================================
+  async function init() {
+    const supabase = window.supabaseClient;
+    
+    if (!supabase) {
+      window.location.href = '../index.html';
+      return;
+    }
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      window.location.href = '../index.html';
+      return;
+    }
+
+    currentUserId = session.user.id;
+
+    // Carrega dados do usuário
+    await carregarDadosUsuario(supabase, currentUserId);
+    
+    // Carrega transações financeiras
+    await carregarTransacoes(supabase, currentUserId);
+    
+    // Configura listeners
+    configurarEventListeners();
+    
+    // Configura realtime
+    configurarRealtime(supabase);
+  }
+
+  // ============================================
+  // CARREGAR DADOS DO USUÁRIO
+  // ============================================
+  async function carregarDadosUsuario(supabase, userId) {
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name, city, uf')
+        .eq('user_id', userId)
+        .single();
+
+      if (profile) {
+        document.getElementById('userName').textContent = `Olá, ${profile.full_name ? profile.full_name.split(' ')[0] : 'Profissional'}`;
+        document.getElementById('userLoc').textContent = profile.city ? `${profile.city}${profile.uf ? ', ' + profile.uf : ''}` : 'Local não definido';
+      }
+    } catch (error) {
+      console.error('Erro ao carregar dados do usuário:', error);
+    }
+  }
+
+  // ============================================
+  // CARREGAR TRANSAÇÕES FINANCEIRAS
+  // ============================================
+  async function carregarTransacoes(supabase, userId) {
+    try {
+      // Busca ordens de serviço com status que geram transações financeiras
+      const { data: orders, error } = await supabase
+        .from('service_orders')
+        .select(`
+          id,
+          status,
+          total_value,
+          created_at,
+          completed_at,
+          demand:demands (
+            title
+          ),
+          client:profiles!service_orders_client_id_fkey (
+            full_name
+          )
+        `)
+        .eq('provider_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Transforma ordens em transações financeiras
+      allTransactions = (orders || []).map(order => {
+        const gross = order.total_value || 0;
+        const commission = gross * COMMISSION_RATE;
+        const net = gross - commission;
+        
+        // Mapeia status para categorias financeiras
+        let statusCategory = 'pending';
+        let statusLabel = 'Em Andamento';
+        let statusClass = 'status-andamento';
+        
+        switch (order.status) {
+          case 'finalizado':
+          case 'concluido':
+            statusCategory = 'completed';
+            statusLabel = 'Concluída';
+            statusClass = 'status-concluido';
+            break;
+          case 'cancelado':
+          case 'cancelada':
+            statusCategory = 'cancelled';
+            statusLabel = 'Cancelada';
+            statusClass = 'status-cancelado';
+            break;
+          case 'aguardando_confirmacao_fim':
+            statusCategory = 'pending';
+            statusLabel = 'Aguardando Cliente';
+            statusClass = 'status-andamento';
+            break;
+          case 'pago_aguardando_inicio':
+            statusCategory = 'pending';
+            statusLabel = 'Aguardando Início';
+            statusClass = 'status-andamento';
+            break;
+          case 'em_andamento':
+          case 'andamento':
+            statusCategory = 'pending';
+            statusLabel = 'Em Andamento';
+            statusClass = 'status-andamento';
+            break;
+          default:
+            statusCategory = 'pending';
+            statusLabel = order.status.replace('_', ' ').toUpperCase();
+            statusClass = 'status-andamento';
+        }
+
+        const clientName = order.client?.full_name || 'Cliente';
+        const clientInitial = clientName.charAt(0).toUpperCase();
+        const date = new Date(order.completed_at || order.created_at).toLocaleDateString('pt-BR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+
+        return {
+          os: order.id.slice(0, 8),
+          osFull: order.id,
+          client: clientName,
+          clientInitial: clientInitial,
+          gross: gross,
+          commission: commission,
+          net: net,
+          date: date,
+          status: statusCategory,
+          statusLabel: statusLabel,
+          statusClass: statusClass,
+          demandTitle: order.demand?.title || 'Serviço'
+        };
+      });
+
+      // Atualiza os cards de saldo
+      atualizarCardsSaldo();
+      
+      // Renderiza a tabela
+      renderTransactions(allTransactions);
+
+    } catch (error) {
+      console.error('Erro ao carregar transações:', error);
+      document.getElementById('transactionsBody').innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align:center; padding:40px; color:var(--alert);">
+            Erro ao carregar transações: ${error.message}
+          </td>
+        </tr>
+      `;
+    }
+  }
+
+  // ============================================
+  // ATUALIZAR CARDS DE SALDO
+  // ============================================
+  function atualizarCardsSaldo() {
+    // Calcula totais
+    const totalDisponivel = allTransactions
+      .filter(t => t.status === 'completed')
+      .reduce((sum, t) => sum + t.net, 0);
+    
+    const totalRetido = allTransactions
+      .filter(t => t.status === 'pending')
+      .reduce((sum, t) => sum + t.gross, 0);
+    
+    const totalMes = allTransactions
+      .filter(t => {
+        const date = new Date(t.date.split('/').reverse().join('-'));
+        const now = new Date();
+        return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+      })
+      .reduce((sum, t) => sum + t.net, 0);
+    
+    const totalComissao = allTransactions
+      .reduce((sum, t) => sum + t.commission, 0);
+
+    // Atualiza os cards
+    document.getElementById('saldoDisponivel').textContent = formatCurrency(totalDisponivel);
+    document.getElementById('saldoRetido').textContent = formatCurrency(totalRetido);
+    document.getElementById('saldoMes').textContent = formatCurrency(totalMes);
+    document.getElementById('totalComissao').textContent = formatCurrency(totalComissao);
+  }
+
+  // ============================================
+  // FORMATAR MOEDA
+  // ============================================
   function formatCurrency(value) {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -564,7 +813,9 @@
     }).format(value);
   }
 
-  // Renderizar tabela
+  // ============================================
+  // RENDERIZAR TABELA
+  // ============================================
   function renderTransactions(data) {
     const tbody = document.getElementById('transactionsBody');
     tbody.innerHTML = '';
@@ -581,29 +832,26 @@
     }
     
     data.forEach(t => {
-      const commission = t.gross * 0.15;
-      const net = t.gross - commission;
-      
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>
-          <div class="os-link" onclick="verDetalhesOS(${t.os})">#${t.os}</div>
+          <div class="os-link" onclick="verDetalhesOS('${t.osFull}')">#${t.os}</div>
           <div class="date-cell">${t.date}</div>
         </td>
         <td>
           <div class="client-cell">
             <div class="client-avatar">${t.clientInitial}</div>
-            <span>${t.client}</span>
+            <span>${escapeHTML(t.client)}</span>
           </div>
         </td>
         <td>
           <span class="amount gross">${formatCurrency(t.gross)}</span>
         </td>
         <td>
-          <span class="amount commission">-${formatCurrency(commission)}</span>
+          <span class="amount commission">-${formatCurrency(t.commission)}</span>
         </td>
         <td>
-          <span class="amount net">${formatCurrency(net)}</span>
+          <span class="amount net">${formatCurrency(t.net)}</span>
         </td>
         <td>
           <span class="status-badge ${t.statusClass}">${t.statusLabel}</span>
@@ -613,50 +861,100 @@
     });
   }
 
-  // Inicializar tabela
-  renderTransactions(transactions);
+  // ============================================
+  // ESCAPE HTML
+  // ============================================
+  function escapeHTML(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>'"]/g, tag => ({ 
+      '&': '&amp;', 
+      '<': '&lt;', 
+      '>': '&gt;', 
+      "'": '&#39;', 
+      '"': '&quot;' 
+    }[tag]));
+  }
 
-  // Filtros
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
-      
-      const filter = this.dataset.filter;
-      const filteredData = filter === 'all' 
-        ? transactions 
-        : transactions.filter(t => t.status === filter);
-      
+  // ============================================
+  // CONFIGURAR EVENT LISTENERS
+  // ============================================
+  function configurarEventListeners() {
+    // Filtros
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        activeFilter = this.dataset.filter;
+        const filteredData = activeFilter === 'all' 
+          ? allTransactions 
+          : allTransactions.filter(t => t.status === activeFilter);
+        
+        renderTransactions(filteredData);
+      });
+    });
+
+    // Busca
+    document.getElementById('searchInput').addEventListener('input', function() {
+      searchTerm = this.value.toLowerCase();
+      const filteredData = allTransactions.filter(t => 
+        t.os.toLowerCase().includes(searchTerm) || 
+        t.client.toLowerCase().includes(searchTerm) ||
+        t.demandTitle.toLowerCase().includes(searchTerm)
+      );
       renderTransactions(filteredData);
     });
-  });
 
-  // Busca
-  document.getElementById('searchInput').addEventListener('input', function() {
-    const searchTerm = this.value.toLowerCase();
-    const filteredData = transactions.filter(t => 
-      t.os.toString().includes(searchTerm) || 
-      t.client.toLowerCase().includes(searchTerm)
-    );
-    renderTransactions(filteredData);
-  });
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+      e.preventDefault();
+      const supabase = window.supabaseClient;
+      if (supabase) {
+        await supabase.auth.signOut();
+      }
+      window.location.href = '../index.html';
+    });
+  }
 
-  // Funções globais
-  function solicitarSaque() {
+  // ============================================
+  // CONFIGURAR REALTIME
+  // ============================================
+  function configurarRealtime(supabase) {
+    supabase
+      .channel('historico-financeiro-realtime')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'service_orders' },
+        async () => {
+          const session = await supabase.auth.getSession();
+          if (session.data.session) {
+            carregarTransacoes(supabase, session.data.session.user.id);
+          }
+        }
+      )
+      .subscribe();
+  }
+
+  // ============================================
+  // FUNÇÕES GLOBAIS
+  // ============================================
+  window.solicitarSaque = function() {
     alert('💰 Solicitação de saque iniciada!\n\nO valor será transferido para sua conta cadastrada em até 1 dia útil.');
-  }
+  };
 
-  function exportarDados() {
+  window.exportarDados = function() {
     alert('📊 Exportação iniciada!\n\nUm arquivo CSV será enviado para seu email.');
-  }
+  };
 
-  function verExtratoCompleto() {
+  window.verExtratoCompleto = function() {
     alert('📋 Abrindo extrato completo...');
-  }
+  };
 
-  function verDetalhesOS(osId) {
-    alert(`🔍 Abrindo detalhes da OS #${osId}...`);
-  }
+  window.verDetalhesOS = function(osId) {
+    window.location.href = `detalhe-ordem.html?id=${osId}`;
+  };
+
+  // Iniciar
+  init();
 </script>
 <script src="../js/mobile-nav.js"></script>
 </body>
