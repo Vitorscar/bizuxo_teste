@@ -2,7 +2,7 @@
   "name": "Bizuxo",
   "short_name": "Bizuxo",
   "description": "Gerencie suas demandas e serviços com o Bizuxo.",
-  "start_url": "/",
+  "start_url": "/bizuxo_teste/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#4F46E5",
