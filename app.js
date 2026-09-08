@@ -5,7 +5,8 @@
 ============================================= */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/bizuxo_teste/sw.js')
+    // ✅ Caminho relativo: funciona localmente E no GitHub Pages
+    navigator.serviceWorker.register('./sw.js')
       .then((registration) => {
         console.log('Service Worker registrado com sucesso:', registration.scope);
       })
@@ -48,7 +49,7 @@ if (btnInstalar) {
 
   // Esconde o botão se o app já estiver instalado
   window.addEventListener('appinstalled', () => {
-    btnInstalar.style.display = 'none';
+    if (btnInstalar) btnInstalar.style.display = 'none';
     console.log('Bizuxo instalado com sucesso!');
   });
 }
