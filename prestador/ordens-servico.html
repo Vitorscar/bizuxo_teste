@@ -247,26 +247,33 @@
   // ============================================
   // CARREGAR ORDENS
   // ============================================
+    // ============================================
+  // CARREGAR ORDENS (Adaptado para tabela 'contracts')
+  // ============================================
   async function carregarOrdens(supabase, userId) {
     try {
+      // Buscamos os contratos filtrando pelo provider_id da proposal associada
       const { data: orders, error } = await supabase
-        .from('service_orders')
+        .from('contracts')
         .select(`
           id, 
           status, 
-          total_value,
-          scheduled_date,
+          final_price,
+          start_code,
+          finish_code,
+          started_at,
+          finished_at,
           created_at,
           demand:demands (
             title,
             city,
-            neighborhood
-          ),
-          client:profiles!service_orders_client_id_fkey (
-            full_name
+            neighborhood,
+            client:profiles (
+              full_name
+            )
           )
         `)
-        .eq('provider_id', userId)
+        .filter('proposals.provider_id', 'eq', userId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -283,8 +290,10 @@
       `;
     }
   }
-
   // ============================================
+  // RENDERIZAÇÃO
+  // ============================================
+    // ============================================
   // RENDERIZAÇÃO
   // ============================================
   function render() {
@@ -293,7 +302,7 @@
     
     const filtered = allOrders.filter(o => {
       const matchesFilter = activeFilter === "all" || o.status === activeFilter;
-      const clienteNome = o.client?.full_name || '';
+      const clienteNome = o.demand?.client?.full_name || '';
       const servicoTitulo = o.demand?.title || '';
       const matchesSearch = !searchTerm || 
         servicoTitulo.toLowerCase().includes(searchTerm) || 
@@ -308,8 +317,9 @@
       const el = document.createElement("div");
       el.className = "list-row";
       
-      const valorFmt = o.total_value ? 
-        new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(o.total_value) : 
+      // CORREÇÃO: Usando final_price em vez de total_value
+      const valorFmt = o.final_price ? 
+        new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(o.final_price) : 
         'A combinar';
       
       const statusLabels = {
@@ -321,7 +331,7 @@
         'concluido': 'Concluída'
       };
       
-      const statusLabel = statusLabels[o.status] || o.status.replace('_', ' ').toUpperCase();
+      const statusLabel = statusLabels[o.status] || (o.status ? o.status.replace('_', ' ').toUpperCase() : 'Pendente');
       const statusClass = o.status === 'pago_aguardando_inicio' ? 'receiving' : 
                           (o.status === 'finalizado' || o.status === 'concluido') ? 'done' : 'selected';
       
@@ -337,7 +347,8 @@
       }
 
       const localizacao = o.demand?.city || o.demand?.neighborhood || 'Local não definido';
-      const clienteNome = o.client?.full_name || 'Cliente';
+      // CORREÇÃO: Buscando o nome do cliente dentro do objeto demand
+      const clienteNome = o.demand?.client?.full_name || 'Cliente';
 
       el.innerHTML = `
         <div class="avatar avatar-md">🛠️</div>
@@ -360,17 +371,7 @@
     });
   }
 
-  // ============================================
-  // AÇÕES DO PRESTADOR
-  // ============================================
-  window.abrirModalInicio = function(orderId) {
-    currentOrderIdForAction = orderId;
-    document.getElementById('startCodeInput').value = '';
-    document.getElementById('startModal').classList.add('active');
-    setTimeout(() => document.getElementById('startCodeInput').focus(), 100);
-  };
-
-  window.enviarCodigoInicio = async function() {
+    window.enviarCodigoInicio = async function() {
     const codigo = document.getElementById('startCodeInput').value.trim();
     if (codigo.length !== 4) {
       alert('O código deve ter exatamente 4 dígitos.');
@@ -380,23 +381,23 @@
     const supabase = window.supabaseClient;
     
     try {
-      // Busca a ordem para verificar o código
-      const { data: ordem, error } = await supabase
-        .from('service_orders')
+      // Busca o contrato para verificar o código
+      const { data: contrato, error } = await supabase
+        .from('contracts')
         .select('start_code')
         .eq('id', currentOrderIdForAction)
         .single();
 
       if (error) throw error;
 
-      if (ordem.start_code !== codigo) {
+      if (contrato.start_code !== codigo) {
         alert('Código inválido. Verifique com o cliente.');
         return;
       }
 
-      // Atualiza o status da ordem
+      // Atualiza o status do contrato
       const { error: updateError } = await supabase
-        .from('service_orders')
+        .from('contracts')
         .update({ status: 'em_andamento', started_at: new Date().toISOString() })
         .eq('id', currentOrderIdForAction);
 
@@ -404,14 +405,16 @@
 
       alert('Serviço iniciado com sucesso!');
       fecharModal('startModal');
-      carregarOrdens(supabase, (await supabase.auth.getSession()).data.session.user.id);
+      const session = await supabase.auth.getSession();
+      carregarOrdens(supabase, session.data.session.user.id);
     } catch (err) {
       console.error('Erro ao iniciar serviço:', err);
       alert('Erro ao iniciar serviço: ' + err.message);
     }
   };
 
-  window.solicitarFim = async function(orderId) {
+
+    window.solicitarFim = async function(orderId) {
     if (!confirm('Tem certeza que o serviço foi concluído? O cliente receberá um código para liberar seu pagamento.')) return;
     
     const supabase = window.supabaseClient;
@@ -421,9 +424,9 @@
       // Gera um código de finalização aleatório de 4 dígitos
       const finishCode = Math.floor(1000 + Math.random() * 9000).toString();
       
-      // Atualiza a ordem com o código de finalização
+      // Atualiza o contrato com o código de finalização
       const { error } = await supabase
-        .from('service_orders')
+        .from('contracts')
         .update({ 
           status: 'aguardando_confirmacao_fim',
           finish_code: finishCode,
@@ -443,12 +446,6 @@
       alert('Erro ao solicitar finalização: ' + err.message);
     }
   };
-
-  window.fecharModal = function(modalId) {
-    document.getElementById(modalId).classList.remove('active');
-    currentOrderIdForAction = null;
-  };
-
   // ============================================
   // CONFIGURAR EVENT LISTENERS
   // ============================================
@@ -483,11 +480,14 @@
   // ============================================
   // CONFIGURAR REALTIME
   // ============================================
+   // ============================================
+  // CONFIGURAR REALTIME
+  // ============================================
   function configurarRealtime(supabase) {
     supabase
       .channel('ordens-servico-realtime')
       .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'service_orders' },
+        { event: '*', schema: 'public', table: 'contracts' }, // MUDANÇA: de service_orders para contracts
         async () => {
           const session = await supabase.auth.getSession();
           if (session.data.session) {
@@ -497,7 +497,6 @@
       )
       .subscribe();
   }
-
   // ============================================
   // ESCAPE HTML
   // ============================================

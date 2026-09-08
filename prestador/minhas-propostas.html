@@ -235,48 +235,61 @@
   // ==========================================
   // CARREGAR PROPOSTAS
   // ==========================================
+    // ==========================================
+  // CARREGAR PROPOSTAS (Corrigido)
+  // ==========================================
+    // ==========================================
+  // CARREGAR PROPOSTAS (Versão Corrigida e Definitiva)
+  // ==========================================
   async function carregarPropostas() {
     const supabaseClient = window.supabaseClient;
     if (!currentProfileId || !supabaseClient) return;
 
+    // Buscamos a proposta, e através da demanda, buscamos os dados do cliente
     const { data: propostas, error } = await supabaseClient
       .from('proposals')
       .select(`
         id,
-        value,
+        price,
         status,
         created_at,
+        deadline_days,
         demand:demands (
           id,
           title,
           city,
-          neighborhood
-        ),
-        client:profiles!proposals_client_id_fkey (
-          full_name,
-          company_name
+          neighborhood,
+          client:profiles (
+            full_name,
+            company_name
+          )
         )
       `)
       .eq('provider_id', currentProfileId)
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('Erro ao buscar propostas:', error);
+      console.error('❌ Erro ao buscar propostas:', error);
       document.getElementById('results-count').textContent = 'Erro ao carregar';
       return;
     }
 
     allProposals = (propostas || []).map(p => {
-      const statusInfo = STATUS_MAP[p.status] || { class: 'agendado', label: p.status };
-      const clientName = p.client?.full_name || p.client?.company_name || 'Cliente';
+      const statusInfo = STATUS_MAP[p.status] || { class: 'agendado', label: p.status || 'Pendente' };
+      
+      // Pegamos os dados do cliente através do relacionamento da demanda
+      const clientData = p.demand?.client || {};
+      const clientName = clientData.full_name || clientData.company_name || 'Cliente';
+      
       const local = p.demand?.city || p.demand?.neighborhood || 'Local não definido';
 
       return {
         id: p.id,
-        demandTitle: p.demand?.title || 'Demanda',
+        demandTitle: p.demand?.title || 'Demanda sem título',
         client: clientName,
         loc: local,
-        value: p.value ? `R$ ${parseFloat(p.value).toFixed(2)}` : 'A combinar',
+        // CORREÇÃO CRÍTICA: Usando p.price (conforme seu banco) em vez de p.value
+        value: p.price ? `R$ ${parseFloat(p.price).toFixed(2)}` : 'A combinar', 
         date: p.created_at ? new Date(p.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : '',
         statusKey: p.status,
         statusClass: statusInfo.class,
@@ -287,7 +300,6 @@
 
     render();
   }
-
   // ==========================================
   // RENDERIZAÇÃO
   // ==========================================

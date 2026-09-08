@@ -361,6 +361,9 @@
   // ============================================
   // CARREGAR SERVIÇOS CONTRATADOS
   // ============================================
+   // ============================================
+  // CARREGAR SERVIÇOS CONTRATADOS (Adaptado para tabela 'contracts')
+  // ============================================
   async function carregarServicosContratados() {
     const supabase = window.supabaseClient || window.supabase;
     
@@ -374,47 +377,53 @@
     const list = document.getElementById('list');
     const empty = document.getElementById('empty');
 
-    // Mostra loading
     if (loadingIndicator) loadingIndicator.style.display = 'block';
     if (errorContainer) errorContainer.style.display = 'none';
     if (list) list.style.display = 'none';
     if (empty) empty.style.display = 'none';
 
     try {
-      // Busca as ordens de serviço do cliente
+      // Busca os contratos do cliente, trazendo dados aninhados da demanda e da proposta
       const { data: ordens, error } = await supabase
-        .from('service_orders')
+        .from('contracts')
         .select(`
           id,
-          title,
-          description,
           status,
-          scheduled_date,
-          total_value,
+          final_price,
+          started_at,
           created_at,
-          provider_id,
-          provider:profiles!provider_id (
-            full_name,
-            company_name,
-            avatar_url
-          ),
-          demand:demands (
+          demand:demand_id (
             id,
             title,
             city,
-            neighborhood
+            neighborhood,
+            client_id
+          ),
+          proposal:proposal_id (
+            id,
+            provider_id,
+            provider:profiles (
+              full_name,
+              company_name,
+              avatar_url
+            )
           )
         `)
-        .eq('client_id', window.currentUser.id)
+        .eq('demand.client_id', window.currentUser.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      console.log('✅ Ordens de serviço carregadas:', ordens);
+      console.log('✅ Contratos carregados:', ordens);
 
-      // Transforma os dados para o formato da UI
+      // Transforma os dados para o formato que a UI já espera
       allOrders = (ordens || []).map(ordem => {
+        const demand = ordem.demand || {};
+        const proposal = ordem.proposal || {};
+        const providerProfile = proposal.provider || {};
+
         const statusMap = {
+          'pending': { label: 'Pendente', class: 'pendente' },
           'agendado': { label: 'Agendado', class: 'agendado' },
           'em_andamento': { label: 'Em andamento', class: 'andamento' },
           'andamento': { label: 'Em andamento', class: 'andamento' },
@@ -425,31 +434,28 @@
         };
         
         const statusInfo = statusMap[ordem.status] || { 
-          label: ordem.status, 
+          label: ordem.status || 'Pendente', 
           class: 'pendente' 
         };
 
-        // Determina o nome do prestador
-        const providerName = ordem.provider?.company_name || 
-                            ordem.provider?.full_name || 
-                            'Prestador não definido';
+        const providerName = providerProfile.company_name || 
+                             providerProfile.full_name || 
+                             'Prestador não definido';
 
-        // Determina o avatar
-        const avatar = ordem.provider?.avatar_url || 
-                      (ordem.provider?.company_name ? '🏢' : '👤');
+        const avatar = providerProfile.avatar_url || 
+                      (providerProfile.company_name ? '🏢' : '👤');
 
-        // Determina localização
-        const localizacao = ordem.demand?.city || 
-                           ordem.demand?.neighborhood || 
-                           'Local não definido';
+        const localizacao = demand.city || 
+                            demand.neighborhood || 
+                            'Local não definido';
 
         return {
           id: ordem.id,
-          title: ordem.title || ordem.demand?.title || 'Serviço contratado',
+          title: demand.title || 'Serviço contratado',
           provider: providerName,
           avatar: avatar,
-          date: formatarData(ordem.scheduled_date || ordem.created_at),
-          value: formatarValor(ordem.total_value),
+          date: formatarData(ordem.started_at || ordem.created_at),
+          value: formatarValor(ordem.final_price),
           loc: localizacao,
           status: ordem.status,
           statusLabel: statusInfo.label,
@@ -459,15 +465,11 @@
         };
       });
 
-      // Esconde loading
       if (loadingIndicator) loadingIndicator.style.display = 'none';
-
-      // Renderiza a lista
       render();
 
     } catch (error) {
       console.error('❌ Erro ao carregar serviços:', error);
-      
       if (loadingIndicator) loadingIndicator.style.display = 'none';
       mostrarErro('Erro ao carregar serviços contratados. ' + error.message);
     }
