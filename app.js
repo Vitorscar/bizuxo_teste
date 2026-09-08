@@ -1,11 +1,8 @@
-// js/app.js
+// js/app.js (agora na raiz)
 
-/* =============================================
-   REGISTRO DO SERVICE WORKER (PWA)
-============================================= */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    // ✅ Caminho relativo: funciona localmente E no GitHub Pages
+    // ✅ Como estão na mesma pasta, ./sw.js funciona perfeitamente
     navigator.serviceWorker.register('./sw.js')
       .then((registration) => {
         console.log('Service Worker registrado com sucesso:', registration.scope);
@@ -15,7 +12,7 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
-
+// ... (o resto do código do botão de instalar continua igual)
 /* =============================================
    BOTÃO "INSTALAR BIZUXO" (PWA)
 ============================================= */
