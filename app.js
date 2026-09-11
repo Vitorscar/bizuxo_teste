@@ -3,7 +3,7 @@
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     // ✅ Como estão na mesma pasta, ./sw.js funciona perfeitamente
-    navigator.serviceWorker.register('./sw.js')
+    navigator.serviceWorker.register('../sw.js')
       .then((registration) => {
         console.log('Service Worker registrado com sucesso:', registration.scope);
       })

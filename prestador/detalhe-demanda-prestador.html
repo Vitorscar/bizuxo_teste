@@ -6,7 +6,7 @@
 <title>Enviar proposta · Bizuxo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="manifest" href="/manifest.json">
+<link rel="manifest" href="../manifest.json">
 <meta name="theme-color" content="#4F46E5">
 <link rel="stylesheet" href="../style.css">
 <style>
@@ -34,9 +34,7 @@
   <div class="wrap">
     <div class="card" id="detailCard">
       <div class="card-label alert"><span class="dot"></span>Detalhes da demanda</div>
-      <div class="detail-lines" id="detailLines">
-        <!-- Preenchido via JS -->
-      </div>
+      <div class="detail-lines" id="detailLines"></div>
       <p id="demandDesc" style="font-size:0.85rem; color:var(--ink-soft); line-height:1.5; margin:16px 0 0;"></p>
     </div>
 
@@ -50,13 +48,15 @@
           </div>
           <div class="field">
             <label for="prazo">Prazo</label>
+            <!-- ✅ deadline_days é INTEGER — value agora é número de dias -->
             <select id="prazo" required>
               <option value="">Selecione...</option>
-              <option value="hoje">Ainda hoje</option>
-              <option value="1h">1 hora</option>
-              <option value="2h">2 horas</option>
-              <option value="amanha">Amanhã</option>
-              <option value="semana">Essa semana</option>
+              <option value="1">Amanhã (1 dia)</option>
+              <option value="2">Em 2 dias</option>
+              <option value="3">Em 3 dias</option>
+              <option value="7">Em 1 semana</option>
+              <option value="15">Em 2 semanas</option>
+              <option value="30">Em 1 mês</option>
             </select>
           </div>
         </div>
@@ -83,70 +83,152 @@
 <script src="../js/utils.js"></script>
 <script src="../js/cadastro.js"></script>
 <script src="../js/auth.js"></script>
-   <script src="../js/app.js"></script>
-<script>
-  const urlParams = new URLSearchParams(window.location.search);
-  const demandId = urlParams.get('id');
+<script src="../app.js"></script>
 
+<script>
+  // ==========================================
+  // 0. SETUP
+  // ==========================================
+  const db = window.supabaseClient;
+  const urlParams = new URLSearchParams(window.location.search);
+  const demandId  = urlParams.get('id');
+
+  let providerProfileId = null;
+
+  // ==========================================
+  // 1. CARREGA DEMANDA + PERFIL DO PRESTADOR
+  // ==========================================
   async function init() {
+    if (!db) { console.error('❌ supabaseClient não inicializado'); return; }
     if (!demandId) { window.location.href = 'demandas-disponiveis.html'; return; }
 
-    const { data, error } = await supabase
+    // ---- 1.1 Sessão e perfil (precisamos do profile.id, não do user.id) ----
+    const { data: { session } } = await db.auth.getSession();
+    if (!session) { window.location.href = '../index.html'; return; }
+
+    const { data: profile, error: profErr } = await db
+      .from('profiles')
+      .select('id')
+      .eq('user_id', session.user.id)
+      .single();
+
+    if (profErr || !profile) {
+      console.error('Erro perfil:', profErr);
+      alert('Perfil de prestador não encontrado.');
+      return;
+    }
+    providerProfileId = profile.id;
+
+    // ---- 1.2 Buscar a demanda (SEM join — mais seguro) ----
+    const { data, error } = await db
       .from('demands')
-      .select(`*, service_types(nome), proposals(count)`)
+      .select('id, title, description, city, neighborhood, status, created_at, category_id')
       .eq('id', demandId)
       .single();
 
     if (error || !data) {
-      alert('Demanda não encontrada');
+      console.error('Erro ao carregar demanda:', error);
+      alert('Demanda não encontrada.');
       window.location.href = 'demandas-disponiveis.html';
       return;
     }
 
-    document.getElementById('demandTitle').textContent = data.titulo;
-    document.getElementById('demandDesc').textContent = `"${data.descricao}"`;
-    
-    const propostas = data.proposals[0]?.count || 0;
-    const dataPub = new Date(data.created_at).toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
-    
-    document.getElementById('detailLines').innerHTML = `
-      <div class="detail-line"><span>Categoria</span><span>${data.service_types?.nome || 'N/A'}</span></div>
-      <div class="detail-line"><span>Local</span><span>${data.bairro}, ${data.cidade}</span></div>
-      <div class="detail-line"><span>Publicada</span><span>${dataPub}</span></div>
-      <div class="detail-line"><span>Propostas até agora</span><span>${propostas}</span></div>
-    `;
+    // ---- 1.3 Tentar pegar o nome da categoria (join opcional) ----
+   let categoriaNome = '—';
+let categoriaIcon = '';
+if (data.category_id) {
+  const { data: cat } = await db
+    .from('categories')
+    .select('name, icon')
+    .eq('id', data.category_id)
+    .maybeSingle();
+
+  if (cat) {
+    categoriaNome = cat.name || '—';
+    categoriaIcon = cat.icon || '';
   }
 
+      } else {
+        // Fallback: tenta 'categories' (alguns projetos usam esse nome)
+        const { data: cat2 } = await db
+          .from('categories')
+          .select('name')
+          .eq('id', data.category_id)
+          .maybeSingle();
+        if (cat2?.name) categoriaNome = cat2.name;
+      }
+    }
+
+    // ---- 1.4 Contar propostas existentes ----
+    const { count: propostasCount } = await db
+      .from('proposals')
+      .select('id', { count: 'exact', head: true })
+      .eq('demand_id', demandId);
+
+    // ---- 1.5 Preencher DOM ----
+    document.getElementById('demandTitle').textContent = data.title || 'Demanda';
+    document.getElementById('demandDesc').textContent  = data.description ? `"${data.description}"` : '';
+
+    const dataPub = data.created_at
+      ? new Date(data.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+      : '—';
+
+    document.getElementById('detailLines').innerHTML = `
+      <div class="detail-line">
+  <span>Categoria</span>
+  <span>${categoriaIcon ? categoriaIcon + ' ' : ''}${categoriaNome}</span>
+</div>
+      <div class="detail-line"><span>Local</span><span>${data.neighborhood || '—'}, ${data.city || '—'}</span></div>
+      <div class="detail-line"><span>Publicada</span><span>${dataPub}</span></div>
+      <div class="detail-line"><span>Propostas até agora</span><span>${propostasCount || 0}</span></div>
+    `;
+  
+
+  // ==========================================
+  // 2. ENVIO DA PROPOSTA
+  // ==========================================
   document.getElementById('propostaForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const session = await supabase.auth.getSession();
-    if (!session.data.session) { alert('Faça login primeiro'); return; }
+
+    if (!providerProfileId) {
+      alert('Sessão expirada. Faça login novamente.');
+      window.location.href = '../index.html';
+      return;
+    }
 
     const btn = document.getElementById('sendBtn');
     btn.textContent = 'Enviando...';
     btn.disabled = true;
 
-    const { error } = await supabase.from('proposals').insert({
-      demand_id: parseInt(demandId),
-      provider_id: session.data.session.user.id,
-      valor: parseFloat(document.getElementById('valor').value),
-      prazo: document.getElementById('prazo').value,
-      mensagem: document.getElementById('mensagem').value,
-      status: 'pendente'
-    });
+    // ✅ Colunas reais de proposals: demand_id, provider_id, price, deadline_days, message, status
+    const payload = {
+      demand_id:     demandId,                                              // UUID direto
+      provider_id:   providerProfileId,                                     // profile.id
+      price:         parseFloat(document.getElementById('valor').value),    // numeric
+      deadline_days: parseInt(document.getElementById('prazo').value, 10),  // INTEGER
+      message:       document.getElementById('mensagem').value.trim(),
+      status:        'pendente'
+    };
 
-    if (error) {
-      alert('Erro ao enviar: ' + error.message);
+    const { error: insertError } = await db.from('proposals').insert(payload);
+
+    if (insertError) {
+      console.error('Erro insert:', insertError);
+      alert('Erro ao enviar: ' + insertError.message);
       btn.textContent = 'Enviar proposta';
       btn.disabled = false;
-    } else {
-      // Atualiza status da demanda para garantir que apareça como "em propostas"
-      await supabase.from('demands').update({ status: 'em_propostas' }).eq('id', demandId);
-      
-      document.getElementById('detailCard').style.display = 'none';
-      document.getElementById('propostaForm').style.display = 'none';
-      document.getElementById('successState').classList.add('show');
+      return;
     }
+
+    // Atualiza status da demanda
+    await db
+      .from('demands')
+      .update({ status: 'EM_PROPOSTAS' })
+      .eq('id', demandId);
+
+    document.getElementById('detailCard').style.display   = 'none';
+    document.getElementById('propostaForm').style.display = 'none';
+    document.getElementById('successState').classList.add('show');
   });
 
   init();

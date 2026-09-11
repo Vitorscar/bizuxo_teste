@@ -6,12 +6,11 @@
 <title>Painel · Bizuxo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
-<!-- Use o caminho relativo com ./ para funcionar em qualquer subpasta -->
-<link rel="manifest" href="./manifest.json">
+<!-- CORREÇÃO: ../ sobe uma pasta para achar o manifest.json na raiz -->
+<link rel="manifest" href="../manifest.json">
 <meta name="theme-color" content="#4F46E5">
 <link rel="stylesheet" href="../style.css">
 <style>
-  /* (mantenha todo o CSS original) */
   .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 32px; }
   .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; display: flex; flex-direction: column; gap: 6px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
   .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(16, 17, 19, 0.06); border-color: var(--ink-faint); }
@@ -147,20 +146,16 @@
   <a href="meu-perfil-cliente.html" class="mobile-nav-item"><span class="nav-icon">⚙️</span><span>Perfil</span></a>
 </nav>
 
+<!-- Scripts com caminho relativo subindo uma pasta (../) para achar a pasta js/ na raiz -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase-cliente.js"></script>
 <script src="../js/auth.js"></script>
-  <script src="../js/app.js"></script>
+<script src="../app.js"></script>
+<script src="../js/mobile-nav.js"></script>
 
 <script>
-  // ==========================================
-  // ESTADO GLOBAL
-  // ==========================================
-  let currentProfileId = null; // ID do perfil (tabela profiles.id)
+  let currentProfileId = null;
 
-  // ==========================================
-  // INICIALIZAÇÃO
-  // ==========================================
   async function init() {
     const supabase = window.supabaseClient;
     if (!supabase) {
@@ -174,7 +169,6 @@
       return;
     }
 
-    // Busca o perfil para obter o ID (client_id nas demandas)
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('id, full_name, city, uf')
@@ -193,19 +187,12 @@
     const local = profile.city ? `${profile.city}${profile.uf ? ', ' + profile.uf : ''}` : 'Local não definido';
     document.getElementById('userLoc').textContent = local;
 
-    // Carrega dados iniciais
     await atualizarDashboard(supabase);
-
-    // Configura realtime
     configurarRealtime(supabase);
   }
 
-  // ==========================================
-  // ATUALIZAR DASHBOARD
-  // ==========================================
   async function atualizarDashboard(supabase) {
     try {
-      // Busca demandas do cliente usando currentProfileId
       const { data: demandas, error: errDemandas } = await supabase
         .from('demands')
         .select('id, title, city, neighborhood, status, created_at')
@@ -215,7 +202,6 @@
 
       if (errDemandas) throw errDemandas;
 
-      // Conta propostas (se tabela existir)
       let propostasCount = 0;
       const demandasIds = (demandas || []).map(d => d.id);
       if (demandasIds.length > 0) {
@@ -226,11 +212,10 @@
             .in('demand_id', demandasIds);
           if (!errPropostas) propostasCount = count || 0;
         } catch (e) {
-          console.warn('Tabela proposals não encontrada');
+          console.warn('Tabela proposals não encontrada ou sem permissão');
         }
       }
 
-      // Calcula estatísticas
       const demandasAtivas = (demandas || []).filter(d =>
         ['OPEN', 'ABERTA', 'EM_PROPOSTAS', 'EM_ANDAMENTO'].includes(d.status)
       ).length;
@@ -239,7 +224,6 @@
         ['CONCLUIDO', 'CONCLUIDA', 'COMPLETED', 'completed'].includes(d.status)
       ).length;
 
-      // Atualiza UI
       document.getElementById('statAtivas').textContent = demandasAtivas;
       document.getElementById('statPropostas').textContent = propostasCount;
       document.getElementById('statConcluidos').textContent = servicosConcluidos;
@@ -252,21 +236,16 @@
         badge.style.display = 'none';
       }
 
-      // Renderiza listas
       renderDemandas(demandas || []);
       renderServicosEmAndamento(demandas || []);
 
     } catch (error) {
       console.error('Erro ao atualizar dashboard:', error);
-      // Exibe listas vazias em caso de erro
       renderDemandas([]);
       renderServicosEmAndamento([]);
     }
   }
 
-  // ==========================================
-  // RENDERIZAÇÃO
-  // ==========================================
   function renderDemandas(demandas) {
     const el = document.getElementById('demandasRecentes');
     if (!demandas || demandas.length === 0) {
@@ -327,9 +306,6 @@
     }).join('');
   }
 
-  // ==========================================
-  // REALTIME
-  // ==========================================
   function configurarRealtime(supabase) {
     supabase
       .channel('dashboard-cliente')
@@ -345,25 +321,17 @@
     console.log('✅ Realtime configurado');
   }
 
-  // ==========================================
-  // LOGOUT
-  // ==========================================
   document.getElementById('logoutBtn').addEventListener('click', async (e) => {
     e.preventDefault();
     await window.supabaseClient.auth.signOut();
     window.location.href = '../index.html';
   });
 
-  // ==========================================
-  // SERVIÇO RÁPIDO
-  // ==========================================
   function solicitarServicoRapido(categoria, icone) {
     window.location.href = `nova-demanda.html?categoria=${encodeURIComponent(categoria)}`;
   }
 
-  // Inicializar
   init();
 </script>
-<script src="../js/mobile-nav.js"></script>
 </body>
 </html>
